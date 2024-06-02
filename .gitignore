@@ -1,0 +1,13 @@
+.vscode
+.pytest_cache
+__pycache__
+.tox
+site/
+dist/
+uml-101.txt
+umli-venv
+testv
+notes
+.idea
+.hypothesis
+test_tmp_*.xml
