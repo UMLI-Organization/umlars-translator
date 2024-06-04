@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "umlars_translator"
-version = "0.0.1"
+version = "0.0.2a0"
 description = "UML representation and analysis system - translation service"
 authors = ["Filip Pawłowski <filip.pawlowski001@gmail.com>"]
 readme = "README.md"
@@ -23,6 +23,8 @@ packages = [{include = "umlars_translator", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+fastapi = "^0.111.0"
+uvicorn = {extras = ["standard"], version = "^0.30.1"}
 
 
 [tool.poetry.group.dev.dependencies]

@@ -39,4 +39,13 @@ publish-test:
 publish:
 	poetry publish --build
 
+docker-setup:
+	poetry install --no-interaction --no-ansi
+
+server-start:
+	poetry run uvicorn src.umlars_translator.app.main:app --reload --host="0.0.0.0" --port=8080
+
+server-start-dev:
+	poetry run uvicorn src.umlars_translator.app.main:app --reload --host="0.0.0.0" --port=8080
+
 .PHONY: setup tests docs clean export version-new-release version-new-prerelease publish publish-test

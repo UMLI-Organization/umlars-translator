@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  translator:
+    image: "umlars-translator:dev"
+    build:
+      target: umlars_translator_dev_build
+      context: .
+      cache_from:
+        - "umlars-translator:dev"
+        - "umlars-translator:latest"
+        - "*"
+      args:
+        # TODO: change to PROD for production
+        UMLI_IN_ENV: DEV
+    # TODO: Change to production version when released
+    # command: make server-start
+    command: make server-start-dev
+    ports:
+      - 8080:8080
+    env_file:
+      - ./.env.dev
+
+    # TODO: Remove this volume mapping in production
+    volumes:
+      - .:/code
