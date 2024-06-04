@@ -16,9 +16,10 @@ Python 3.10+
 
 ## Installation
 
-pip install uml-interpreter
+pip install umlars_translator
 
 ## Dev Usage
+
 - **make setup**: installs all dependencies
 - **make test**: runs pytest tests
 - **make tox-test**: runs tox tests
@@ -30,11 +31,12 @@ pip install uml-interpreter
 - **make clean**: - cleans working directory
 
 To quick-check, if translation was successful, use visitor for logging Python objects structure into the terminal.
+
 > python3 sandbox/visit_sample_1.py
 
 ## Dev Usage
 
-Published as Python package to test PyPi. 
+Published as Python package to test PyPi.
 Documented using mkdocs.
 Tested on multiple Python versions using tox.
 
