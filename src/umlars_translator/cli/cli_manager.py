@@ -1,6 +1,6 @@
 import argparse
 
-from umlars_translator.config import supported_formats
+from umlars_translator.core.deserializer.config import supported_formats
 
 
 class CLIManager:
