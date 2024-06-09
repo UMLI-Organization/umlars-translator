@@ -25,6 +25,7 @@ packages = [{include = "umlars_translator", from = "src"}]
 python = "^3.10"
 fastapi = "^0.111.0"
 uvicorn = {extras = ["standard"], version = "^0.30.1"}
+kink = "^0.8.0"
 
 
 [tool.poetry.group.dev.dependencies]
