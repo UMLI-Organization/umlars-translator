@@ -10,6 +10,7 @@ from umlars_translator.core.translator import ModelTranslator
 def translator() -> ModelTranslator:
     return ModelTranslator()
 
+
 @fixture
 def ea_data() -> str:
     return """
@@ -31,10 +32,8 @@ def ea_data() -> str:
     """
 
 
-
 def test_when_given_ea_format_deserialization_successful(ea_data, translator) -> None:
     # Given
     # When
     result = translator.translate(ea_data)
     assert result
-

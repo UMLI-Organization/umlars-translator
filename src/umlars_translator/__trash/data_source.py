@@ -1,7 +1,10 @@
 import json
 from typing import Union
 
-from umlars_translator.core.abstract.deserializer.json.exceptions import InvalidJsonException
+from umlars_translator.core.abstract.deserializer.json.exceptions import (
+    InvalidJsonException,
+)
+
 
 class JsonDataSource:
     def __init__(self, data: Union[dict, str]) -> None:
@@ -13,7 +16,7 @@ class JsonDataSource:
     @property
     def data(self) -> Any:
         return self._data
-    
+
     @data.setter
     def data(self, data: Any) -> None:
         self._data = data

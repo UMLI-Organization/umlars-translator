@@ -20,7 +20,11 @@ class DeserializationStrategy(ABC):
         """
 
     @abstractmethod
-    def can_deserialize_format(self, format: Optional[SupportedFormat] = None, format_data: Optional[DataSource] = None) -> bool:
+    def can_deserialize_format(
+        self,
+        format: Optional[SupportedFormat] = None,
+        format_data: Optional[DataSource] = None,
+    ) -> bool:
         """
         Method used by a final user to check if a specific format can be deserialized.
         Uses self._can_deserialize_format_data and self.__class__.__SUPPORTED_FORMAT_NAME to check if the format is supported.

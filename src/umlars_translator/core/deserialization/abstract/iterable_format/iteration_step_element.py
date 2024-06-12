@@ -10,11 +10,11 @@ class FormatElementContext(ABC):
 
 class FormatElementType(NamedTuple):
     """
-    Named tuple is used so that the iteration step element type can be used as a key in a dictionary. 
+    Named tuple is used so that the iteration step element type can be used as a key in a dictionary.
     """
+
     element_type_name: str
     element_context: Optional["FormatElementType"] = None
-
 
 
 class FormatElement(ABC):
@@ -24,11 +24,9 @@ class FormatElement(ABC):
         self.context: Optional[FormatElementContext] = None
 
 
-example_config = {
-
-}
+example_config = {}
 
 
-supported_elements = [ 
+supported_elements = [
     FormatElementType("uml::Class", element_context=FormatElementType("uml::Package")),
 ]

@@ -9,13 +9,20 @@ from kink import inject
 class ExtensionsManager:
     """
     Class used to manage extensions of the application. It allows to load plugins from directories and filter them by categories.
-    Fasade for yapsy.PluginManager. 
+    Fasade for yapsy.PluginManager.
     """
-    def __init__(self, extensions_modules_groups_names: Optional[Iterator[str]]=None, logger: Optional[Logger] = None) -> None:
+
+    def __init__(
+        self,
+        extensions_modules_groups_names: Optional[Iterator[str]] = None,
+        logger: Optional[Logger] = None,
+    ) -> None:
         self._logger = logger
         self._extensions_modules_groups_names = extensions_modules_groups_names
 
-    def activate_extensions(self, extensions_modules_groups_names: Optional[Iterator[str]]=None) -> None:
+    def activate_extensions(
+        self, extensions_modules_groups_names: Optional[Iterator[str]] = None
+    ) -> None:
         if extensions_modules_groups_names is None:
             if self._extensions_modules_groups_names is None:
                 self._logger.error("No extensions modules groups names provided.")

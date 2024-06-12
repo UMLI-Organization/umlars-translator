@@ -3,7 +3,9 @@ from abc import ABC, abstractmethod
 from typing import Iterator
 
 from umlars_translator.core.deserialization.data_source import DataSource
-from umlars_translator.core.deserialization.abstract.iterable_format.iteration_step_element import FormatElement
+from umlars_translator.core.deserialization.abstract.iterable_format.iteration_step_element import (
+    FormatElement,
+)
 
 
 class FormatIterator(ABC):
@@ -24,7 +26,11 @@ class XmlIterator(FormatIterator):
             yield element
 
     def get_element_tree(self, source: DataSource) -> ET.ElementTree:
-        return ET.parse(source.file_path) if source.file_path is not None else ET.ElementTree(ET.fromstring(source.retrieved_data))
+        return (
+            ET.parse(source.file_path)
+            if source.file_path is not None
+            else ET.ElementTree(ET.fromstring(source.retrieved_data))
+        )
 
     def iterate_elements(self, element_tree: ET.ElementTree) -> Iterator[FormatElement]:
         yield from element_tree.iter()

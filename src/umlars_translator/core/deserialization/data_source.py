@@ -3,7 +3,9 @@ from functools import cached_property
 
 
 class DataSource:
-    def __init__(self, data: Optional[str | Callable] = None, file_path: Optional[str]=None) -> None:
+    def __init__(
+        self, data: Optional[str | Callable] = None, file_path: Optional[str] = None
+    ) -> None:
         self._data = data
         self._file_path = file_path
 
@@ -18,7 +20,7 @@ class DataSource:
 
         if self._data is None:
             if self._file_path is not None:
-                return self.read_data_from_file() 
+                return self.read_data_from_file()
         else:
             return self._data
 
@@ -42,9 +44,9 @@ class DataSource:
 
     @cached_property
     def data_by_lines(self) -> Iterable[str]:
-        with open(self._file_path, 'r', encoding='utf-8') as file:
+        with open(self._file_path, "r", encoding="utf-8") as file:
             yield from file.readlines()
 
     def read_data_from_file(self) -> str:
-        with open(self._file_path, 'r', encoding='utf-8') as file:
+        with open(self._file_path, "r", encoding="utf-8") as file:
             return file.read()
