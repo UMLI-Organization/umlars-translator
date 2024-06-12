@@ -1,5 +1,5 @@
 import importlib
-from typing import Optional, Iterator, Dict, List, TYPE_CHECKING
+from typing import Optional, Iterator, Dict, Iterator, TYPE_CHECKING
 from logging import Logger
 
 from kink import inject
@@ -30,25 +30,10 @@ class ModelDeserializer:
         # from src.umlars_translator.core.deserialization.formats.ea_xmi import deserialization_strategy
         self.load_formats_support()
 
-    def load_formats_support(self, directories_with_extensions: Optional[List[str]] = None) -> None:
-        # supported_formats = {
-        #     format_name: format_file_path 
-        #     for format_name, format_file_path in importlib.metadata["umlars_translator.core.deserialization.abstract.deserialization_strategy"]
-        # }
-        entry_points = importlib.metadata.entry_points()
-        if 'umlars_translator.core.deserialization.abstract.base.deserialization_strategy' in entry_points:
-            for entry_point in entry_points['umlars_translator.core.deserialization.abstract.base.deserialization_strategy']:
-                plugin_class = entry_point.load()
-                self._logger.info(f"Loaded plugin's dir: {dir(plugin_class)}")
-                
-                # plugin_class.load_module()
-
-                self._logger.info(f"Loaded plugin: {plugin_class.__name__}")
-        pass
-        # if directories_with_extensions is None:
-        #     directories_with_extensions = config.EXTENSIONS_BASE_DIRS
-        #     # directories_with_extensions = [os.path.join(os.getcwd(), dir_path) for dir_path in settings.EXTENSIONS_BASE_DIRS]
-        # self._deserialization_extensions_manager.activate_extensions(directories_with_extensions)
+    def load_formats_support(self, extensions_group_name: Optional[Iterator[str]] = None) -> None:
+        if extensions_group_name is None:
+            extensions_group_name = config.DESERIALIZATION_EXTENSIONS_GROUP_NAME
+        self._deserialization_extensions_manager.activate_extensions(extensions_group_name)
 
     def deserialize(self, file_paths: Optional[Iterator[str]] = None, data_batches: Optional[Iterator[str]] = None, data_sources: Optional[Iterator[DataSource]] = None, from_format: Optional[SupportedFormat] = None) -> Iterator[UMLModel]:
         """
