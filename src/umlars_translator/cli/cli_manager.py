@@ -2,7 +2,7 @@ import argparse
 
 from umlars_translator.core.deserialization.config import SupportedFormat
 from umlars_translator.core.translator import ModelTranslator
-from umlars_translator.core.utils import get_enum_members_values
+from umlars_translator.core.utils.functions import get_enum_members_values
 
 
 class CLIManager:

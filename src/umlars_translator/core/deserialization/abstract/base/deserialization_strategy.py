@@ -35,4 +35,3 @@ class DeserializationStrategy(ABC):
     @abstractmethod
     def retrieve_model(self, data_source: DataSource) -> UMLModel:
         pass
-

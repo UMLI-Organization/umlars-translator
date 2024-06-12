@@ -1,22 +1,39 @@
-from typing import Optional, Iterator
+from typing import Optional, Iterator, Dict, List, TYPE_CHECKING
 from logging import Logger
 
 from kink import inject
 
 from umlars_translator.core.deserialization.input_processor import InputProcessor
-from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import DeserializationStrategy
-from umlars_translator.core.deserialization.factory import DeserializationStrategyFactory
 from umlars_translator.core.deserialization.data_source import DataSource
 from umlars_translator.core.deserialization.config import SupportedFormat
 from umlars_translator.core.model.uml_model import UMLModel
+from umlars_translator.extensions_manager import ExtensionsManager
+from umlars_translator.core.deserialization import config
+from umlars_translator.core.deserialization.factory import DeserializationStrategyFactory
+from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import DeserializationStrategy
+
+
 
 
 @inject
 class ModelDeserializer:
-    def __init__(self, factory: DeserializationStrategyFactory, input_processor: Optional[InputProcessor]=None, logger: Optional[Logger]=None) -> None:
+    def __init__(self, factory: DeserializationStrategyFactory, deserialization_extensions_manager: ExtensionsManager, input_processor: Optional[InputProcessor]=None, logger: Optional[Logger]=None) -> None:
         self._factory = factory
+        self._deserialization_extensions_manager = deserialization_extensions_manager
+        # from umlars_translator.core.deserialization.formats.ea_xmi import deserialization_strategy
+
         self._input_processor = input_processor or InputProcessor()
         self._logger = logger.getChild(self.__class__.__name__)
+        # import importlib
+        # importlib.import_module('src.umlars_translator.core.deserialization.formats.ea_xmi.deserialization_strategy')
+        # from src.umlars_translator.core.deserialization.formats.ea_xmi import deserialization_strategy
+        self.load_formats_support()
+
+    def load_formats_support(self, directories_with_extensions: Optional[List[str]] = None) -> None:
+        if directories_with_extensions is None:
+            directories_with_extensions = config.EXTENSIONS_BASE_DIRS
+            # directories_with_extensions = [os.path.join(os.getcwd(), dir_path) for dir_path in settings.EXTENSIONS_BASE_DIRS]
+        self._deserialization_extensions_manager.activate_extensions(directories_with_extensions)
 
     def deserialize(self, file_paths: Optional[Iterator[str]] = None, data_batches: Optional[Iterator[str]] = None, data_sources: Optional[Iterator[DataSource]] = None, from_format: Optional[SupportedFormat] = None) -> Iterator[UMLModel]:
         """

@@ -1,9 +1,8 @@
-from abc import ABC, abstractmethod
 from typing import Optional
 
-from umlars_translator.core.deserialization.factory import register_strategy
 from umlars_translator.core.deserialization.data_source import DataSource
 from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import DeserializationStrategy
+from umlars_translator.core.deserialization.factory import register_deserialization_strategy
 from umlars_translator.core.deserialization.abstract.iterable_format.format_iterator import XmlIterator
 from umlars_translator.core.model.uml_model import UMLModel
 from umlars_translator.core.deserialization.config import SupportedFormat
@@ -20,7 +19,7 @@ class TypeToBuilderMapper:
     """
 
 
-@register_strategy
+@register_deserialization_strategy
 class EaXmiImportParsingStrategy(DeserializationStrategy):
     SUPPORTED_FORMAT_NAME = SupportedFormat.XMI_EA
 
