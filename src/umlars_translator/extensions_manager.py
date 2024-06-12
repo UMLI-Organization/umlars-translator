@@ -14,7 +14,6 @@ class ExtensionsManager:
     def __init__(self, extensions_modules_groups_names: Optional[Iterator[str]]=None, logger: Optional[Logger] = None) -> None:
         self._logger = logger
         self._extensions_modules_groups_names = extensions_modules_groups_names
-        self._extensions_modules = []
 
     def activate_extensions(self, extensions_modules_groups_names: Optional[Iterator[str]]=None) -> None:
         if extensions_modules_groups_names is None:
@@ -30,8 +29,4 @@ class ExtensionsManager:
             if extension_module_group_name in entry_points:
                 for entry_point in entry_points[extension_module_group_name]:
                     plugin_class = entry_point.load()
-                    self._logger.info(f"Loaded plugin's dir: {dir(plugin_class)}")
-                    
-                    # plugin_class.load_module()
-
                     self._logger.info(f"Loaded plugin: {plugin_class.__name__}")

@@ -14,20 +14,13 @@ from umlars_translator.core.deserialization.factory import DeserializationStrate
 from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import DeserializationStrategy
 
 
-
-
 @inject
 class ModelDeserializer:
     def __init__(self, factory: DeserializationStrategyFactory, deserialization_extensions_manager: ExtensionsManager, input_processor: Optional[InputProcessor]=None, logger: Optional[Logger]=None) -> None:
         self._factory = factory
         self._deserialization_extensions_manager = deserialization_extensions_manager
-        # from umlars_translator.core.deserialization.formats.ea_xmi import deserialization_strategy
-
         self._input_processor = input_processor or InputProcessor()
         self._logger = logger.getChild(self.__class__.__name__)
-        # import importlib
-        # importlib.import_module('src.umlars_translator.core.deserialization.formats.ea_xmi.deserialization_strategy')
-        # from src.umlars_translator.core.deserialization.formats.ea_xmi import deserialization_strategy
         self.load_formats_support()
 
     def load_formats_support(self, extensions_group_name: Optional[Iterator[str]] = None) -> None:
