@@ -16,7 +16,7 @@ class InputProcessor:
         self, data: Optional[str] = None, file_path: Optional[str] = None
     ) -> DataSource:
         if data is not None:
-            yield self.parse_data(data=data)
+            return self.parse_data(data=data)
 
     def accept_multiple_inputs(
         self,
