@@ -77,9 +77,11 @@ class ModelProcessingPipe(ABC):
         data_batch = DataBatch(data, parent_context) if data_batch is None else data_batch
             
         batches_of_data_processed_by_parent = self._process(data_batch=data_batch)
-
-        for successor in self._successors:
-            for data_batch in batches_of_data_processed_by_parent:
+        
+        # Iteration through this generator can be done only once.
+        # TODO: this should be optimized not to iterate through all successors for each data batch.
+        for data_batch in batches_of_data_processed_by_parent:
+            for successor in self._successors:
                 successor.process_if_possible(data_batch=data_batch)
 
     def get_model(self) -> UmlModel:

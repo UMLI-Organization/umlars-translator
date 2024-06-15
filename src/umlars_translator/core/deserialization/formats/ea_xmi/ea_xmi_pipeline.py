@@ -185,7 +185,7 @@ class DiagramPipe(XmlModelProcessingPipe):
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
         try:
-            diagram_id = data.attrib[EA_EXTENDED_ATTRIBUTES["id"]]
+            diagram_id = data.attrib[ATTRIBUTES["id"]]
             diagram_properties = data.find(EA_EXTENDED_TAGS["properties"])
 
             self._construct_diagram_from_properties(diagram_properties, diagram_id)

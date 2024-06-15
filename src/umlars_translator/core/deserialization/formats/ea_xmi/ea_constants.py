@@ -94,6 +94,8 @@ EA_EXTENDED_ATTRIBUTES: dict[str, str] = {
     "diagram_id": f"{NAMESPACES['XMI_2_1']}id",
     "diagram_package": "package",
     "property_name": "name",
+    "property_type": "type",
+    "element_name": "name",
     "subject": "subject",
 }
 
