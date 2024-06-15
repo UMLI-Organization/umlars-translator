@@ -4,7 +4,7 @@ from umlars_translator.core.deserialization.factory import (
     DeserializationStrategyFactory,
 )
 from umlars_translator.core.deserialization.deserializer import ModelDeserializer
-from umlars_translator.extensions_manager import ExtensionsManager
+from umlars_translator.core.extensions_manager import ExtensionsManager
 
 
 def bootstrap_di() -> None:

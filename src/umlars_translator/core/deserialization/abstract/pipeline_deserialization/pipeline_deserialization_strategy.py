@@ -5,7 +5,7 @@ from umlars_translator.core.deserialization.abstract.base.deserialization_strate
     DeserializationStrategy,
 )
 from umlars_translator.core.deserialization.data_source import DataSource
-from umlars_translator.core.model.uml_model import UMLModel
+from umlars_translator.core.model.uml_model import UmlModel
 from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
     ModelProcessingPipe,
     FormatDetectionPipe,
@@ -54,7 +54,7 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
 
     def retrieve_model(
         self, data_source: DataSource, clear_afterwards: bool = True
-    ) -> UMLModel:
+    ) -> UmlModel:
         self._parsed_data = (
             self._parse_format_data(data_source)
             if self._parsed_data is None
@@ -75,7 +75,7 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
         """
         return data_source.retrieved_data
 
-    def _process_data(self, data: Any) -> UMLModel:
+    def _process_data(self, data: Any) -> UmlModel:
         self.pipe.process(data)
         return self.pipe.get_model()
 

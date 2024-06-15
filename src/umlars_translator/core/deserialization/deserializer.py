@@ -7,8 +7,8 @@ from kink import inject
 from umlars_translator.core.deserialization.input_processor import InputProcessor
 from umlars_translator.core.deserialization.data_source import DataSource
 from umlars_translator.core.deserialization.config import SupportedFormat
-from umlars_translator.core.model.uml_model import UMLModel
-from umlars_translator.extensions_manager import ExtensionsManager
+from umlars_translator.core.model.uml_model import UmlModel
+from umlars_translator.core.extensions_manager import ExtensionsManager
 from umlars_translator.core.deserialization import config
 from umlars_translator.core.deserialization.factory import (
     DeserializationStrategyFactory,
@@ -48,7 +48,7 @@ class ModelDeserializer:
         data_batches: Optional[Iterator[str]] = None,
         data_sources: Optional[Iterator[DataSource]] = None,
         from_format: Optional[SupportedFormat] = None,
-    ) -> Iterator[UMLModel]:
+    ) -> Iterator[UmlModel]:
         """
         TODO: Support for accepting dictionary assigning from_format to file_name or data_batch.
         """
@@ -68,7 +68,7 @@ class ModelDeserializer:
         self,
         data_sources: Iterator[DataSource],
         from_format: Optional[SupportedFormat] = None,
-    ) -> Iterator[UMLModel]:
+    ) -> Iterator[UmlModel]:
         for source in data_sources:
             self._logger.info(
                 f"Choosing deserialization strategy for data source: {source}"

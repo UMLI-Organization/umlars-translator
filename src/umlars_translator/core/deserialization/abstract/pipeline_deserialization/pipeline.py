@@ -12,7 +12,7 @@ from umlars_translator.core.deserialization.exceptions import (
     UnsupportedFormatException,
     InvalidFormatException,
 )
-from umlars_translator.core.model.uml_model import UMLModel
+from umlars_translator.core.model.uml_model import UmlModel
 from umlars_translator.core.model.uml_model_builder import UmlModelBuilder
 
 
@@ -72,7 +72,7 @@ class ModelProcessingPipe(ABC):
             for data_processed_by_parent in batches_of_data_processed_by_parent:
                 successor.process_if_possible(data_processed_by_parent)
 
-    def get_model(self) -> UMLModel:
+    def get_model(self) -> UmlModel:
         return self.model_builder.build()
 
     def can_run_for(self, data) -> bool:

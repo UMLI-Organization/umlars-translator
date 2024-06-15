@@ -1,7 +1,6 @@
 from typing import Optional, Iterable
 from logging import Logger
 
-import time
 from kink import inject
 
 from umlars_translator.core.deserialization.deserializer import ModelDeserializer

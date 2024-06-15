@@ -1,7 +1,7 @@
 from typing import Any
 from xml.etree import ElementTree as ET
 
-from umlars_translator.core.model.uml_model import UMLModel
+from umlars_translator.core.model.uml_model import UmlModel
 from umlars_translator.core.deserialization.data_source import DataSource
 from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline_deserialization_strategy import (
     PipelineDeserializationStrategy,

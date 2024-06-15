@@ -3,7 +3,7 @@ from typing import Optional
 
 from umlars_translator.core.deserialization.config import SupportedFormat
 from umlars_translator.core.deserialization.data_source import DataSource
-from umlars_translator.core.model.uml_model import UMLModel
+from umlars_translator.core.model.uml_model import UmlModel
 
 
 class DeserializationStrategy(ABC):
@@ -44,7 +44,7 @@ class DeserializationStrategy(ABC):
         """
 
     @abstractmethod
-    def retrieve_model(self, data_source: DataSource) -> UMLModel:
+    def retrieve_model(self, data_source: DataSource) -> UmlModel:
         """
         Method resposible for the main processing of the source data.
         It performs the transformations required to retrieve all the data from source format into the UML Model.

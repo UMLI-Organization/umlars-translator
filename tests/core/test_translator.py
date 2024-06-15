@@ -2,6 +2,7 @@ from pytest import fixture
 import logging
 
 from umlars_translator.core.translator import ModelTranslator
+from umlars_translator.core.model.uml_model import UmlModel
 
 # test_when_given_ea_data_deserialization_successful
 
@@ -36,4 +37,7 @@ def test_when_given_ea_format_deserialization_successful(ea_data, translator) ->
     # Given
     # When
     result = translator.translate(ea_data)
-    assert result
+    
+    # Then
+    assert isinstance(result, UmlModel)
+
