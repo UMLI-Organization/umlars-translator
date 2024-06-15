@@ -7,7 +7,6 @@ from kink import inject
 from umlars_translator.core.deserialization.data_source import DataSource
 
 
-
 @inject
 class InputProcessor:
     def __init__(self, logger: Optional[Logger] = None) -> None:

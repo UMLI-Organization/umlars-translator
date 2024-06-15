@@ -60,4 +60,3 @@ class DelayedCaller(ABC):
             while evaluation_queue:
                 function_to_call = evaluation_queue.popleft()
                 function_to_call(element_instance)
-

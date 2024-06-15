@@ -46,4 +46,3 @@ class ExtensionsManager:
                         )
                         self._logger.error(error_message)
                         raise ModuleNotFoundError(error_message) from ex
-

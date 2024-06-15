@@ -30,7 +30,6 @@ class DeserializationStrategyFactory:
         ] = strategy_class
         return strategy_class
 
-
     def get_strategy(
         self,
         *,
@@ -60,8 +59,10 @@ class DeserializationStrategyFactory:
         if len(strategies_instances_for_data) > 1:
             # TODO: add logging
             # TODO: add custom exception
-            raise ValueError("Multiple strategies can deserialize the format data."
-                             f"Strategies: {strategies_instances_for_data}")
+            raise ValueError(
+                "Multiple strategies can deserialize the format data."
+                f"Strategies: {strategies_instances_for_data}"
+            )
         elif len(strategies_instances_for_data) == 0:
             raise ValueError("No strategy can deserialize the format data.")
         else:

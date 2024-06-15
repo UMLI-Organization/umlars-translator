@@ -32,7 +32,10 @@ class DeserializationStrategy(ABC):
         Method used by a final user to check if a specific format can be deserialized.
         Uses self._can_deserialize_format_data and self.__class__.__SUPPORTED_FORMAT_NAME to check if the format is supported.
         """
-        return format is self.__class__.get_supported_format() or self._can_deserialize_format_data(format_data)
+        return (
+            format is self.__class__.get_supported_format()
+            or self._can_deserialize_format_data(format_data)
+        )
 
     @abstractmethod
     def _can_deserialize_format_data(self, format_data: DataSource) -> bool:

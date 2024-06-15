@@ -2,8 +2,14 @@ from xml.etree import ElementTree as ET
 from enum import Enum
 from typing import Callable, Iterator, Optional, NamedTuple, Any
 
-from umlars_translator.core.deserialization.abstract.xml.pipeline import XmlModelProcessingPipe, XmlFormatDetectionPipe
-from umlars_translator.core.deserialization.formats.ea_xmi.constants import TAGS, ATTRIBUTES
+from umlars_translator.core.deserialization.abstract.xml.pipeline import (
+    XmlModelProcessingPipe,
+    XmlFormatDetectionPipe,
+)
+from umlars_translator.core.deserialization.formats.ea_xmi.constants import (
+    TAGS,
+    ATTRIBUTES,
+)
 from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException
 
 
@@ -16,10 +22,14 @@ class EaXmiDetectionPipe(XmlFormatDetectionPipe):
             data_root = data.getroot()
             xmi_version = data_root.attrib[ATTRIBUTES["xmi_version"]]
         except AttributeError as ex:
-            raise UnsupportedFormatException(f"Structure of the data format was invalid. Error: {str(ex)}") from ex
-        
+            raise UnsupportedFormatException(
+                f"Structure of the data format was invalid. Error: {str(ex)}"
+            ) from ex
+
         except KeyError as ex:
-            raise UnsupportedFormatException(f"Structure of the data format was invalid. Error: {str(ex)}") from ex
+            raise UnsupportedFormatException(
+                f"Structure of the data format was invalid. Error: {str(ex)}"
+            ) from ex
 
         if xmi_version != self.__class__.EXPECTED_XMI_VERSION:
             raise UnsupportedFormatException(f"Invalid XMI version.")
@@ -36,7 +46,9 @@ class EaXmiDocumentationDetectionPipe(XmlFormatDetectionPipe):
         try:
             exporter = data.attrib[ATTRIBUTES["exporter"]]
         except KeyError as ex:
-            raise ValueError(f"Structure of the data format was invalid. Error: {str(ex)}")
+            raise ValueError(
+                f"Structure of the data format was invalid. Error: {str(ex)}"
+            )
 
         if exporter != self.__class__.EXPECTED_EXPORTER:
             raise UnsupportedFormatException(f"Invalid exporter.")
@@ -51,20 +63,28 @@ class RootPipe(XmlModelProcessingPipe):
         try:
             self.model_builder.xmi_version(data_root.attrib[ATTRIBUTES["xmi_version"]])
         except KeyError as ex:
-            raise ValueError(f"Structure of the data format was invalid. Error: {str(ex)}")
-        
+            raise ValueError(
+                f"Structure of the data format was invalid. Error: {str(ex)}"
+            )
+
         # Iteration over the children of the root element
         yield from data_root
-        
+
 
 class DocumentationPipe(XmlModelProcessingPipe):
     ASSOCIATED_XML_TAG: str = TAGS["documentation"]
 
     def _process(self, data: ET.Element) -> Iterator[ET.Element]:
         try:
-            self.model_builder.documentation(data.attrib[ATTRIBUTES["exporter"]], data.attrib[ATTRIBUTES["exporterVersion"]], data.attrib[ATTRIBUTES["exporterID"]])
+            self.model_builder.documentation(
+                data.attrib[ATTRIBUTES["exporter"]],
+                data.attrib[ATTRIBUTES["exporterVersion"]],
+                data.attrib[ATTRIBUTES["exporterID"]],
+            )
         except KeyError as ex:
-            raise ValueError(f"Structure of the data format was invalid. Error: {str(ex)}")
+            raise ValueError(
+                f"Structure of the data format was invalid. Error: {str(ex)}"
+            )
 
         yield from data
 
@@ -74,8 +94,14 @@ class ModelPipe(XmlModelProcessingPipe):
 
     def _process(self, data: ET.Element) -> Iterator[ET.Element]:
         try:
-            self.model_builder.model(data.attrib[ATTRIBUTES["name"]], data.attrib[ATTRIBUTES["name"]], data.attrib[ATTRIBUTES["visibility"]])
+            self.model_builder.model(
+                data.attrib[ATTRIBUTES["name"]],
+                data.attrib[ATTRIBUTES["name"]],
+                data.attrib[ATTRIBUTES["visibility"]],
+            )
         except KeyError as ex:
-            raise ValueError(f"Structure of the data format was invalid. Error: {str(ex)}")
+            raise ValueError(
+                f"Structure of the data format was invalid. Error: {str(ex)}"
+            )
 
         yield from data

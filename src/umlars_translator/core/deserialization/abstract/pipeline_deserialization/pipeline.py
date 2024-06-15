@@ -4,16 +4,27 @@ from logging import Logger
 
 from kink import inject
 
-from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import DeserializationStrategy
+from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
+    DeserializationStrategy,
+)
 from umlars_translator.core.deserialization.data_source import DataSource
-from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException, InvalidFormatException
+from umlars_translator.core.deserialization.exceptions import (
+    UnsupportedFormatException,
+    InvalidFormatException,
+)
 from umlars_translator.core.model.uml_model import UMLModel
 from umlars_translator.core.model.uml_model_builder import UmlModelBuilder
 
 
 @inject
 class ModelProcessingPipe(ABC):
-    def __init__(self, successors: Optional[Iterator["ModelProcessingPipe"]] = None, predecessor: Optional["ModelProcessingPipe"]= None, model_builder: Optional[UmlModelBuilder]=None, logger: Optional[Logger]= None) -> None:
+    def __init__(
+        self,
+        successors: Optional[Iterator["ModelProcessingPipe"]] = None,
+        predecessor: Optional["ModelProcessingPipe"] = None,
+        model_builder: Optional[UmlModelBuilder] = None,
+        logger: Optional[Logger] = None,
+    ) -> None:
         self._successors = successors if successors is not None else []
         self._predecessor = predecessor
         self._model_builder = model_builder or UmlModelBuilder()
@@ -22,7 +33,7 @@ class ModelProcessingPipe(ABC):
     @property
     def model_builder(self) -> UmlModelBuilder:
         return self._model_builder
-    
+
     @model_builder.setter
     def model_builder(self, new_model_builder: UmlModelBuilder) -> None:
         self._model_builder = new_model_builder
@@ -30,12 +41,14 @@ class ModelProcessingPipe(ABC):
     @property
     def predecessor(self) -> Optional["ModelProcessingPipe"]:
         return self._predecessor
-    
+
     @predecessor.setter
     def predecessor(self, value: Optional["ModelProcessingPipe"]) -> None:
         self._predecessor = value
 
-    def add_next(self, pipe: "ModelProcessingPipe", share_builder: bool = True) -> "ModelProcessingPipe":
+    def add_next(
+        self, pipe: "ModelProcessingPipe", share_builder: bool = True
+    ) -> "ModelProcessingPipe":
         self._successors.append(pipe)
         if share_builder:
             pipe.model_builder = self.model_builder
@@ -58,7 +71,7 @@ class ModelProcessingPipe(ABC):
         for successor in self._successors:
             for data_processed_by_parent in batches_of_data_processed_by_parent:
                 successor.process_if_possible(data_processed_by_parent)
-        
+
     def get_model(self) -> UMLModel:
         return self.model_builder.build()
 
@@ -91,8 +104,7 @@ class FormatDetectionPipe(ModelProcessingPipe):
         except UnsupportedFormatException as ex:
             self._logger.debug(f"Format is not supported: {ex}")
             return False
-        
-        
+
     @abstractmethod
     def _process(self, data) -> Iterator[Any]:
         """
