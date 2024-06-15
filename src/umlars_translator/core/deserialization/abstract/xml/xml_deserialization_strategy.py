@@ -1,19 +1,22 @@
 from typing import Any
 from xml.etree import ElementTree as ET
 
-from umlars_translator.core.model.uml_model import UmlModel
 from umlars_translator.core.deserialization.data_source import DataSource
 from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline_deserialization_strategy import (
     PipelineDeserializationStrategy,
 )
-from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
-    ModelProcessingPipe,
-)
+from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException
+
 
 
 class XmlDeserializationStrategy(PipelineDeserializationStrategy):
     def _parse_format_data(self, data_source: DataSource) -> Any:
-        return self.get_element_tree(data_source)
+        try:
+            return self.get_element_tree(data_source)
+        except ET.ParseError as ex:
+            error_message = f"Error parsing XML data from {data_source}: {ex}"
+            self._logger.error(error_message)
+            raise UnsupportedFormatException(error_message)
 
     def get_element_tree(self, source: DataSource) -> ET.ElementTree:
         return (

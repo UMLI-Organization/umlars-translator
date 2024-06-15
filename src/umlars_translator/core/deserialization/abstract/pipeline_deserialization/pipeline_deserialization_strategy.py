@@ -10,6 +10,7 @@ from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pi
     ModelProcessingPipe,
     FormatDetectionPipe,
 )
+from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException
 
 
 class PipelineDeserializationStrategy(DeserializationStrategy):
@@ -21,6 +22,7 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
         self._pipe = pipe
         self._format_detection_pipe = format_detection_pipe
         self._parsed_data = None
+        super().__init__()
 
     @property
     def pipe(self) -> ModelProcessingPipe:
@@ -46,7 +48,12 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
         Helper method used to check if the format data is valid for deserialization.
         Using format detection pipe allows for kind of lazy instantiation of the main pipe, in case it is not needed.
         """
-        parsed_data = self._parse_format_data(format_data)
+        try:
+            parsed_data = self._parse_format_data(format_data)
+        except UnsupportedFormatException as ex:
+            message = f"Unable to parse format data: {ex}"
+            self._logger.info(message)
+            return False
 
         if cache_parsed_data:
             self._parsed_data = parsed_data

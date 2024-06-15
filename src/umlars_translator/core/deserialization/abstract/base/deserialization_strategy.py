@@ -1,11 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import Optional
+from logging import Logger
+
+from kink import inject
 
 from umlars_translator.core.deserialization.config import SupportedFormat
 from umlars_translator.core.deserialization.data_source import DataSource
 from umlars_translator.core.model.uml_model import UmlModel
 
 
+@inject
 class DeserializationStrategy(ABC):
     """
     Class should be lightweight since it will be often instantiated for checking, if it can deserialize data.
@@ -15,6 +19,9 @@ class DeserializationStrategy(ABC):
     """
     Used dunder static attribute to store the supported format name and don't share it with subclasses. 
     """
+
+    def __init__(self, logger: Optional[Logger] = None) -> None:
+        self._logger = logger.getChild(self.__class__.__name__)
 
     @classmethod
     def get_supported_format(cls: type["DeserializationStrategy"]) -> SupportedFormat:
