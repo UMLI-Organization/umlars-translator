@@ -12,5 +12,5 @@ notes
 .hypothesis
 test_tmp_*.xml
 
-src/umlars_translator/core/model
+src/umlars_translator/core/model/*/
 src/umlars_translator/__trash

@@ -10,7 +10,12 @@ from umlars_translator.core.deserialization.config import SupportedFormat
 from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_pipeline import (
     RootPipe,
     DocumentationPipe,
-    ModelPipe,
+    UmlModelPipe,
+    UmlPackagePipe,
+    UmlClassPipe,
+    ExtensionPipe,
+    DiagramsPipe,
+    DiagramPipe,
     EaXmiDetectionPipe,
     EaXmiDocumentationDetectionPipe,
 )
@@ -23,33 +28,27 @@ class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
     def _build_processing_pipe(self) -> RootPipe:
         root_pipe = RootPipe()
         documentation_pipe = root_pipe.add_next(DocumentationPipe())
-        model_pipe = documentation_pipe.add_next(ModelPipe())
+        self._build_uml_model_processing_pipe(root_pipe)
+        self._build_extension_processing_pipe(root_pipe)
 
         return root_pipe
+
+    def _build_uml_model_processing_pipe(self, root_pipe: RootPipe) -> UmlModelPipe:
+        uml_model_pipe = root_pipe.add_next(UmlModelPipe())
+        package_pipe = uml_model_pipe.add_next(UmlPackagePipe())
+        class_pipe = package_pipe.add_next(UmlClassPipe())
+
+        return uml_model_pipe
+
+    def _build_extension_processing_pipe(self, root_pipe: RootPipe) -> ExtensionPipe:
+        extension_pipe = root_pipe.add_next(ExtensionPipe())
+
+        diagrams_pipe = extension_pipe.add_next(DiagramsPipe())
+        diagram_pipe = diagrams_pipe.add_next(DiagramPipe())
+
+        return extension_pipe
 
     def _build_format_detection_pipe(self) -> EaXmiDetectionPipe:
         xmi_detection_pipe = EaXmiDetectionPipe()
         xmi_detection_pipe.add_next(EaXmiDocumentationDetectionPipe())
         return xmi_detection_pipe
-
-    # def _build_processing_pipe(self) -> RootPipe:
-    #     with ModelProcessingPipe() as root_pipe:
-    #         with root_pipe.add_next(ModelProcessingPipe()) as model_pipe:
-    #             with model_pipe.add_next(ModelProcessingPipe()) as package_pipe:
-    #                 class_pipe = self._create_class_pipe(package_pipe)
-    #                 interaction_pipe = self._create_interaction_pipe(package_pipe)
-
-    # def _create_class_pipe(self, parent_pipe: ModelProcessingPipe) -> ModelProcessingPipe:
-    #     with parent_pipe.add_next(ModelProcessingPipe()) as class_pipe:
-    #         self._create_attribute_pipe(class_pipe)
-    #         self._create_operation_pipe(class_pipe)
-    #     return class_pipe
-
-    # def _create_interaction_pipe(self, parent_pipe: ModelProcessingPipe) -> ModelProcessingPipe:
-    #     return parent_pipe.add_next(ModelProcessingPipe())
-
-    # def _create_attribute_pipe(self, parent_pipe: ModelProcessingPipe) -> ModelProcessingPipe:
-    #     return parent_pipe.add_next(ModelProcessingPipe())
-
-    # def _create_operation_pipe(self, parent_pipe: ModelProcessingPipe) -> ModelProcessingPipe:
-    #     return parent_pipe.add_next(ModelProcessingPipe())

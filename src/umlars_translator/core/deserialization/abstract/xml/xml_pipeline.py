@@ -5,6 +5,7 @@ from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pi
     ModelProcessingPipe,
     UmlModelBuilder,
     FormatDetectionPipe,
+    DataBatch,
 )
 
 
@@ -84,7 +85,9 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
 
         return all(condition(data) for condition in self._attributes_conditions)
 
-    def _can_process(self, data: ET.ElementTree | ET.Element) -> bool:
+    def _can_process(self, data_batch: Optional[DataBatch] = None) -> bool:
+        data = data_batch.data
+        
         if isinstance(data, ET.ElementTree):
             data = data.getroot()
         elif not isinstance(data, ET.Element):
@@ -100,5 +103,3 @@ class XmlFormatDetectionPipe(XmlModelProcessingPipe, FormatDetectionPipe):
     """
     Diamond inheiritance
     """
-
-    ...

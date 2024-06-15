@@ -1,3 +1,6 @@
+from umlars_translator.core.model.constants import DiagramType
+
+
 NAMESPACES: dict[str, str] = {
     "UML_2_1": "{http://schema.omg.org/spec/UML/2.1}",
     "XMI_2_1": "{http://schema.omg.org/spec/XMI/2.1}",
@@ -34,6 +37,7 @@ TAGS: dict[str, str] = {
     "upper_value": "upperValue",
 }
 
+
 ATTRIBUTES: dict[str, str] = {
     "id": f"{NAMESPACES['XMI_2_1']}id",
     "type": f"{NAMESPACES['XMI_2_1']}type",
@@ -57,4 +61,44 @@ ATTRIBUTES: dict[str, str] = {
     "diagram_id": f"{NAMESPACES['XMI_2_1']}id",
     "property_name": "name",
     "subject": "subject",
+    "extender": "extender",
+}
+
+
+EA_EXTENDED_TAGS: dict[str, str] = {
+    "elements": "elements",
+    "element": "element",
+    "model": "model",
+    "package_properties": "packageproperties",
+    "connectors": "connectors",
+    "connector": "connector",
+    "source": "source",
+    "target": "target",
+    "properties": "properties",
+    "diagrams": "diagrams",
+    "diagram": "diagram",
+    "diagram_model": "model",
+}
+
+EA_EXTENDED_ATTRIBUTES: dict[str, str] = {
+    "idref": f"{NAMESPACES['XMI_2_1']}idref",
+    "type": f"{NAMESPACES['XMI_2_1']}type",
+    "name": "name",
+    "package": "package",
+    "connector_idref": f"{NAMESPACES['XMI_2_1']}idref",
+    "connector_name": "name",
+    "source_idref": f"{NAMESPACES['XMI_2_1']}idref",
+    "target_idref": f"{NAMESPACES['XMI_2_1']}idref",
+    "connector_type": "ea_type",
+    "direction": "direction",
+    "diagram_id": f"{NAMESPACES['XMI_2_1']}id",
+    "diagram_package": "package",
+    "property_name": "name",
+    "subject": "subject",
+}
+
+
+EA_DIAGRAMS_TYPES: dict[str, str] = {
+    "Logical": DiagramType.CLASS,
+    "Sequence": DiagramType.SEQUENCE,
 }
