@@ -21,7 +21,7 @@ class DeserializationStrategyFactory:
 
     def register_strategy(
         self, strategy_class: Type["DeserializationStrategy"]
-    ) -> "DeserializationStrategy":
+    ) -> Type["DeserializationStrategy"]:
         """
         Decorator function used to register a strategy for a specific format name.
         """
@@ -30,12 +30,13 @@ class DeserializationStrategyFactory:
         ] = strategy_class
         return strategy_class
 
+
     def get_strategy(
         self,
         *,
         format: Optional[SupportedFormat] = None,
         format_data_source: Optional[DataSource],
-        **kwargs
+        **kwargs,
     ) -> Optional["DeserializationStrategy"]:
         """
         Method used to retrieve a strategy for a specific format name.
@@ -45,25 +46,28 @@ class DeserializationStrategyFactory:
             self._registered_strategies.get(format) if format is not None else None
         )
 
-        if strategy_class is None:
-            registered_strategies = list(
-                filter(
-                    lambda strategy: strategy.can_deserialize_format(
-                        format, format_data_source
-                    ),
-                    self._registered_strategies.values(),
-                )
-            )
-            if len(registered_strategies) > 1:
-                # TODO: add logging
-                # TODO: add custom exception
-                raise ValueError("Multiple strategies can deserialize the format data.")
-            elif len(registered_strategies) == 0:
-                raise ValueError("No strategy can deserialize the format data.")
-            else:
-                strategy_class = registered_strategies[0]
+        if strategy_class is not None:
+            return strategy_class(**kwargs)
 
-        return strategy_class(**kwargs)
+        strategies_instances_for_data = [
+            strategy_instance
+            for strategy_class in self._registered_strategies.values()
+            if (strategy_instance := strategy_class(**kwargs)).can_deserialize_format(
+                format, format_data_source
+            )
+        ]
+
+        if len(strategies_instances_for_data) > 1:
+            # TODO: add logging
+            # TODO: add custom exception
+            raise ValueError("Multiple strategies can deserialize the format data."
+                             f"Strategies: {strategies_instances_for_data}")
+        elif len(strategies_instances_for_data) == 0:
+            raise ValueError("No strategy can deserialize the format data.")
+        else:
+            strategy_instance = strategies_instances_for_data[0]
+
+        return strategy_instance
 
 
 @inject

@@ -7,19 +7,22 @@ from umlars_translator.core.model.uml_model import UMLModel
 
 
 class DeserializationStrategy(ABC):
-    SUPPORTED_FORMAT_NAME: Optional[SupportedFormat]
+    """
+    Class should be lightweight since it will be often instantiated for checking, if it can deserialize data.
+    """
+
+    SUPPORTED_FORMAT_NAME: SupportedFormat
     """
     Used dunder static attribute to store the supported format name and don't share it with subclasses. 
     """
 
     @classmethod
-    @abstractmethod
     def get_supported_format(cls: type["DeserializationStrategy"]) -> SupportedFormat:
         """
         Abstract method enforcing the implementation of a property to return the supported format name.
         """
+        return cls.SUPPORTED_FORMAT_NAME
 
-    @abstractmethod
     def can_deserialize_format(
         self,
         format: Optional[SupportedFormat] = None,
@@ -29,13 +32,17 @@ class DeserializationStrategy(ABC):
         Method used by a final user to check if a specific format can be deserialized.
         Uses self._can_deserialize_format_data and self.__class__.__SUPPORTED_FORMAT_NAME to check if the format is supported.
         """
+        return format is self.__class__.get_supported_format() or self._can_deserialize_format_data(format_data)
 
     @abstractmethod
-    def _can_deserialize_format_data(self, format_data: Optional[DataSource]) -> bool:
+    def _can_deserialize_format_data(self, format_data: DataSource) -> bool:
         """
         Helper method used to check if the format data is valid for deserialization.
         """
 
     @abstractmethod
     def retrieve_model(self, data_source: DataSource) -> UMLModel:
-        pass
+        """
+        Method resposible for the main processing of the source data.
+        It performs the transformations required to retrieve all the data from source format into the UML Model.
+        """
