@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Callable, NamedTuple, Any, Iterator
+from logging import Logger
+
+from kink import inject
 
 from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import DeserializationStrategy
 from umlars_translator.core.deserialization.data_source import DataSource
@@ -8,11 +11,13 @@ from umlars_translator.core.model.uml_model import UMLModel
 from umlars_translator.core.model.uml_model_builder import UmlModelBuilder
 
 
+@inject
 class ModelProcessingPipe(ABC):
-    def __init__(self, successors: Optional[Iterator["ModelProcessingPipe"]] = None, predecessor: Optional["ModelProcessingPipe"]= None, model_builder: Optional[UmlModelBuilder]=None) -> None:
+    def __init__(self, successors: Optional[Iterator["ModelProcessingPipe"]] = None, predecessor: Optional["ModelProcessingPipe"]= None, model_builder: Optional[UmlModelBuilder]=None, logger: Optional[Logger]= None) -> None:
         self._successors = successors if successors is not None else []
         self._predecessor = predecessor
-        self._model_builder = model_builder
+        self._model_builder = model_builder or UmlModelBuilder()
+        self._logger = logger.getChild(self.__class__.__name__)
 
     @property
     def model_builder(self) -> UmlModelBuilder:
@@ -47,12 +52,15 @@ class ModelProcessingPipe(ABC):
         if self.can_run_for(data):
             self.process(data)
 
-    def process(self, data) -> Any:
+    def process(self, data) -> None:
         batches_of_data_processed_by_parent = self._process(data)
 
         for successor in self._successors:
             for data_processed_by_parent in batches_of_data_processed_by_parent:
                 successor.process_if_possible(data_processed_by_parent)
+        
+    def get_model(self) -> UMLModel:
+        return self.model_builder.build()
 
     def can_run_for(self, data) -> bool:
         return self._can_process(data)
@@ -81,6 +89,7 @@ class FormatDetectionPipe(ModelProcessingPipe):
             self.process(data)
             return True
         except UnsupportedFormatException as ex:
+            self._logger.debug(f"Format is not supported: {ex}")
             return False
         
         

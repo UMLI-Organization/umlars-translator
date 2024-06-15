@@ -1,5 +1,5 @@
-from abc import ABC, abstractmethod
-from typing import Optional, Callable, NamedTuple, Any, Iterator
+from abc import abstractmethod
+from typing import Optional, Any
 
 from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import DeserializationStrategy
 from umlars_translator.core.deserialization.data_source import DataSource
@@ -61,6 +61,7 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
 
     def _process_data(self, data: Any) -> UMLModel:
         self.pipe.process(data)
+        return self.pipe.get_model()
 
     @abstractmethod
     def _build_processing_pipe(self) -> ModelProcessingPipe:
@@ -69,12 +70,3 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
     @abstractmethod
     def _build_format_detection_pipe(self) -> FormatDetectionPipe:
         ...
-
-    # @abstractmethod
-    # def _build_processing_pipe_proxy(self) -> ModelProcessingPipe:
-    #     ...
-
-
-# build_pipe_base
-    # > responsible for detecting model source and base documentation
-# build_pipe_core
