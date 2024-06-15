@@ -37,7 +37,6 @@ def test_when_given_ea_format_deserialization_successful(ea_data, translator) ->
     # Given
     # When
     result = translator.translate(ea_data)
-    
+
     # Then
     assert isinstance(result, UmlModel)
-

@@ -4,13 +4,8 @@ from logging import Logger
 
 from kink import inject
 
-from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
-    DeserializationStrategy,
-)
-from umlars_translator.core.deserialization.data_source import DataSource
 from umlars_translator.core.deserialization.exceptions import (
     UnsupportedFormatException,
-    InvalidFormatException,
 )
 from umlars_translator.core.model.uml_model import UmlModel
 from umlars_translator.core.model.uml_model_builder import UmlModelBuilder
@@ -110,4 +105,3 @@ class FormatDetectionPipe(ModelProcessingPipe):
         """
         Throws UnsupportedFormatException if the format indicators are invalid in regards to the represented format.
         """
-        ...

@@ -2,7 +2,7 @@ from xml.etree import ElementTree as ET
 from enum import Enum
 from typing import Callable, Iterator, Optional, NamedTuple, Any
 
-from umlars_translator.core.deserialization.abstract.xml.pipeline import (
+from umlars_translator.core.deserialization.abstract.xml.xml_pipeline import (
     XmlModelProcessingPipe,
     XmlFormatDetectionPipe,
 )
