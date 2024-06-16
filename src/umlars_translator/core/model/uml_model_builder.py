@@ -43,9 +43,7 @@ class UmlModelBuilder(DelayedCaller):
             print(f"Method called: {name}")
             print(f"Args: {args}")
             print(f"Kwargs: {kwargs}")
-            self._logger.debug(f"Method called: {name}")
-            self._logger.debug(f"Args: {args}")
-            self._logger.debug(f"Kwargs: {kwargs}")
+            self._logger.debug(f"Method called: {name}({args}, {kwargs})")
             return None
 
         return method
