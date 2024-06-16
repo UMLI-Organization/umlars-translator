@@ -1,12 +1,12 @@
 from xml.etree import ElementTree as ET
-from enum import Enum
-from typing import Callable, Iterator, Optional, NamedTuple, Any
+from typing import Iterator
 
 from umlars_translator.core.deserialization.abstract.xml.xml_pipeline import (
     XmlModelProcessingPipe,
     XmlFormatDetectionPipe,
     XmlAttributeCondition,
     DataBatch,
+    AliasToXmlKey,
 )
 from umlars_translator.core.deserialization.formats.ea_xmi.ea_constants import (
     TAGS,
@@ -14,6 +14,7 @@ from umlars_translator.core.deserialization.formats.ea_xmi.ea_constants import (
     EA_EXTENDED_TAGS,
     EA_EXTENDED_ATTRIBUTES,
     EA_DIAGRAMS_TYPES,
+    EaPackagedElementTypes,
 )
 from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException
 
@@ -25,21 +26,16 @@ class EaXmiDetectionPipe(XmlFormatDetectionPipe):
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
+        data_root = self._get_root_element(data, exception_on_parsing_error=UnsupportedFormatException)
         try:
-            data_root = data.getroot()
-            xmi_version = data_root.attrib[ATTRIBUTES["xmi_version"]]
-        except AttributeError as ex:
-            raise UnsupportedFormatException(
-                f"Structure of the data format was invalid. Error: {str(ex)}"
-            ) from ex
-
+            mandatory_attributes = AliasToXmlKey.from_kwargs(xmi_version = ATTRIBUTES["xmi_version"])
         except KeyError as ex:
-            raise UnsupportedFormatException(
-                f"Structure of the data format was invalid. Error: {str(ex)}"
-            ) from ex
+            raise ValueError(f"Configuration of the data format was invalid. Error: {str(ex)}")
 
-        if xmi_version != self.__class__.EXPECTED_XMI_VERSION:
-            raise UnsupportedFormatException(f"Invalid XMI version.")
+        aliases_to_values = self._get_attributes_values_for_aliases(data_root, mandatory_attributes, exception_on_parsing_error=UnsupportedFormatException)
+
+        if aliases_to_values['xmi_version'] != self.__class__.EXPECTED_XMI_VERSION:
+            raise UnsupportedFormatException("Invalid XMI version.")
 
         # Iteration over the children of the root element
         yield from self._create_data_batches(data_root)
@@ -52,14 +48,15 @@ class EaXmiDocumentationDetectionPipe(XmlFormatDetectionPipe):
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
         try:
-            exporter = data.attrib[ATTRIBUTES["exporter"]]
+            mandatory_attributes = AliasToXmlKey.from_kwargs(exporter = ATTRIBUTES["exporter"])
         except KeyError as ex:
-            raise ValueError(
-                f"Structure of the data format was invalid. Error: {str(ex)}"
-            )
-
-        if exporter != self.__class__.EXPECTED_EXPORTER:
-            raise UnsupportedFormatException(f"Invalid exporter.")
+            raise ValueError(f"Configuration of the data format was invalid. Error: {str(ex)}")
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(data, mandatory_attributes, exception_on_parsing_error=UnsupportedFormatException)
+        
+        if aliases_to_values['exporter'] != self.__class__.EXPECTED_EXPORTER:
+            raise UnsupportedFormatException("Invalid exporter.")
+        
         yield from self._create_data_batches(data)
 
 
@@ -68,13 +65,14 @@ class RootPipe(XmlModelProcessingPipe):
     ASSOCIATED_XML_TAG: str = TAGS["root"]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
-        data_root = data_batch.data.getroot()
+        data_root = self._get_root_element(data_batch.data)
         try:
-            self.model_builder.construct_metadata(xmi_version=data_root.attrib[ATTRIBUTES["xmi_version"]])
+            mandatory_attributes = AliasToXmlKey.from_kwargs(xmi_version = ATTRIBUTES["xmi_version"])
         except KeyError as ex:
-            raise ValueError(
-                f"Structure of the data format was invalid. Error: {str(ex)}"
-            )
+            raise ValueError(f"Configuration of the data format was invalid. Error: {str(ex)}")
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(data_root, mandatory_attributes)
+        self.model_builder.construct_metadata(**aliases_to_values)
 
         # Iteration over the children of the root element
         yield from self._create_data_batches(data_root)
@@ -85,16 +83,15 @@ class DocumentationPipe(XmlModelProcessingPipe):
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
+
         try:
-            self.model_builder.construct_metadata(
-                exporter=data.attrib[ATTRIBUTES["exporter"]],
-                exporterVersion=data.get(ATTRIBUTES["exporterVersion"]),
-                exporterID=data.get(ATTRIBUTES["exporterID"]),
-            )
+            mandatory_attributes = AliasToXmlKey.from_kwargs(exporter = ATTRIBUTES["exporter"])
+            optional_attributes = AliasToXmlKey.from_kwargs(exporterVersion = ATTRIBUTES["exporterVersion"], exporterID = ATTRIBUTES["exporterID"])
         except KeyError as ex:
-            raise ValueError(
-                f"Structure of the data format was invalid. Error: {str(ex)}"
-            )
+            raise ValueError(f"Configuration of the data format was invalid. Error: {str(ex)}")
+
+        aliases_to_values = self._get_attributes_values_for_aliases(data, mandatory_attributes, optional_attributes)
+        self.model_builder.construct_metadata(**aliases_to_values)
 
         yield from self._create_data_batches(data)
 
@@ -105,15 +102,14 @@ class UmlModelPipe(XmlModelProcessingPipe):
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
+
         try:
-            self.model_builder.construct_uml_model(
-                name=data.attrib[ATTRIBUTES["name"]],
-                visibility=data.attrib[ATTRIBUTES["visibility"]],
-            )
+            mandatory_attributes = AliasToXmlKey.from_kwargs(name = ATTRIBUTES["name"], visibility = ATTRIBUTES["visibility"])
         except KeyError as ex:
-            raise ValueError(
-                f"Structure of the data format was invalid. Error: {str(ex)}"
-            )
+            raise ValueError(f"Configuration of the data format was invalid. Error: {str(ex)}")
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(data, mandatory_attributes)
+        self.model_builder.construct_uml_model(**aliases_to_values)
 
         yield from self._create_data_batches(data)
 
@@ -124,39 +120,87 @@ class UmlPackagePipe(XmlModelProcessingPipe):
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
+
         try:
-            self.model_builder.construct_uml_package(
-                id=data.attrib[ATTRIBUTES["id"]],
-                name=data.attrib[ATTRIBUTES["name"]],
-                visibility=data.attrib[ATTRIBUTES["visibility"]],
-            )
+            mandatory_attributes = AliasToXmlKey.from_kwargs(id = ATTRIBUTES["id"] , name = ATTRIBUTES["name"], visibility = ATTRIBUTES["visibility"])
         except KeyError as ex:
-            raise ValueError(
-                f"Structure of the data format was invalid. Error: {str(ex)}"
-            )
+            raise ValueError(f"Configuration of the data format was invalid. Error: {str(ex)}")
+
+        aliases_to_values = self._get_attributes_values_for_aliases(data, mandatory_attributes)
+        self.model_builder.construct_uml_package(**aliases_to_values)
 
         yield from self._create_data_batches(data)
 
 
 class UmlClassPipe(XmlModelProcessingPipe):
     ASSOCIATED_XML_TAG: str = TAGS["packaged_element"]
-    ATTRIBUTES_CONDITIONS: Iterator[XmlAttributeCondition] = [XmlAttributeCondition(ATTRIBUTES["type"], "uml:Class")]
+    ATTRIBUTES_CONDITIONS: Iterator[XmlAttributeCondition] = [XmlAttributeCondition(ATTRIBUTES["type"], EaPackagedElementTypes.CLASS)]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
+        
         try:
-            self.model_builder.construct_uml_class(
-                name=data.attrib[ATTRIBUTES["name"]],
-                visibility=data.attrib[ATTRIBUTES["visibility"]],
-            )
+            mandatory_attributes = AliasToXmlKey.from_kwargs(name = ATTRIBUTES["name"], visibility = ATTRIBUTES["visibility"])
         except KeyError as ex:
-            raise ValueError(
-                f"Structure of the data format was invalid. Error: {str(ex)}"
-            )
+            raise ValueError(f"Configuration of the data format was invalid. Error: {str(ex)}")
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(data, mandatory_attributes)
+        self.model_builder.construct_uml_class(**aliases_to_values)
+        
+        yield from self._create_data_batches(data)
+
+
+class UmlInterfacePipe(XmlModelProcessingPipe):
+    ASSOCIATED_XML_TAG: str = TAGS["packaged_element"]
+    ATTRIBUTES_CONDITIONS: Iterator[XmlAttributeCondition] = [XmlAttributeCondition(ATTRIBUTES["type"], EaPackagedElementTypes.INTERFACE)]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+        
+        try:
+            mandatory_attributes = AliasToXmlKey.from_kwargs(name = ATTRIBUTES["name"], visibility = ATTRIBUTES["visibility"])
+        except KeyError as ex:
+            raise ValueError(f"Configuration of the data format was invalid. Error: {str(ex)}")
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(data, mandatory_attributes)
+        self.model_builder.construct_uml_interface(**aliases_to_values)
 
         yield from self._create_data_batches(data)
 
 
+class UmlAttributePipe(XmlModelProcessingPipe):
+    ASSOCIATED_XML_TAG: str = TAGS["owned_attribute"]
+    ATTRIBUTES_CONDITIONS: Iterator[XmlAttributeCondition] = [XmlAttributeCondition(ATTRIBUTES["type"], "uml:Property")]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToXmlKey.from_kwargs(
+                name=ATTRIBUTES["name"],
+                id=ATTRIBUTES["id"],
+                type=ATTRIBUTES["type"],
+            )
+
+            optional_attributes = AliasToXmlKey.from_kwargs(
+                visibility=ATTRIBUTES["visibility"],
+                is_static=ATTRIBUTES["is_static"],
+                is_ordered=ATTRIBUTES["is_ordered"],
+                is_unique=ATTRIBUTES["is_unique"],
+                is_read_only=ATTRIBUTES["is_read_only"],
+                is_query=ATTRIBUTES["is_query"],
+                is_derived=ATTRIBUTES["is_derived"],
+                is_derived_union=ATTRIBUTES["is_derived_union"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(data, mandatory_attributes, optional_attributes)
+        self.model_builder.construct_uml_attribute(**aliases_to_values)
+        
+        yield from self._create_data_batches(data)
 
 
 

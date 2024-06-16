@@ -25,6 +25,11 @@ from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_pipeline impor
 class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
     SUPPORTED_FORMAT_NAME = SupportedFormat.XMI_EA
 
+    def _build_format_detection_pipe(self) -> EaXmiDetectionPipe:
+        xmi_detection_pipe = EaXmiDetectionPipe()
+        xmi_detection_pipe.add_next(EaXmiDocumentationDetectionPipe())
+        return xmi_detection_pipe
+    
     def _build_processing_pipe(self) -> RootPipe:
         root_pipe = RootPipe()
         documentation_pipe = root_pipe.add_next(DocumentationPipe())
@@ -48,7 +53,3 @@ class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
 
         return extension_pipe
 
-    def _build_format_detection_pipe(self) -> EaXmiDetectionPipe:
-        xmi_detection_pipe = EaXmiDetectionPipe()
-        xmi_detection_pipe.add_next(EaXmiDocumentationDetectionPipe())
-        return xmi_detection_pipe

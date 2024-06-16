@@ -1,3 +1,5 @@
+from enum import Enum
+
 from umlars_translator.core.model.constants import DiagramType
 
 
@@ -62,6 +64,13 @@ ATTRIBUTES: dict[str, str] = {
     "property_name": "name",
     "subject": "subject",
     "extender": "extender",
+    "is_static": "isStatic",
+    "is_ordered": "isOrdered",
+    "is_unique": "isUnique",
+    "is_read_only": "isReadOnly",
+    "is_query": "isQuery",
+    "is_derived": "isDerived",
+    "is_derived_union": "isDerivedUnion",
 }
 
 
@@ -104,3 +113,16 @@ EA_DIAGRAMS_TYPES: dict[str, str] = {
     "Logical": DiagramType.CLASS,
     "Sequence": DiagramType.SEQUENCE,
 }
+
+
+class EaPackagedElementTypes(str, Enum):
+    """
+    String enum is used to allow comparison with xml data.
+    """
+    PACKAGE = "uml:Package"
+    CLASS = "uml:Class"
+    INTERFACE = "uml:Interface"
+    ASSOCIATION = "uml:Association"
+    DEPENDENCY = "uml:Dependency"
+    GENERALIZATION = "uml:Generalization"
+    REALIZATION = "uml:Realization"

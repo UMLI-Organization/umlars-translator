@@ -14,8 +14,7 @@ def translator() -> ModelTranslator:
 
 @fixture
 def ea_data() -> str:
-    return """
-<xmi:XMI xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1">
+    return """<xmi:XMI xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1">
     <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5" exporterID="1628"/>
     <uml:Model xmi:type="uml:Model" name="unit model" visibility="public">
     </uml:Model>

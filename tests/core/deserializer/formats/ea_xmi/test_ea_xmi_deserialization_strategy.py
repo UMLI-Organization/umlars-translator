@@ -11,7 +11,7 @@ from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_pipeline impor
 )
 from umlars_translator.core.deserialization.input_processor import InputProcessor
 from umlars_translator.core.model.uml_model import UmlModel
-from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException
+from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException, InvalidFormatException
 
 
 FILES_WITH_EA_XMI_FORMAT = [
@@ -89,7 +89,7 @@ def test_build_format_detection_pipe():
     assert isinstance(detection_pipe, EaXmiDetectionPipe)
 
 
-def test_when_retrieve_model_from_ea_xmi_then_return_root_pipe(ea_xmi_class_data_sources):
+def test_when_retrieve_model_from_ea_xmi_then_return_model(ea_xmi_class_data_sources):
     for data_source in ea_xmi_class_data_sources:
         strategy = EaXmiImportParsingStrategy()
         model = strategy.retrieve_model(data_source)
@@ -104,5 +104,5 @@ def test_when_retrieve_model_from_other_format_then_raise_exception(other_format
 
 def test_when_retrieve_model_from_other_xmi_then_raise_exception(other_xmi_data_source):
     strategy = EaXmiImportParsingStrategy()
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidFormatException):
         strategy.retrieve_model(other_xmi_data_source)

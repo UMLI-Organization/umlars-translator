@@ -1,6 +1,6 @@
 import importlib
 from logging import Logger
-from typing import Iterator, Optional, Any
+from typing import Iterator, Optional
 
 from kink import inject
 

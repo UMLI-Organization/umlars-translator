@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Callable, NamedTuple, Any, Iterator
+from typing import Optional, NamedTuple, Any, Iterator
 from logging import Logger
 
 from kink import inject

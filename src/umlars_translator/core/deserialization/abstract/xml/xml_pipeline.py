@@ -10,6 +10,15 @@ from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pi
 from umlars_translator.core.deserialization.exceptions import InvalidFormatException
 
 
+class AliasToXmlKey(NamedTuple):
+    alias: str
+    xml_key: str
+
+    @classmethod
+    def from_kwargs(cls, **kwargs) -> Iterator["AliasToXmlKey"]:
+        return (cls(alias=alias, xml_key=xml_key) for alias, xml_key in kwargs.items())
+
+
 class XmlAttributeCondition(NamedTuple):
     attribute_name: str
     expected_value: Any
@@ -33,7 +42,7 @@ class XmlAttributeCondition(NamedTuple):
 
 
 class XmlModelProcessingPipe(ModelProcessingPipe):
-    ASSOCIATED_XML_TAG: str
+    ASSOCIATED_XML_TAG: Optional[str] = None
     ATTRIBUTES_CONDITIONS: Optional[Iterator[XmlAttributeCondition | Callable]] = None
 
     @classmethod
@@ -101,11 +110,11 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         data: ET.ElementTree | ET.Element = data_batch.data
         
         if isinstance(data, ET.ElementTree):
-            data = data.getroot()
+            data = self._get_root_element(data)
        
         try:
             return (
-                data.tag == self._associated_xml_tag
+                (data.tag == self._associated_xml_tag or self._associated_xml_tag is None)
                 and self._has_required_attributes_values(data)
             )
         except AttributeError as ex:
@@ -116,9 +125,43 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
 
             self._logger.error(error_message)
             raise InvalidFormatException(error_message) from ex
+        
+    def _get_attributes_values_for_aliases(self, data: ET.Element, mandatory_attributes: Optional[Iterator[AliasToXmlKey]] = None, optional_attributes: Optional[Iterator[AliasToXmlKey]] = None, exception_on_parsing_error: type = InvalidFormatException) -> dict:
+        kwargs = {}
+        try:
+            if mandatory_attributes is not None:
+                try:
+                    for alias, xml_key in mandatory_attributes:
+                        kwargs[alias] = data.attrib[xml_key]
+                except KeyError as ex:
+                    raise exception_on_parsing_error(
+                        f"Structure of the data format was invalid. Error: {str(ex)}"
+                    )
+
+            if optional_attributes is not None:
+                for alias, xml_key in optional_attributes:
+                    kwargs[alias] = data.get(xml_key)
+
+        except AttributeError as ex:
+            if not isinstance(data, ET.Element):
+                error_message = f"Xml processing pipeline didn't receive parsed xml data. Received: {data} of type {type(data)}"
+            else:
+                error_message = f"Unexpected error occurred while processing xml data. Received: {data} of type {type(data)}"
+            self._logger.error(error_message)
+            raise exception_on_parsing_error(error_message) from ex
+
+        return kwargs
+
+    def _get_root_element(self, data: ET.ElementTree, exception_on_parsing_error: type = InvalidFormatException) -> ET.Element:
+        try:
+            return data.getroot()
+        except AttributeError as ex:
+            error_message = f"Xml processing pipeline didn't receive parsed xml data. Received: {data} of type {type(data)}"
+            self._logger.error(error_message)
+            raise exception_on_parsing_error(error_message) from ex
 
 
 class XmlFormatDetectionPipe(XmlModelProcessingPipe, FormatDetectionPipe):
     """
-    Diamond inheiritance
+    Diamond inheiritance.
     """
