@@ -13,7 +13,8 @@ from umlars_translator.core.deserialization.formats.ea_xmi.ea_constants import (
     ATTRIBUTES,
     EA_EXTENDED_TAGS,
     EA_EXTENDED_ATTRIBUTES,
-    EA_DIAGRAMS_TYPES,
+    EA_TYPE_ATTRIBUTE_MAPPING,
+    EA_HREF_ATTRIBUTE_MAPPING,
     EaPackagedElementTypes,
 )
 from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException
@@ -269,9 +270,91 @@ class UmlAttributePipe(XmlModelProcessingPipe):
         aliases_to_values = self._get_attributes_values_for_aliases(
             data, mandatory_attributes, optional_attributes
         )
+
+        aliases_to_values.update(self._process_attribute_type(data_batch))
+        aliases_to_values.update(self._process_attribute_multiplicity(data_batch))
+
         self.model_builder.construct_uml_attribute(**aliases_to_values)
 
-        yield from self._create_data_batches(data)
+        yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
+
+
+    def _process_attribute_type(self, data_batch: DataBatch) -> dict:
+        data = data_batch.data
+        attribute_type_data = data.find(TAGS["type"])
+        if attribute_type_data is None:
+            return {}
+        
+        try:
+            mandatory_attributes = AliasToXmlKey.from_kwargs(
+                type=ATTRIBUTES["type"]
+            )
+            optional_attributes = AliasToXmlKey.from_kwargs(
+                href=ATTRIBUTES["href"]
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            attribute_type_data, mandatory_attributes, optional_attributes
+        )
+        self._map_value_from_key(aliases_to_values, "type", EA_TYPE_ATTRIBUTE_MAPPING)
+
+        if aliases_to_values["href"] is not None:
+            self._map_value_from_key(aliases_to_values, "href", EA_HREF_ATTRIBUTE_MAPPING)
+            aliases_to_values["type_metadata"] = {"referenced_type": aliases_to_values.pop("href")}
+        
+        return aliases_to_values
+    
+    def _process_attribute_multiplicity(self, data_batch: DataBatch) -> dict:
+        return self._process_attribute_lower_value(data_batch) | self._process_attribute_upper_value(data_batch)
+    
+    def _process_attribute_lower_value(self, data_batch: DataBatch) -> dict:
+        data = data_batch.data
+        lower_value_data = data.find(TAGS["lower_value"])
+        if lower_value_data is None:
+            return {}
+        
+        try:
+            mandatory_attributes = AliasToXmlKey.from_kwargs(
+                id=ATTRIBUTES["id"], value=ATTRIBUTES["value"], type=ATTRIBUTES["type"]
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            lower_value_data, mandatory_attributes
+        )
+
+        self._map_value_from_key(aliases_to_values, "type", EA_TYPE_ATTRIBUTE_MAPPING)
+        
+        return aliases_to_values
+
+    def _process_attribute_upper_value(self, data_batch: DataBatch) -> dict:
+        data = data_batch.data
+        upper_value_data = data.find(TAGS["upper_value"])
+        if upper_value_data is None:
+            return {}
+        
+        try:
+            mandatory_attributes = AliasToXmlKey.from_kwargs(
+                id=ATTRIBUTES["id"], value=ATTRIBUTES["value"], type=ATTRIBUTES["type"]
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            upper_value_data, mandatory_attributes
+        )
+        self._map_value_from_key(aliases_to_values, "type", EA_TYPE_ATTRIBUTE_MAPPING)
+        
+        return aliases_to_values
 
 
 class ExtensionPipe(XmlModelProcessingPipe):

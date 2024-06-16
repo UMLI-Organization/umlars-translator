@@ -133,7 +133,7 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         mandatory_attributes: Optional[Iterator[AliasToXmlKey]] = None,
         optional_attributes: Optional[Iterator[AliasToXmlKey]] = None,
         exception_on_parsing_error: type = InvalidFormatException,
-    ) -> dict:
+    ) -> dict[str,str]:
         kwargs = {}
         try:
             if mandatory_attributes is not None:
@@ -172,6 +172,21 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
             raise exception_on_parsing_error(error_message) from ex
 
 
+    def _map_value_from_key(
+        self,
+        values_dict: dict[str, str],
+        key_to_map: str,
+        mapping_dict: dict[str, Any],
+    ) -> str:
+        try:
+            value_to_map = values_dict[key_to_map]
+            values_dict[key_to_map] = mapping_dict[value_to_map]
+        except KeyError as ex:
+            raise InvalidFormatException(
+                f"Value {value_to_map} not found in mapping dict {mapping_dict}" 
+                f"or key {key_to_map} not found in values dict {values_dict}."
+            ) from ex
+        
 class XmlFormatDetectionPipe(XmlModelProcessingPipe, FormatDetectionPipe):
     """
     Diamond inheiritance.

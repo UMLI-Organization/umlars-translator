@@ -18,8 +18,9 @@ from umlars_translator.core.deserialization.exceptions import (
 
 
 FILES_WITH_EA_XMI_FORMAT = [
-    "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_basic.xml",
-    "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_library.xml",
+    # "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_basic.xml",
+    # "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_library.xml",
+    "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_car-model-xmi-21.xml",
 ]
 
 

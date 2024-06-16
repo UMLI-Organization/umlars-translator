@@ -1,6 +1,6 @@
 from enum import Enum
 
-from umlars_translator.core.model.constants import DiagramType
+from umlars_translator.core.model.constants import DiagramType, PrimitiveTypes, UmlElementType
 
 
 NAMESPACES: dict[str, str] = {
@@ -19,7 +19,7 @@ TAGS: dict[str, str] = {
     "attribute_type": "type",
     "operation": "ownedOperation",
     "operation_parameter": "ownedParameter",
-    "parameter_type": "type",
+    "type": "type",
     "property_type": "type",
     "covered": "covered",
     "operand": "operand",
@@ -71,6 +71,7 @@ ATTRIBUTES: dict[str, str] = {
     "is_query": "isQuery",
     "is_derived": "isDerived",
     "is_derived_union": "isDerivedUnion",
+    "value": "value",
 }
 
 
@@ -109,10 +110,29 @@ EA_EXTENDED_ATTRIBUTES: dict[str, str] = {
 }
 
 
-EA_DIAGRAMS_TYPES: dict[str, str] = {
+EA_DIAGRAMS_TYPES_MAPPING: dict[str, str] = {
     "Logical": DiagramType.CLASS,
     "Sequence": DiagramType.SEQUENCE,
 }
+
+
+EA_TYPE_ATTRIBUTE_MAPPING: dict[str, str] = {
+    "uml:PrimitiveType": UmlElementType.PRIMITIVE_TYPE,
+    "uml:Class": UmlElementType.CLASS,
+    "uml:Interface": UmlElementType.INTERFACE,
+    "uml:Association": UmlElementType.ASSOCIATION,
+    "uml:Dependency": UmlElementType.DEPENDENCY,
+    "uml:Generalization": UmlElementType.GENERALIZATION,
+    "uml:Realization": UmlElementType.REALIZATION,
+    "uml:LiteralInteger": PrimitiveTypes.INTEGER,
+    "EAnone_void": None,
+}
+
+
+EA_HREF_ATTRIBUTE_MAPPING: dict[str, str] = {
+    "http://schema.omg.org/spec/UML/2.1/uml.xml#Integer": PrimitiveTypes.INTEGER,
+}
+
 
 
 class EaPackagedElementTypes(str, Enum):
