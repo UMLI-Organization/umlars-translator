@@ -119,6 +119,7 @@ class EaPackagedElementTypes(str, Enum):
     """
     String enum is used to allow comparison with xml data.
     """
+
     PACKAGE = "uml:Package"
     CLASS = "uml:Class"
     INTERFACE = "uml:Interface"

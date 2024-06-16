@@ -3,6 +3,7 @@ from enum import Enum
 
 class DiagramType(Enum):
     """Enum class for diagram types"""
+
     CLASS = "Class"
     USE_CASE = "UseCase"
     ACTIVITY = "Activity"

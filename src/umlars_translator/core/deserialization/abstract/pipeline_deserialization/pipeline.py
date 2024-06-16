@@ -17,9 +17,9 @@ class DataBatch(NamedTuple):
     Parent context is a dictionary of data shared from the predecessor pipe.
     Dictionary is used to allow flexible information exchange.
     """
+
     data: Any
     parent_context: Optional[dict[str, Any]] = None
-
 
 
 @inject
@@ -67,17 +67,31 @@ class ModelProcessingPipe(ABC):
             pipe.add_next(self)
         self._predecessor = pipe
 
-    def process_if_possible(self, data: Optional[Any] = None, parent_context: Optional[dict[str, Any]] = None, data_batch: Optional[DataBatch] = None) -> None:
-        data_batch = DataBatch(data, parent_context) if data_batch is None else data_batch
+    def process_if_possible(
+        self,
+        data: Optional[Any] = None,
+        parent_context: Optional[dict[str, Any]] = None,
+        data_batch: Optional[DataBatch] = None,
+    ) -> None:
+        data_batch = (
+            DataBatch(data, parent_context) if data_batch is None else data_batch
+        )
 
         if self.can_run_for(data_batch=data_batch):
             self.process(data_batch=data_batch)
 
-    def process(self, data: Optional[Any] = None, parent_context: Optional[dict[str, Any]] = None, data_batch: Optional[DataBatch] = None) -> None:
-        data_batch = DataBatch(data, parent_context) if data_batch is None else data_batch
-            
+    def process(
+        self,
+        data: Optional[Any] = None,
+        parent_context: Optional[dict[str, Any]] = None,
+        data_batch: Optional[DataBatch] = None,
+    ) -> None:
+        data_batch = (
+            DataBatch(data, parent_context) if data_batch is None else data_batch
+        )
+
         batches_of_data_processed_by_parent = self._process(data_batch=data_batch)
-        
+
         # It is a generator so iteration through it can be done only once.
         # TODO: this should be optimized not to iterate through all successors for each data batch IF some way of grouping successors is possible.
         for data_batch in batches_of_data_processed_by_parent:
@@ -87,11 +101,23 @@ class ModelProcessingPipe(ABC):
     def get_model(self) -> UmlModel:
         return self.model_builder.build()
 
-    def can_run_for(self, data: Optional[Any] = None, parent_context: Optional[dict[str, Any]] = None, data_batch: Optional[DataBatch] = None) -> bool:
-        data_batch = DataBatch(data, parent_context) if data_batch is None else data_batch
+    def can_run_for(
+        self,
+        data: Optional[Any] = None,
+        parent_context: Optional[dict[str, Any]] = None,
+        data_batch: Optional[DataBatch] = None,
+    ) -> bool:
+        data_batch = (
+            DataBatch(data, parent_context) if data_batch is None else data_batch
+        )
         return self._can_process(data_batch=data_batch)
-    
-    def _create_data_batches(self, data_iterator: Iterator[Any], parent_context: Optional[dict[str, Any]] = None, **kwargs) -> Iterator[DataBatch]:
+
+    def _create_data_batches(
+        self,
+        data_iterator: Iterator[Any],
+        parent_context: Optional[dict[str, Any]] = None,
+        **kwargs,
+    ) -> Iterator[DataBatch]:
         if parent_context is None:
             parent_context = {}
         parent_context.update(kwargs)
@@ -114,9 +140,16 @@ class ModelProcessingPipe(ABC):
 
 
 class FormatDetectionPipe(ModelProcessingPipe):
-    def is_supported_format(self, data: Optional[Any] = None, parent_context: Optional[dict[str, Any]] = None, data_batch: Optional[DataBatch] = None) -> bool:
-        data_batch = DataBatch(data, parent_context) if data_batch is None else data_batch
-        
+    def is_supported_format(
+        self,
+        data: Optional[Any] = None,
+        parent_context: Optional[dict[str, Any]] = None,
+        data_batch: Optional[DataBatch] = None,
+    ) -> bool:
+        data_batch = (
+            DataBatch(data, parent_context) if data_batch is None else data_batch
+        )
+
         if not self.can_run_for(data_batch=data_batch):
             return False
 

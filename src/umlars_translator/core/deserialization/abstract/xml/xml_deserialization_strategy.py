@@ -8,7 +8,6 @@ from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pi
 from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException
 
 
-
 class XmlDeserializationStrategy(PipelineDeserializationStrategy):
     def _parse_format_data(self, data_source: DataSource) -> Any:
         try:

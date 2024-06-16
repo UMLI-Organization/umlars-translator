@@ -29,7 +29,7 @@ class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
         xmi_detection_pipe = EaXmiDetectionPipe()
         xmi_detection_pipe.add_next(EaXmiDocumentationDetectionPipe())
         return xmi_detection_pipe
-    
+
     def _build_processing_pipe(self) -> RootPipe:
         root_pipe = RootPipe()
         documentation_pipe = root_pipe.add_next(DocumentationPipe())
@@ -52,4 +52,3 @@ class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
         diagram_pipe = diagrams_pipe.add_next(DiagramPipe())
 
         return extension_pipe
-

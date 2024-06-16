@@ -36,7 +36,9 @@ class XmlAttributeCondition(NamedTuple):
                 return False
             # TODO: add tests for this behavior
             except AttributeError as ex:
-                raise InvalidFormatException(f"Xml attribute condition didn't receive parsed xml data. Received: {xml_element} of type {type(xml_element)}") from ex
+                raise InvalidFormatException(
+                    f"Xml attribute condition didn't receive parsed xml data. Received: {xml_element} of type {type(xml_element)}"
+                ) from ex
 
         return attribute_condition
 
@@ -108,15 +110,14 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
 
     def _can_process(self, data_batch: Optional[DataBatch] = None) -> bool:
         data: ET.ElementTree | ET.Element = data_batch.data
-        
+
         if isinstance(data, ET.ElementTree):
             data = self._get_root_element(data)
-       
+
         try:
             return (
-                (data.tag == self._associated_xml_tag or self._associated_xml_tag is None)
-                and self._has_required_attributes_values(data)
-            )
+                data.tag == self._associated_xml_tag or self._associated_xml_tag is None
+            ) and self._has_required_attributes_values(data)
         except AttributeError as ex:
             if not isinstance(data, ET.Element):
                 error_message = f"Xml processing pipeline didn't receive parsed xml data. Received: {data} of type {type(data)}"
@@ -125,8 +126,14 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
 
             self._logger.error(error_message)
             raise InvalidFormatException(error_message) from ex
-        
-    def _get_attributes_values_for_aliases(self, data: ET.Element, mandatory_attributes: Optional[Iterator[AliasToXmlKey]] = None, optional_attributes: Optional[Iterator[AliasToXmlKey]] = None, exception_on_parsing_error: type = InvalidFormatException) -> dict:
+
+    def _get_attributes_values_for_aliases(
+        self,
+        data: ET.Element,
+        mandatory_attributes: Optional[Iterator[AliasToXmlKey]] = None,
+        optional_attributes: Optional[Iterator[AliasToXmlKey]] = None,
+        exception_on_parsing_error: type = InvalidFormatException,
+    ) -> dict:
         kwargs = {}
         try:
             if mandatory_attributes is not None:
@@ -152,7 +159,11 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
 
         return kwargs
 
-    def _get_root_element(self, data: ET.ElementTree, exception_on_parsing_error: type = InvalidFormatException) -> ET.Element:
+    def _get_root_element(
+        self,
+        data: ET.ElementTree,
+        exception_on_parsing_error: type = InvalidFormatException,
+    ) -> ET.Element:
         try:
             return data.getroot()
         except AttributeError as ex:

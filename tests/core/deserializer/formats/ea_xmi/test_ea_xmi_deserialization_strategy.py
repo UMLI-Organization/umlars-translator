@@ -11,7 +11,10 @@ from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_pipeline impor
 )
 from umlars_translator.core.deserialization.input_processor import InputProcessor
 from umlars_translator.core.model.uml_model import UmlModel
-from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException, InvalidFormatException
+from umlars_translator.core.deserialization.exceptions import (
+    UnsupportedFormatException,
+    InvalidFormatException,
+)
 
 
 FILES_WITH_EA_XMI_FORMAT = [
@@ -31,8 +34,8 @@ def ea_xmi_class_data_sources():
 
 @pytest.fixture
 def other_xmi_data_source():
-    return (
-        InputProcessor().accept_input("""<?xml version="1.0" encoding="windows-1252"?>
+    return InputProcessor().accept_input(
+        """<?xml version="1.0" encoding="windows-1252"?>
 <xmi:XMI xmlns:xmi="http://schema.eclipse.com/spec/XMI/2.1" xmlns:uml="http://schema.eclipse.com/spec/UML/2.1" xmi:version="2.1">
     <xmi:Documentation exporter="Not Enterprise Architect" exporterVersion="6.5" exporterID="1628"/>
     <uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
@@ -40,15 +43,14 @@ def other_xmi_data_source():
             <packagedElement xmi:type="uml:Class" xmi:id="EAID_2" name="EA_Class" visibility="public"/>
         </packagedElement>
     </uml:Model>
-</xmi:XMI>""")
+</xmi:XMI>"""
     )
 
 
 @pytest.fixture
 def other_format_data_source():
-    return (
-        InputProcessor().accept_input(
-            """
+    return InputProcessor().accept_input(
+        """
                 {
                     Exporter : Imaginary Exporter,
                     UML_MODEL: {
@@ -59,7 +61,6 @@ def other_format_data_source():
                     }
                 }
             """
-        )
     )
 
 
@@ -96,7 +97,9 @@ def test_when_retrieve_model_from_ea_xmi_then_return_model(ea_xmi_class_data_sou
         assert isinstance(model, UmlModel)
 
 
-def test_when_retrieve_model_from_other_format_then_raise_exception(other_format_data_source):
+def test_when_retrieve_model_from_other_format_then_raise_exception(
+    other_format_data_source,
+):
     strategy = EaXmiImportParsingStrategy()
     with pytest.raises(UnsupportedFormatException):
         strategy.retrieve_model(other_format_data_source)
