@@ -11,6 +11,7 @@ notes
 .idea
 .hypothesis
 test_tmp_*.xml
+umlars.log
 
 src/umlars_translator/core/model/*/
 src/umlars_translator/__trash

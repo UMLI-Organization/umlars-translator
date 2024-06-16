@@ -1,5 +1,4 @@
 from pytest import fixture
-import logging
 
 from umlars_translator.core.translator import ModelTranslator
 from umlars_translator.core.model.uml_model import UmlModel

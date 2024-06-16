@@ -229,30 +229,33 @@ class DiagramPipe(XmlModelProcessingPipe):
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
         try:
-            diagram_id = data.attrib[ATTRIBUTES["id"]]
+            mandatory_attributes = AliasToXmlKey.from_kwargs(id = ATTRIBUTES["id"])
+            aliases_to_values = self._get_attributes_values_for_aliases(data, mandatory_attributes)
+
             diagram_properties = data.find(EA_EXTENDED_TAGS["properties"])
 
-            self._construct_diagram_from_properties(diagram_properties, diagram_id)
+            self._construct_diagram_from_properties(diagram_properties, aliases_to_values["id"])
 
             diagram_elements = data.find(EA_EXTENDED_TAGS["elements"])
-            self._construct_diagram_elements(diagram_elements)
+            self._construct_diagram_elements(diagram_elements, aliases_to_values["id"])
         except KeyError as ex:
-            raise ValueError(
-                f"Structure of the data format was invalid. Error: {str(ex)}"
-            )
+            raise ValueError(f"Configuration of the data format was invalid. Error: {str(ex)}")
 
         yield from self._create_data_batches(data)
 
     def _construct_diagram_from_properties(self, diagram_properties: ET.Element, diagram_id: str) -> None:
-        diagram_type = diagram_properties.attrib.get(EA_EXTENDED_ATTRIBUTES["property_type"])
-        diagram_name = diagram_properties.attrib.get(EA_EXTENDED_ATTRIBUTES["element_name"])
-        self.model_builder.construct_diagram(
-            diagram_id=diagram_id,
-            diagram_type=EA_DIAGRAMS_TYPES[diagram_type],
-            diagram_name=diagram_name,
+        optional_attributes = AliasToXmlKey.from_kwargs(
+            diagram_type = EA_EXTENDED_ATTRIBUTES["property_type"],
+            diagram_name = EA_EXTENDED_ATTRIBUTES["element_name"],
         )
-
-    def _construct_diagram_elements(self, diagram_elements: ET.Element) -> None:
+        aliases_to_values = self._get_attributes_values_for_aliases(diagram_properties, optional_attributes)
+        self.model_builder.construct_diagram(**aliases_to_values, id=diagram_id)
+        
+    def _construct_diagram_elements(self, diagram_elements: ET.Element, diagram_id: str) -> None:
         for element in diagram_elements:
-            element_id = element.attrib.get(EA_EXTENDED_ATTRIBUTES["subject"])
-            self.model_builder.bind_element_to_diagram(element_id=element_id)
+            mandatory_attributes = AliasToXmlKey.from_kwargs(
+                element_id = EA_EXTENDED_ATTRIBUTES["subject"],
+            )
+            aliases_to_values = self._get_attributes_values_for_aliases(element, mandatory_attributes)
+
+            self.model_builder.bind_element_to_diagram(element_id=aliases_to_values["element_id"], diagram_id=diagram_id)
