@@ -78,8 +78,8 @@ class ModelProcessingPipe(ABC):
             
         batches_of_data_processed_by_parent = self._process(data_batch=data_batch)
         
-        # Iteration through this generator can be done only once.
-        # TODO: this should be optimized not to iterate through all successors for each data batch.
+        # It is a generator so iteration through it can be done only once.
+        # TODO: this should be optimized not to iterate through all successors for each data batch IF some way of grouping successors is possible.
         for data_batch in batches_of_data_processed_by_parent:
             for successor in self._successors:
                 successor.process_if_possible(data_batch=data_batch)

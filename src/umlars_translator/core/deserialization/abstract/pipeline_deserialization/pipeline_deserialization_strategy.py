@@ -27,6 +27,12 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
     @property
     def pipe(self) -> ModelProcessingPipe:
         if self._pipe is None:
+            # TODO: possible improvement - based on supposition format_detection_pipe is similar to the main pipe, it could be used as a base for the main pipe
+            # However, it would require some additional logic to handle the differences between the two implemented in the subclasses of this deserilization strategy.
+            # if self._format_detection_pipe is not None:
+            #     self._pipe = self._build_processing_pipe(based_on_format_detection_pipe=True)
+            # else:
+            #     self._pipe = self._build_processing_pipe()
             self._pipe = self._build_processing_pipe()
         return self._pipe
 

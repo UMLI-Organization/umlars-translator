@@ -7,15 +7,27 @@ from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pi
     FormatDetectionPipe,
     DataBatch,
 )
+from umlars_translator.core.deserialization.exceptions import InvalidFormatException
 
 
 class XmlAttributeCondition(NamedTuple):
     attribute_name: str
     expected_value: Any
+    when_missing_raise_exception: bool = False
 
     def to_callable(self) -> Callable:
         def attribute_condition(xml_element: ET.Element) -> bool:
-            return xml_element.attrib[self.attribute_name] == self.expected_value
+            try:
+                return xml_element.attrib[self.attribute_name] == self.expected_value
+            except KeyError as ex:
+                if self.when_missing_raise_exception:
+                    raise InvalidFormatException(
+                        f"Attribute {self.attribute_name} not found in xml element {xml_element}"
+                    ) from ex
+                return False
+            # TODO: add tests for this behavior
+            except AttributeError as ex:
+                raise InvalidFormatException(f"Xml attribute condition didn't receive parsed xml data. Received: {xml_element} of type {type(xml_element)}") from ex
 
         return attribute_condition
 
@@ -86,17 +98,24 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         return all(condition(data) for condition in self._attributes_conditions)
 
     def _can_process(self, data_batch: Optional[DataBatch] = None) -> bool:
-        data = data_batch.data
+        data: ET.ElementTree | ET.Element = data_batch.data
         
         if isinstance(data, ET.ElementTree):
             data = data.getroot()
-        elif not isinstance(data, ET.Element):
-            return False
+       
+        try:
+            return (
+                data.tag == self._associated_xml_tag
+                and self._has_required_attributes_values(data)
+            )
+        except AttributeError as ex:
+            if not isinstance(data, ET.Element):
+                error_message = f"Xml processing pipeline didn't receive parsed xml data. Received: {data} of type {type(data)}"
+            else:
+                error_message = f"Unexpected error occurred while processing xml data. Received: {data} of type {type(data)}"
 
-        return (
-            data.tag == self._associated_xml_tag
-            and self._has_required_attributes_values(data)
-        )
+            self._logger.error(error_message)
+            raise InvalidFormatException(error_message) from ex
 
 
 class XmlFormatDetectionPipe(XmlModelProcessingPipe, FormatDetectionPipe):

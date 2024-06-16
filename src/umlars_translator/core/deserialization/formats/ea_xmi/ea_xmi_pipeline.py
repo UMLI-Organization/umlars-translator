@@ -88,8 +88,8 @@ class DocumentationPipe(XmlModelProcessingPipe):
         try:
             self.model_builder.construct_metadata(
                 exporter=data.attrib[ATTRIBUTES["exporter"]],
-                exporterVersion=data.attrib[ATTRIBUTES["exporterVersion"]],
-                exporterID=data.attrib[ATTRIBUTES["exporterID"]],
+                exporterVersion=data.get(ATTRIBUTES["exporterVersion"]),
+                exporterID=data.get(ATTRIBUTES["exporterID"]),
             )
         except KeyError as ex:
             raise ValueError(
