@@ -34,26 +34,30 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
             #     self._pipe = self._build_processing_pipe(based_on_format_detection_pipe=True)
             # else:
             #     self._pipe = self._build_processing_pipe()
-            self._create_new_pipe()
+            self._create_new_processing_pipe()
         return self._pipe
 
     @property
     def format_detection_pipe(self) -> FormatDetectionPipe:
         if self._format_detection_pipe is None:
-            self._format_detection_pipe = self._build_format_detection_pipe()
+            self._create_new_format_detection_pipe()
         return self._format_detection_pipe
 
-    def set_pipe_config(self) -> None:
-        self.pipe.set_config(self.config)
+    def set_pipe_config(self, pipe: ModelProcessingPipe) -> None:
+        pipe.set_config(self.config)
 
     def clear(self) -> None:
         self._pipe = None
         self._format_detection_pipe = None
         self._parsed_data = None
 
-    def _create_new_pipe(self) -> ModelProcessingPipe:
+    def _create_new_processing_pipe(self) -> ModelProcessingPipe:
         self._pipe = self._build_processing_pipe()
-        self.set_pipe_config()
+        self.set_pipe_config(self.pipe)
+    
+    def _create_new_format_detection_pipe(self) -> FormatDetectionPipe:
+        self._format_detection_pipe = self._build_format_detection_pipe()
+        self.set_pipe_config(self.format_detection_pipe)
 
     def _can_deserialize_format_data(
         self, format_data: DataSource, cache_parsed_data: bool = True
