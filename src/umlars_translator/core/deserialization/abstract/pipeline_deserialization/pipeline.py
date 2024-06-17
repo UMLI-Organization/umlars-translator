@@ -9,6 +9,7 @@ from umlars_translator.core.deserialization.exceptions import (
 )
 from umlars_translator.core.model.uml_model import UmlModel
 from umlars_translator.core.model.uml_model_builder import UmlModelBuilder
+from umlars_translator.core.configuration.config_namespace import ConfigNamespace
 
 
 class DataBatch(NamedTuple):
@@ -29,12 +30,14 @@ class ModelProcessingPipe(ABC):
         successors: Optional[Iterator["ModelProcessingPipe"]] = None,
         predecessor: Optional["ModelProcessingPipe"] = None,
         model_builder: Optional[UmlModelBuilder] = None,
+        config: Optional[ConfigNamespace] = None,
         logger: Optional[Logger] = None,
     ) -> None:
+        self._logger = logger.getChild(self.__class__.__name__)
         self._successors = successors if successors is not None else []
         self._predecessor = predecessor
         self._model_builder = model_builder or UmlModelBuilder()
-        self._logger = logger.getChild(self.__class__.__name__)
+        self.set_config(config)
 
     @property
     def model_builder(self) -> UmlModelBuilder:
@@ -49,15 +52,35 @@ class ModelProcessingPipe(ABC):
         return self._predecessor
 
     @predecessor.setter
-    def predecessor(self, value: Optional["ModelProcessingPipe"]) -> None:
-        self._predecessor = value
+    def predecessor(self, new_predecessor: Optional["ModelProcessingPipe"]) -> None:
+        self._predecessor = new_predecessor
+
+    @property
+    def config(self) -> dict[str, Any]:
+        return self._config
+
+    def set_config(self, new_config: Optional[ConfigNamespace], update_successors: bool = True, configure: bool = True) -> None:
+        """
+        Updates the config of the pipeline and all its successors.
+        """
+        self._config = new_config
+
+        if configure:
+            self._configure()
+
+        if update_successors:
+            for successor in self._successors:
+                successor.set_config(new_config)
 
     def add_next(
-        self, pipe: "ModelProcessingPipe", share_builder: bool = True
+        self, pipe: "ModelProcessingPipe", share_builder: bool = True, share_config: bool = True
     ) -> "ModelProcessingPipe":
         self._successors.append(pipe)
         if share_builder:
             pipe.model_builder = self.model_builder
+        
+        if share_config:
+            pipe.set_config(self.config)
 
         pipe.add_predecessor(self)
         return pipe
@@ -138,6 +161,12 @@ class ModelProcessingPipe(ABC):
         Method overrided in each subclass. Defines, whether the received data can be parsed by default pipe of such type.
         """
 
+    def _configure(self) -> None:
+        """
+        Configures the pipe using the config namespace.
+        Run always whenever the config is set and flag configure is set to True.
+        Should be overriden in subclasses if needed.
+        """
 
 class FormatDetectionPipe(ModelProcessingPipe):
     def is_supported_format(

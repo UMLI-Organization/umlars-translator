@@ -8,6 +8,8 @@ from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pi
     DataBatch,
 )
 from umlars_translator.core.deserialization.exceptions import InvalidFormatException
+from umlars_translator.core.configuration.config_namespace import ConfigNamespace, ParsedConfigNamespace
+from umlars_translator.core.configuration.config_proxy import ConfigProxy, get_configurable_value
 
 
 class AliasToXmlKey(NamedTuple):
@@ -20,7 +22,7 @@ class AliasToXmlKey(NamedTuple):
 
 
 class XmlAttributeCondition(NamedTuple):
-    attribute_name: str
+    attribute_name: str | ConfigProxy
     expected_value: Any
     when_missing_raise_exception: bool = False
 
@@ -41,21 +43,24 @@ class XmlAttributeCondition(NamedTuple):
                 ) from ex
 
         return attribute_condition
+    
+    def evaluate_attribute_name(self, config: ParsedConfigNamespace) -> None:
+        self.attribute_name = get_configurable_value(self.attribute_name, config)
 
 
 class XmlModelProcessingPipe(ModelProcessingPipe):
-    ASSOCIATED_XML_TAG: Optional[str] = None
+    ASSOCIATED_XML_TAG: Optional[str | ConfigProxy] = None
     ATTRIBUTES_CONDITIONS: Optional[Iterator[XmlAttributeCondition | Callable]] = None
-
-    @classmethod
-    def get_associated_xml_tag(cls) -> str:
-        return cls.ASSOCIATED_XML_TAG
 
     @classmethod
     def get_attributes_conditions(
         cls,
     ) -> Optional[Iterator[XmlAttributeCondition | Callable]]:
         return cls.ATTRIBUTES_CONDITIONS
+    
+    @classmethod
+    def get_associated_xml_tag(cls) -> str:
+        return cls.ASSOCIATED_XML_TAG
 
     def __init__(
         self,
@@ -66,37 +71,34 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         successors: Optional[Iterator["ModelProcessingPipe"]] = None,
         predecessor: Optional["ModelProcessingPipe"] = None,
         model_builder: Optional[UmlModelBuilder] = None,
+        config: Optional[ParsedConfigNamespace] = None,
+        **kwargs
     ) -> None:
-        self._associated_xml_tag = xml_tag or self.__class__.get_associated_xml_tag()
-        self._attributes_conditions = self._create_attributes_conditions_callables(
-            attributes_conditions
-        )
-        super().__init__(successors, predecessor, model_builder)
+        super().__init__(successors, predecessor, model_builder, config, **kwargs)
+        self._associated_xml_tag = xml_tag if xml_tag is not None else self.__class__.get_associated_xml_tag()
+        self._attributes_conditions = attributes_conditions if attributes_conditions is not None else self.__class__.get_attributes_conditions()
 
-    def _create_attributes_conditions_callables(
-        self,
-        custom_attributes_conditions: Optional[
-            Iterator[XmlAttributeCondition | Callable]
-        ],
-    ) -> Iterator[XmlAttributeCondition | Callable]:
-        attributes_conditions = []
-        if custom_attributes_conditions is not None:
-            attributes_conditions.extend(custom_attributes_conditions)
+    def _configure(self) -> None:
+        if self._config is not None:
+            self._configure_xml_tag()
+            self._configure_attributes_conditions_callables()
 
-        if (
-            class_attributes_conditions := self.__class__.get_attributes_conditions()
-        ) is not None:
-            attributes_conditions.extend(class_attributes_conditions)
+    def _configure_xml_tag(self) -> None:
+        if self._associated_xml_tag is not None:
+            self._associated_xml_tag = get_configurable_value(self._associated_xml_tag, self.config)
 
-        return [
-            self._create_attribute_condition_callable(condition)
-            for condition in attributes_conditions
-        ]
+    def _configure_attributes_conditions_callables(self) -> Iterator[XmlAttributeCondition | Callable]:
+        if self._attributes_conditions is not None:
+            self._attributes_conditions = [
+                self._configure_attribute_condition_callable(condition)
+                for condition in self._attributes_conditions
+            ]
 
-    def _create_attribute_condition_callable(
+    def _configure_attribute_condition_callable(
         self, attribute_condition: XmlAttributeCondition | Callable
     ) -> Callable:
         if isinstance(attribute_condition, XmlAttributeCondition):
+            attribute_condition.evaluate_attribute_name(self.config)
             return attribute_condition.to_callable()
         return attribute_condition
 
@@ -133,7 +135,7 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         mandatory_attributes: Optional[Iterator[AliasToXmlKey]] = None,
         optional_attributes: Optional[Iterator[AliasToXmlKey]] = None,
         exception_on_parsing_error: type = InvalidFormatException,
-    ) -> dict[str,str]:
+    ) -> dict[str, str]:
         kwargs = {}
         try:
             if mandatory_attributes is not None:
@@ -171,7 +173,6 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
             self._logger.error(error_message)
             raise exception_on_parsing_error(error_message) from ex
 
-
     def _map_value_from_key(
         self,
         values_dict: dict[str, str],
@@ -187,7 +188,8 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
                 f"or key {key_to_map} not found in values dict {values_dict}."
             ) from ex
         
-class XmlFormatDetectionPipe(XmlModelProcessingPipe, FormatDetectionPipe):
+
+class XmlFormatDetectionPipe(FormatDetectionPipe, XmlModelProcessingPipe):
     """
     Diamond inheiritance.
     """
