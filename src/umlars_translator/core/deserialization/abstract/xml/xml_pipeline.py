@@ -1,5 +1,6 @@
 from xml.etree import ElementTree as ET
 from typing import Callable, Iterator, Optional, NamedTuple, Any
+from dataclasses import dataclass
 
 from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
     ModelProcessingPipe,
@@ -8,7 +9,7 @@ from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pi
     DataBatch,
 )
 from umlars_translator.core.deserialization.exceptions import InvalidFormatException
-from umlars_translator.core.configuration.config_namespace import ConfigNamespace, ParsedConfigNamespace
+from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
 from umlars_translator.core.configuration.config_proxy import ConfigProxy, get_configurable_value
 
 
@@ -21,7 +22,8 @@ class AliasToXmlKey(NamedTuple):
         return (cls(alias=alias, xml_key=xml_key) for alias, xml_key in kwargs.items())
 
 
-class XmlAttributeCondition(NamedTuple):
+@dataclass
+class XmlAttributeCondition:
     attribute_name: str | ConfigProxy
     expected_value: Any
     when_missing_raise_exception: bool = False
@@ -43,7 +45,7 @@ class XmlAttributeCondition(NamedTuple):
                 ) from ex
 
         return attribute_condition
-    
+
     def evaluate_attribute_name(self, config: ParsedConfigNamespace) -> None:
         self.attribute_name = get_configurable_value(self.attribute_name, config)
 

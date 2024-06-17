@@ -136,7 +136,10 @@ class UmlModelPipe(XmlModelProcessingPipe):
 
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
-                name=self.config.ATTRIBUTES["name"], visibility=self.config.ATTRIBUTES["visibility"]
+                name=self.config.ATTRIBUTES["name"]
+            )
+            optional_attributes = AliasToXmlKey.from_kwargs(
+                visibility=self.config.ATTRIBUTES["visibility"]
             )
         except KeyError as ex:
             raise ValueError(
@@ -144,7 +147,7 @@ class UmlModelPipe(XmlModelProcessingPipe):
             )
 
         aliases_to_values = self._get_attributes_values_for_aliases(
-            data, mandatory_attributes
+            data, mandatory_attributes, optional_attributes
         )
         self.model_builder.construct_uml_model(**aliases_to_values)
 
@@ -164,8 +167,10 @@ class UmlPackagePipe(XmlModelProcessingPipe):
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
                 id=self.config.ATTRIBUTES["id"],
-                name=self.config.ATTRIBUTES["name"],
-                visibility=self.config.ATTRIBUTES["visibility"],
+                name=self.config.ATTRIBUTES["name"]
+            )
+            optional_attributes = AliasToXmlKey.from_kwargs(
+                visibility=self.config.ATTRIBUTES["visibility"]
             )
         except KeyError as ex:
             raise ValueError(
@@ -173,7 +178,7 @@ class UmlPackagePipe(XmlModelProcessingPipe):
             )
 
         aliases_to_values = self._get_attributes_values_for_aliases(
-            data, mandatory_attributes
+            data, mandatory_attributes, optional_attributes
         )
         self.model_builder.construct_uml_package(**aliases_to_values)
 

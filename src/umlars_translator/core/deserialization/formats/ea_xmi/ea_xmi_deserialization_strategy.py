@@ -34,9 +34,9 @@ class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
 
     def _build_processing_pipe(self) -> RootPipe:
         root_pipe = RootPipe()
-        # documentation_pipe = root_pipe.add_next(DocumentationPipe())
-        # self._build_uml_model_processing_pipe(root_pipe)
-        # self._build_extension_processing_pipe(root_pipe)
+        documentation_pipe = root_pipe.add_next(DocumentationPipe())
+        self._build_uml_model_processing_pipe(root_pipe)
+        self._build_extension_processing_pipe(root_pipe)
 
         return root_pipe
 
