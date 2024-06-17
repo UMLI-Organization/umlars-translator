@@ -54,7 +54,7 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
     def _create_new_processing_pipe(self) -> ModelProcessingPipe:
         self._pipe = self._build_processing_pipe()
         self.set_pipe_config(self.pipe)
-    
+
     def _create_new_format_detection_pipe(self) -> FormatDetectionPipe:
         self._format_detection_pipe = self._build_format_detection_pipe()
         self.set_pipe_config(self.format_detection_pipe)

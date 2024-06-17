@@ -38,7 +38,7 @@ def other_xmi_data_source():
     return InputProcessor().accept_input(
         """<?xml version="1.0" encoding="windows-1252"?>
 <xmi:XMI xmlns:xmi="http://schema.eclipse.com/spec/XMI/2.1" xmlns:uml="http://schema.eclipse.com/spec/UML/2.1" xmi:version="2.1">
-    <xmi:Documentation exporter="Not Enterprise Architect" exporterVersion="6.5" exporterID="1628"/>
+    <xmi:Documentation exporter-name="Not Enterprise Architect" exporterVersion="6.5" exporterID="1628"/>
     <uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
         <packagedElement xmi:type="uml:Package" xmi:id="EAPK_53FD35CE_1AC8_4eb3_837B_A43049AEA5FE" name="Basic Class Diagram with Attributes and Operations" visibility="public">
             <packagedElement xmi:type="uml:Class" xmi:id="EAID_2" name="EA_Class" visibility="public"/>
