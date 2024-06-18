@@ -7,7 +7,7 @@ from umlars_translator.core.deserialization.abstract.xml.xml_pipeline import (
     DataBatch,
     AliasToXmlKey,
 )
-from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException, UnableToMapError
+from umlars_translator.core.deserialization.exceptions import UnableToMapError
 from umlars_translator.core.configuration.config_proxy import Config
 
 
@@ -365,16 +365,17 @@ class UmlOperationParameterPipe(EaXmiModelProcessingPipe):
 
         try:
             self._map_value_from_key(aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING)
-        except UnableToMapError as ex:
+        except UnableToMapError:
             type_attr_value = aliases_to_values.pop("type")
-            self._logger.debug(f"Assuming type attribute value: {type_attr_value} is an ID reference.")
-            aliases_to_values["type_id"] = type_attr_value
+            if type_attr_value is not None:
+                self._logger.debug(f"Assuming type attribute value: {type_attr_value} is an ID reference.")
+                aliases_to_values["type_id"] = type_attr_value
 
         self.model_builder.construct_uml_operation_parameter(**aliases_to_values, operation_id = data_batch.parent_context["parent_id"])
         yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
 
 
-class AssociationPipe(EaXmiModelProcessingPipe):
+class UmlAssociationPipe(EaXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
     ATTRIBUTES_CONDITIONS = [
         XmlAttributeCondition(Config.ATTRIBUTES["type"], "uml:Association")
@@ -386,10 +387,10 @@ class AssociationPipe(EaXmiModelProcessingPipe):
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
                 id=self.config.ATTRIBUTES["id"],
-                name=self.config.ATTRIBUTES["name"],
             )
 
             optional_attributes = AliasToXmlKey.from_kwargs(
+                name=self.config.ATTRIBUTES["name"],
                 visibility=self.config.ATTRIBUTES["visibility"],
                 is_derived=self.config.ATTRIBUTES["is_derived"],
                 is_derived_union=self.config.ATTRIBUTES["is_derived_union"],
@@ -412,7 +413,7 @@ class AssociationPipe(EaXmiModelProcessingPipe):
         yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
 
 
-class AssociationMemberEndPipe(EaXmiModelProcessingPipe):
+class UmlAssociationMemberEndPipe(EaXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["member_end"]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
@@ -434,10 +435,10 @@ class AssociationMemberEndPipe(EaXmiModelProcessingPipe):
         self.model_builder.bind_end_to_association(
             end_id=aliases_to_values["idref"], association_id=data_batch.parent_context["parent_id"]
         )
-        yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
+        yield from self._create_data_batches(data)
 
 
-class AssociationOwnedEndPipe(EaXmiModelProcessingPipe):
+class UmlAssociationOwnedEndPipe(EaXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["owned_end"]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
