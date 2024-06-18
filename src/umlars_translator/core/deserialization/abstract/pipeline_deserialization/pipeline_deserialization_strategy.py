@@ -10,7 +10,7 @@ from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pi
     ModelProcessingPipe,
     FormatDetectionPipe,
 )
-from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException
+from umlars_translator.core.deserialization.exceptions import InvalidFormatException
 
 
 class PipelineDeserializationStrategy(DeserializationStrategy):
@@ -76,7 +76,7 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
         """
         try:
             parsed_data = self._parse_format_data(format_data)
-        except UnsupportedFormatException as ex:
+        except InvalidFormatException as ex:
             message = f"Unable to parse format data: {ex}"
             self._logger.info(message)
             return False

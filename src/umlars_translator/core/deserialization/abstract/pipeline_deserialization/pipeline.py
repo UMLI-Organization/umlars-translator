@@ -5,7 +5,7 @@ from logging import Logger
 from kink import inject
 
 from umlars_translator.core.deserialization.exceptions import (
-    UnsupportedFormatException, ImproperlyInstantiatedObjectError
+    InvalidFormatException, UnsupportedFormatException, ImproperlyInstantiatedObjectError
 )
 from umlars_translator.core.model.abstract.uml_model import IUmlModel
 from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
@@ -185,6 +185,7 @@ class ModelProcessingPipe(ABC):
         Should be overriden in subclasses if needed.
         """
 
+
 class FormatDetectionPipe(ModelProcessingPipe):
     def is_supported_format(
         self,
@@ -202,12 +203,9 @@ class FormatDetectionPipe(ModelProcessingPipe):
         try:
             self.process(data_batch=data_batch)
             return True
+        except InvalidFormatException as ex:
+            self._logger.debug(f"Format is not invalid - pipeline processing failed: {ex}")
+            return False
         except UnsupportedFormatException as ex:
             self._logger.debug(f"Format is not supported: {ex}")
             return False
-
-    @abstractmethod
-    def _process(self, data_batch: Optional[DataBatch] = None) -> Iterator[DataBatch]:
-        """
-        Throws UnsupportedFormatException if the format indicators are invalid in regards to the represented format.
-        """

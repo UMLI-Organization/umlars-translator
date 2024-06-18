@@ -21,9 +21,7 @@ class EaXmiDetectionPipe(EaXmiFormatDetectionPipe):
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
-        data_root = self._get_root_element(
-            data, exception_on_parsing_error=UnsupportedFormatException
-        )
+        data_root = self._get_root_element(data)
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
                 xmi_version=self.config.ATTRIBUTES["xmi_version"]
@@ -36,7 +34,6 @@ class EaXmiDetectionPipe(EaXmiFormatDetectionPipe):
         aliases_to_values = self._get_attributes_values_for_aliases(
             data_root,
             mandatory_attributes,
-            exception_on_parsing_error=UnsupportedFormatException,
         )
 
         if aliases_to_values["xmi_version"] != self.__class__.EXPECTED_XMI_VERSION:
@@ -65,7 +62,6 @@ class EaXmiDocumentationDetectionPipe(EaXmiFormatDetectionPipe):
         aliases_to_values = self._get_attributes_values_for_aliases(
             data,
             mandatory_attributes,
-            exception_on_parsing_error=UnsupportedFormatException,
         )
 
         if aliases_to_values["exporter"] != self.__class__.EXPECTED_EXPORTER:

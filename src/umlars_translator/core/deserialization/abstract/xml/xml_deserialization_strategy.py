@@ -6,7 +6,7 @@ from umlars_translator.core.deserialization.data_source import DataSource
 from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline_deserialization_strategy import (
     PipelineDeserializationStrategy,
 )
-from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException
+from umlars_translator.core.deserialization.exceptions import InvalidFormatException
 from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
 
 
@@ -24,7 +24,7 @@ class XmlDeserializationStrategy(PipelineDeserializationStrategy):
         except ET.ParseError as ex:
             error_message = f"Error parsing XML data from {data_source}: {ex}"
             self._logger.error(error_message)
-            raise UnsupportedFormatException(error_message)
+            raise InvalidFormatException(error_message)
 
     def _get_element_tree(self, source: DataSource) -> ET.ElementTree:
         return (

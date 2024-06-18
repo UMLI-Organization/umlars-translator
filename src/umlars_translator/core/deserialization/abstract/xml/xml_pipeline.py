@@ -137,7 +137,6 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         data: ET.Element,
         mandatory_attributes: Optional[Iterator[AliasToXmlKey]] = None,
         optional_attributes: Optional[Iterator[AliasToXmlKey]] = None,
-        exception_on_parsing_error: type = InvalidFormatException,
     ) -> dict[str, str]:
         kwargs = {}
         try:
@@ -146,8 +145,8 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
                     for alias, xml_key in mandatory_attributes:
                         kwargs[alias] = data.attrib[xml_key]
                 except KeyError as ex:
-                    raise exception_on_parsing_error(
-                        f"Structure of the data format was invalid. Error: {str(ex)}"
+                    raise InvalidFormatException(
+                        f"Structure of the data format was invalid. Missing key {xml_key}. Error: {str(ex)}"
                     )
 
             if optional_attributes is not None:
@@ -160,21 +159,20 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
             else:
                 error_message = f"Unexpected error occurred while processing xml data. Received: {data} of type {type(data)}"
             self._logger.error(error_message)
-            raise exception_on_parsing_error(error_message) from ex
+            raise InvalidFormatException(error_message) from ex
 
         return kwargs
 
     def _get_root_element(
         self,
         data: ET.ElementTree,
-        exception_on_parsing_error: type = InvalidFormatException,
     ) -> ET.Element:
         try:
             return data.getroot()
         except AttributeError as ex:
             error_message = f"Xml processing pipeline didn't receive parsed xml data. Received: {data} of type {type(data)}"
             self._logger.error(error_message)
-            raise exception_on_parsing_error(error_message) from ex
+            raise InvalidFormatException(error_message) from ex
 
     def _map_value_from_key(
         self,

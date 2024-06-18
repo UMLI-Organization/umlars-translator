@@ -132,7 +132,7 @@ class DocumentationPipe(EaXmiModelProcessingPipe):
             )
         except KeyError as ex:
             raise ValueError(
-                f"Configuration of the data format was invalid. Error: {str(ex)}"
+                f"Configuration of the data format was invalid. Missing key error: {str(ex)}"
             )
 
         aliases_to_values = self._get_attributes_values_for_aliases(
