@@ -12,12 +12,12 @@ from umlars_translator.core.utils.delayed_caller import (
 
 
 @inject
-class UmlModelBuilder(IUmlModelBuilder, DelayedCaller):
+class UmlModelBuilder(DelayedCaller, IUmlModelBuilder):
     def __init__(
         self, model: Optional[UmlModel] = None, logger: Optional[Logger] = None
     ) -> None:
         self._logger = logger.getChild(self.__class__.__name__)
-        # super(DelayedCaller, self).__init__(logger=self._logger)
+        super().__init__(logger=self._logger)
 
         self._model = model if model is not None else UmlModel()
 
