@@ -4,7 +4,7 @@ from logging import Logger
 from kink import inject
 
 from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
-from umlars_translator.core.model.umlars_model.umlars_uml_model import UmlarsUmlModel
+from umlars_translator.core.model.umlars_model.umlars_uml_model import UmlModel
 from umlars_translator.core.utils.delayed_caller import (
     DelayedCaller,
     evaluate_elements_afterwards,
@@ -12,21 +12,21 @@ from umlars_translator.core.utils.delayed_caller import (
 
 
 @inject
-class UmlarsUmlModelBuilder(IUmlModelBuilder, DelayedCaller):
+class UmlModelBuilder(IUmlModelBuilder, DelayedCaller):
     def __init__(
-        self, model: Optional[UmlarsUmlModel] = None, logger: Optional[Logger] = None
+        self, model: Optional[UmlModel] = None, logger: Optional[Logger] = None
     ) -> None:
         self._logger = logger.getChild(self.__class__.__name__)
         # super(DelayedCaller, self).__init__(logger=self._logger)
 
-        self._model = model if model is not None else UmlarsUmlModel()
+        self._model = model if model is not None else UmlModel()
 
-    def build(self) -> UmlarsUmlModel:
+    def build(self) -> UmlModel:
         self._evaluate_elements()
         return self._model
 
     def clear(self) -> None:
-        self._model = UmlarsUmlModel()
+        self._model = UmlModel()
 
     # def __getattr__(self, name):
     #     def method(*args, **kwargs):

@@ -15,7 +15,7 @@ from umlars_translator.core.deserialization.exceptions import (
     UnsupportedFormatException,
     InvalidFormatException,
 )
-from umlars_translator.core.model.umlars_model.umlars_uml_model_builder import UmlarsUmlModelBuilder
+from umlars_translator.core.model.umlars_model.umlars_uml_model_builder import UmlModelBuilder
 
 
 FILES_WITH_EA_XMI_FORMAT = [
@@ -27,7 +27,7 @@ FILES_WITH_EA_XMI_FORMAT = [
 
 @pytest.fixture
 def umlars_model_builder():
-    return UmlarsUmlModelBuilder()
+    return UmlModelBuilder()
 
 
 @pytest.fixture
