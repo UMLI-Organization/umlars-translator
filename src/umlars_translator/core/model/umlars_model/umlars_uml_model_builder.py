@@ -28,15 +28,13 @@ class UmlModelBuilder(DelayedCaller, IUmlModelBuilder):
     def clear(self) -> None:
         self._model = UmlModel()
 
-    # def __getattr__(self, name):
-    #     def method(*args, **kwargs):
-    #         print(f"Method called: {name}")
-    #         print(f"Args: {args}")
-    #         print(f"Kwargs: {kwargs}")
-    #         self._logger.debug(f"Method called: {name}({args}, {kwargs})")
-    #         return None
+    # TODO: remove after final definition of the builder interface
+    def __getattr__(self, name: str) -> "IUmlModelBuilder":
+        def method(*args, **kwargs):
+            self._logger.debug(f"Method called: {name}({args}, {kwargs})")
+            return self
 
-    #     return method
+        return method
 
 
 # #TODO: evaluate_elements_shouldnt_suppose_self - just be method of delayed caller and evaluate after pipe's process

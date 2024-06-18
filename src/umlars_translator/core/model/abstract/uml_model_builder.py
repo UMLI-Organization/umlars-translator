@@ -69,10 +69,3 @@ class IUmlModelBuilder(ABC):
     @log_calls_and_return_self()
     def construct_uml_package(self, *args, **kwargs) -> "IUmlModelBuilder":
         ...
-
-    # def __getattr__(self, name: str) -> "IUmlModelBuilder":
-    #     def method(*args, **kwargs):
-    #         self._logger.debug(f"Method called: {name}({args}, {kwargs})")
-    #         return self
-
-    #     return method
