@@ -83,4 +83,8 @@ class ModelDeserializer:
     def get_strategy_for_source(
         self, source: DataSource, from_format: Optional[SupportedFormat] = None
     ) -> DeserializationStrategy:
-        return self._factory.get_strategy(format_data_source=source, format=from_format, model_builder=self._model_builder)
+        return self._factory.get_strategy(
+            format_data_source=source,
+            format=from_format,
+            model_builder=self._model_builder,
+        )

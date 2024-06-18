@@ -13,40 +13,56 @@ from umlars_translator.core.configuration.config_proxy import Config
 
 class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
     def _process_type_child(self, data_batch: DataBatch) -> dict[str, Any]:
-            data = data_batch.data
-            attribute_type_data = data.find(self.config.TAGS["type"])
-            if attribute_type_data is None:
-                return {}
-            
-            try:
-                optional_attributes = AliasToXmlKey.from_kwargs(
-                    href=self.config.ATTRIBUTES["href"],
-                    idref=self.config.ATTRIBUTES["idref"],
-                    type=self.config.ATTRIBUTES["type"]
-                )
-            except KeyError as ex:
-                raise ValueError(
-                    f"Configuration of the data format was invalid. Error: {str(ex)}"
-                )
+        data = data_batch.data
+        attribute_type_data = data.find(self.config.TAGS["type"])
+        if attribute_type_data is None:
+            return {}
 
-            aliases_to_values = self._get_attributes_values_for_aliases(
-                attribute_type_data, optional_attributes=optional_attributes
+        try:
+            optional_attributes = AliasToXmlKey.from_kwargs(
+                href=self.config.ATTRIBUTES["href"],
+                idref=self.config.ATTRIBUTES["idref"],
+                type=self.config.ATTRIBUTES["type"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
             )
 
-            self._map_value_from_key(aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING, raise_when_missing=False)
-            self._process_type_metadata(aliases_to_values)
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            attribute_type_data, optional_attributes=optional_attributes
+        )
 
-            return aliases_to_values
+        self._map_value_from_key(
+            aliases_to_values,
+            "type",
+            self.config.EA_TYPE_ATTRIBUTE_MAPPING,
+            raise_when_missing=False,
+        )
+        self._process_type_metadata(aliases_to_values)
+
+        return aliases_to_values
 
     def _process_type_metadata(self, aliases_to_values: dict[str, Any]) -> None:
         aliases_to_values["type_metadata"] = {}
-        self._map_value_from_key(aliases_to_values, "href", self.config.EA_HREF_ATTRIBUTE_MAPPING, raise_when_missing=False)
-        aliases_to_values["type_metadata"].update({"referenced_type_href": aliases_to_values.pop("href", None)})
-        aliases_to_values["type_metadata"].update({"referenced_type_id": aliases_to_values.pop("idref", None)})
+        self._map_value_from_key(
+            aliases_to_values,
+            "href",
+            self.config.EA_HREF_ATTRIBUTE_MAPPING,
+            raise_when_missing=False,
+        )
+        aliases_to_values["type_metadata"].update(
+            {"referenced_type_href": aliases_to_values.pop("href", None)}
+        )
+        aliases_to_values["type_metadata"].update(
+            {"referenced_type_id": aliases_to_values.pop("idref", None)}
+        )
 
     def _process_attribute_multiplicity(self, data_batch: DataBatch) -> dict[str, Any]:
-        return self._process_attribute_lower_value(data_batch) | self._process_attribute_upper_value(data_batch)
-    
+        return self._process_attribute_lower_value(
+            data_batch
+        ) | self._process_attribute_upper_value(data_batch)
+
     def _process_attribute_lower_value(self, data_batch: DataBatch) -> dict[str, Any]:
         data = data_batch.data
         lower_value_data = data.find(self.config.TAGS["lower_value"])
@@ -55,7 +71,9 @@ class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
 
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
-                id=self.config.ATTRIBUTES["id"], value=self.config.ATTRIBUTES["value"], type=self.config.ATTRIBUTES["type"]
+                id=self.config.ATTRIBUTES["id"],
+                value=self.config.ATTRIBUTES["value"],
+                type=self.config.ATTRIBUTES["type"],
             )
         except KeyError as ex:
             raise ValueError(
@@ -66,8 +84,10 @@ class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
             lower_value_data, mandatory_attributes
         )
 
-        self._map_value_from_key(aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING)
-        
+        self._map_value_from_key(
+            aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING
+        )
+
         return aliases_to_values
 
     def _process_attribute_upper_value(self, data_batch: DataBatch) -> dict[str, Any]:
@@ -75,10 +95,12 @@ class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
         upper_value_data = data.find(self.config.TAGS["upper_value"])
         if upper_value_data is None:
             return {}
-        
+
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
-                id=self.config.ATTRIBUTES["id"], value=self.config.ATTRIBUTES["value"], type=self.config.ATTRIBUTES["type"]
+                id=self.config.ATTRIBUTES["id"],
+                value=self.config.ATTRIBUTES["value"],
+                type=self.config.ATTRIBUTES["type"],
             )
         except KeyError as ex:
             raise ValueError(
@@ -88,8 +110,10 @@ class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
         aliases_to_values = self._get_attributes_values_for_aliases(
             upper_value_data, mandatory_attributes
         )
-        self._map_value_from_key(aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING)
-        
+        self._map_value_from_key(
+            aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING
+        )
+
         return aliases_to_values
 
 
@@ -185,8 +209,7 @@ class UmlPackagePipe(EaXmiModelProcessingPipe):
 
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
-                id=self.config.ATTRIBUTES["id"],
-                name=self.config.ATTRIBUTES["name"]
+                id=self.config.ATTRIBUTES["id"], name=self.config.ATTRIBUTES["name"]
             )
             optional_attributes = AliasToXmlKey.from_kwargs(
                 visibility=self.config.ATTRIBUTES["visibility"]
@@ -207,7 +230,9 @@ class UmlPackagePipe(EaXmiModelProcessingPipe):
 class UmlClassPipe(EaXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
     ATTRIBUTES_CONDITIONS = [
-        XmlAttributeCondition(Config.ATTRIBUTES["type"], Config.EaPackagedElementTypes.CLASS)
+        XmlAttributeCondition(
+            Config.ATTRIBUTES["type"], Config.EaPackagedElementTypes.CLASS
+        )
     ]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
@@ -236,7 +261,9 @@ class UmlClassPipe(EaXmiModelProcessingPipe):
 class UmlInterfacePipe(EaXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
     ATTRIBUTES_CONDITIONS = [
-        XmlAttributeCondition(Config.ATTRIBUTES["type"], Config.EaPackagedElementTypes.INTERFACE)
+        XmlAttributeCondition(
+            Config.ATTRIBUTES["type"], Config.EaPackagedElementTypes.INTERFACE
+        )
     ]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
@@ -301,7 +328,9 @@ class UmlAttributePipe(EaXmiModelProcessingPipe):
         aliases_to_values.update(self._process_attribute_multiplicity(data_batch))
 
         self.model_builder.construct_uml_attribute(**aliases_to_values)
-        yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
+        yield from self._create_data_batches(
+            data, parent_context={"parent_id": aliases_to_values["id"]}
+        )
 
 
 class UmlOperationPipe(EaXmiModelProcessingPipe):
@@ -336,7 +365,9 @@ class UmlOperationPipe(EaXmiModelProcessingPipe):
         )
 
         self.model_builder.construct_uml_operation(**aliases_to_values)
-        yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
+        yield from self._create_data_batches(
+            data, parent_context={"parent_id": aliases_to_values["id"]}
+        )
 
 
 class UmlOperationParameterPipe(EaXmiModelProcessingPipe):
@@ -364,15 +395,23 @@ class UmlOperationParameterPipe(EaXmiModelProcessingPipe):
         )
 
         try:
-            self._map_value_from_key(aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING)
+            self._map_value_from_key(
+                aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING
+            )
         except UnableToMapError:
             type_attr_value = aliases_to_values.pop("type")
             if type_attr_value is not None:
-                self._logger.debug(f"Assuming type attribute value: {type_attr_value} is an ID reference.")
+                self._logger.debug(
+                    f"Assuming type attribute value: {type_attr_value} is an ID reference."
+                )
                 aliases_to_values["type_id"] = type_attr_value
 
-        self.model_builder.construct_uml_operation_parameter(**aliases_to_values, operation_id = data_batch.parent_context["parent_id"])
-        yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
+        self.model_builder.construct_uml_operation_parameter(
+            **aliases_to_values, operation_id=data_batch.parent_context["parent_id"]
+        )
+        yield from self._create_data_batches(
+            data, parent_context={"parent_id": aliases_to_values["id"]}
+        )
 
 
 class UmlAssociationPipe(EaXmiModelProcessingPipe):
@@ -410,7 +449,9 @@ class UmlAssociationPipe(EaXmiModelProcessingPipe):
         )
 
         self.model_builder.construct_uml_association(**aliases_to_values)
-        yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
+        yield from self._create_data_batches(
+            data, parent_context={"parent_id": aliases_to_values["id"]}
+        )
 
 
 class UmlAssociationMemberEndPipe(EaXmiModelProcessingPipe):
@@ -433,7 +474,8 @@ class UmlAssociationMemberEndPipe(EaXmiModelProcessingPipe):
         )
 
         self.model_builder.bind_end_to_association(
-            end_id=aliases_to_values["idref"], association_id=data_batch.parent_context["parent_id"]
+            end_id=aliases_to_values["idref"],
+            association_id=data_batch.parent_context["parent_id"],
         )
         yield from self._create_data_batches(data)
 
@@ -469,12 +511,16 @@ class UmlAssociationOwnedEndPipe(EaXmiModelProcessingPipe):
         aliases_to_values = self._get_attributes_values_for_aliases(
             data, mandatory_attributes, optional_attributes
         )
-        
+
         aliases_to_values.update(self._process_type_child(data_batch))
         aliases_to_values.update(self._process_attribute_multiplicity(data_batch))
 
-        self.model_builder.construct_uml_association_end(**aliases_to_values, association_id=data_batch.parent_context["parent_id"])
-        yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
+        self.model_builder.construct_uml_association_end(
+            **aliases_to_values, association_id=data_batch.parent_context["parent_id"]
+        )
+        yield from self._create_data_batches(
+            data, parent_context={"parent_id": aliases_to_values["id"]}
+        )
 
 
 class ExtensionPipe(EaXmiModelProcessingPipe):
@@ -502,7 +548,9 @@ class DiagramPipe(EaXmiModelProcessingPipe):
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
         try:
-            mandatory_attributes = AliasToXmlKey.from_kwargs(id=self.config.ATTRIBUTES["id"])
+            mandatory_attributes = AliasToXmlKey.from_kwargs(
+                id=self.config.ATTRIBUTES["id"]
+            )
             aliases_to_values = self._get_attributes_values_for_aliases(
                 data, mandatory_attributes
             )

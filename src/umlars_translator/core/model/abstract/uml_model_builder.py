@@ -13,10 +13,13 @@ def log_calls_and_return_self(log_level: int = logging.DEBUG) -> Callable:
     def inner(method: Callable) -> Callable:
         @wraps(method)
         def wrapper(self, *args, **kwargs) -> Any:
-            self._logger.log(log_level, f"Method called: {method.__name__}({args}, {kwargs})")
+            self._logger.log(
+                log_level, f"Method called: {method.__name__}({args}, {kwargs})"
+            )
             return self
 
         return wrapper
+
     return inner
 
 
@@ -24,9 +27,10 @@ def log_calls_and_return_self(log_level: int = logging.DEBUG) -> Callable:
 class IUmlModelBuilder(ABC):
     """
     Interface required by the final UmlBuilder implementation.
-    Main requirement for a subclass is to provide methods `build` and `clear`. 
+    Main requirement for a subclass is to provide methods `build` and `clear`.
     If other methods are not implemented, calling them won't disrupt the process and the call wll just be logged.
     """
+
     _logger: Logger
     _model: IUmlModel
 

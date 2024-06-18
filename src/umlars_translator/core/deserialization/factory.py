@@ -42,7 +42,10 @@ class DeserializationStrategyFactory:
         Method used to retrieve a strategy for a specific format name.
         Using positional arguments is not allowed due to complexity of the method.
         """
-        def create_strategy(stategy_class: type["DeserializationStrategy"]) -> DeserializationStrategy: 
+
+        def create_strategy(
+            stategy_class: type["DeserializationStrategy"],
+        ) -> DeserializationStrategy:
             return stategy_class(model_builder=model_builder, **kwargs)
 
         strategy_class = (
@@ -55,9 +58,9 @@ class DeserializationStrategyFactory:
         strategies_instances_for_data = [
             strategy_instance
             for strategy_class in self._registered_strategies.values()
-            if (strategy_instance := create_strategy(strategy_class)).can_deserialize_format(
-                format, format_data_source
-            )
+            if (
+                strategy_instance := create_strategy(strategy_class)
+            ).can_deserialize_format(format, format_data_source)
         ]
 
         if len(strategies_instances_for_data) > 1:

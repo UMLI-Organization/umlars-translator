@@ -8,9 +8,15 @@ from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pi
     FormatDetectionPipe,
     DataBatch,
 )
-from umlars_translator.core.deserialization.exceptions import InvalidFormatException, UnableToMapError
+from umlars_translator.core.deserialization.exceptions import (
+    InvalidFormatException,
+    UnableToMapError,
+)
 from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
-from umlars_translator.core.configuration.config_proxy import ConfigProxy, get_configurable_value
+from umlars_translator.core.configuration.config_proxy import (
+    ConfigProxy,
+    get_configurable_value,
+)
 
 
 class AliasToXmlKey(NamedTuple):
@@ -60,7 +66,7 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         cls,
     ) -> Optional[Iterator[XmlAttributeCondition | Callable]]:
         return cls.ATTRIBUTES_CONDITIONS
-    
+
     @classmethod
     def get_associated_xml_tag(cls) -> str:
         return cls.ASSOCIATED_XML_TAG
@@ -75,11 +81,17 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         predecessor: Optional["ModelProcessingPipe"] = None,
         model_builder: Optional[IUmlModelBuilder] = None,
         config: Optional[ParsedConfigNamespace] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(successors, predecessor, model_builder, config, **kwargs)
-        self._associated_xml_tag = xml_tag if xml_tag is not None else self.__class__.get_associated_xml_tag()
-        self._attributes_conditions = attributes_conditions if attributes_conditions is not None else self.__class__.get_attributes_conditions()
+        self._associated_xml_tag = (
+            xml_tag if xml_tag is not None else self.__class__.get_associated_xml_tag()
+        )
+        self._attributes_conditions = (
+            attributes_conditions
+            if attributes_conditions is not None
+            else self.__class__.get_attributes_conditions()
+        )
 
     def _configure(self) -> None:
         if self._config is not None:
@@ -88,9 +100,13 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
 
     def _configure_xml_tag(self) -> None:
         if self._associated_xml_tag is not None:
-            self._associated_xml_tag = get_configurable_value(self._associated_xml_tag, self.config)
+            self._associated_xml_tag = get_configurable_value(
+                self._associated_xml_tag, self.config
+            )
 
-    def _configure_attributes_conditions_callables(self) -> Iterator[XmlAttributeCondition | Callable]:
+    def _configure_attributes_conditions_callables(
+        self,
+    ) -> Iterator[XmlAttributeCondition | Callable]:
         if self._attributes_conditions is not None:
             self._attributes_conditions = [
                 self._configure_attribute_condition_callable(condition)
@@ -180,7 +196,7 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         key_to_map: str,
         mapping_dict: dict[str, Any],
         raise_when_missing: bool = True,
-        inplace: bool = True
+        inplace: bool = True,
     ) -> str | None:
         try:
             value_to_map = values_dict[key_to_map]
@@ -189,14 +205,15 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
                 values_dict[key_to_map] = mapped_value
             else:
                 return mapped_value
-            
+
         except KeyError as ex:
             if raise_when_missing:
                 raise UnableToMapError(
-                    f"Value {value_to_map} not found in mapping dict" 
+                    f"Value {value_to_map} not found in mapping dict"
                     f"or key {key_to_map} not found in values dict."
                 ) from ex
             return None
+
 
 class XmlFormatDetectionPipe(FormatDetectionPipe, XmlModelProcessingPipe):
     """

@@ -11,6 +11,7 @@ from umlars_translator.core.configuration.config_proxy import Config
 
 # The following classes are used to detect the format of the data
 
+
 class EaXmiFormatDetectionPipe(XmlFormatDetectionPipe):
     ...
 

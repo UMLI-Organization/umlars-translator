@@ -5,7 +5,9 @@ from logging import Logger
 from kink import inject
 
 from umlars_translator.core.deserialization.exceptions import (
-    InvalidFormatException, UnsupportedFormatException, ImproperlyInstantiatedObjectError
+    InvalidFormatException,
+    UnsupportedFormatException,
+    ImproperlyInstantiatedObjectError,
 )
 from umlars_translator.core.model.abstract.uml_model import IUmlModel
 from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
@@ -19,6 +21,7 @@ def require_instantiated_builder(method: Callable) -> Callable:
             self._logger.error(error_message)
             raise ImproperlyInstantiatedObjectError(error_message)
         return method(self, *args, **kwargs)
+
     return inner
 
 
@@ -64,8 +67,12 @@ class ModelProcessingPipe(ABC):
     @property
     def config(self) -> dict[str, Any]:
         return self._config
-    
-    def set_model_builder(self, new_model_builder: Optional[ConfigNamespace], update_successors: bool = True) -> None:
+
+    def set_model_builder(
+        self,
+        new_model_builder: Optional[ConfigNamespace],
+        update_successors: bool = True,
+    ) -> None:
         """
         Updates the config of the pipeline and all its successors.
         """
@@ -75,7 +82,12 @@ class ModelProcessingPipe(ABC):
             for successor in self._successors:
                 successor.set_model_builder(new_model_builder)
 
-    def set_config(self, new_config: Optional[ConfigNamespace], update_successors: bool = True, configure: bool = True) -> None:
+    def set_config(
+        self,
+        new_config: Optional[ConfigNamespace],
+        update_successors: bool = True,
+        configure: bool = True,
+    ) -> None:
         """
         Updates the config of the pipeline and all its successors.
         """
@@ -89,12 +101,15 @@ class ModelProcessingPipe(ABC):
                 successor.set_config(new_config)
 
     def add_next(
-        self, pipe: "ModelProcessingPipe", share_builder: bool = True, share_config: bool = True
+        self,
+        pipe: "ModelProcessingPipe",
+        share_builder: bool = True,
+        share_config: bool = True,
     ) -> "ModelProcessingPipe":
         self._successors.append(pipe)
         if share_builder:
             pipe.set_model_builder(self.model_builder, update_successors=True)
-        
+
         if share_config:
             pipe.set_config(self.config, update_successors=True)
 
@@ -204,7 +219,9 @@ class FormatDetectionPipe(ModelProcessingPipe):
             self.process(data_batch=data_batch)
             return True
         except InvalidFormatException as ex:
-            self._logger.debug(f"Format is not invalid - pipeline processing failed: {ex}")
+            self._logger.debug(
+                f"Format is not invalid - pipeline processing failed: {ex}"
+            )
             return False
         except UnsupportedFormatException as ex:
             self._logger.debug(f"Format is not supported: {ex}")

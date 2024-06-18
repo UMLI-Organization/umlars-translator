@@ -9,7 +9,7 @@ class ConfigNamespace(ABC):
 
 
 class ParsedConfigNamespace(ConfigNamespace):
-    def __init__(self, mapping_dict: Optional[dict[str, str]]=None) -> None:
+    def __init__(self, mapping_dict: Optional[dict[str, str]] = None) -> None:
         self._mapping_dict = mapping_dict if mapping_dict is not None else {}
         if self._mapping_dict:
             self._replace_placeholders()
@@ -17,7 +17,9 @@ class ParsedConfigNamespace(ConfigNamespace):
     def parse(self, mapping_dict: Optional[dict[str, str]] = None) -> None:
         self._replace_placeholders(mapping_dict)
 
-    def _replace_placeholders(self, namespace_patterns: Optional[dict[str, str]] = None) -> None:
+    def _replace_placeholders(
+        self, namespace_patterns: Optional[dict[str, str]] = None
+    ) -> None:
         if namespace_patterns is None:
             if self._mapping_dict:
                 namespace_patterns = self._mapping_dict
@@ -28,7 +30,9 @@ class ParsedConfigNamespace(ConfigNamespace):
             attr_value = getattr(self.__class__, attr_name)
             if not attr_name.startswith("__") and not callable(attr_value):
                 if isinstance(attr_value, dict):
-                    formatted_dict = self.__class__._format_dict(attr_value, namespace_patterns)
+                    formatted_dict = self.__class__._format_dict(
+                        attr_value, namespace_patterns
+                    )
                     setattr(self, attr_name, formatted_dict)
 
     @staticmethod

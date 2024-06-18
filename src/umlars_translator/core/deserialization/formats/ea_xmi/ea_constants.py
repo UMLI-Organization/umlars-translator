@@ -1,10 +1,15 @@
 from enum import Enum
 
-from umlars_translator.core.model.constants import DiagramType, PrimitiveTypes, UmlElementType
+from umlars_translator.core.model.constants import (
+    DiagramType,
+    PrimitiveTypes,
+    UmlElementType,
+)
 from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
 
 
 # TODO: split config into parsed config and normal - so u can use normal enums etc
+
 
 class EaXmiConfig(ParsedConfigNamespace):
     # TODO: use to check if namespace is allowed for data source
@@ -45,7 +50,6 @@ class EaXmiConfig(ParsedConfigNamespace):
         "upper_value": "upperValue",
     }
 
-
     ATTRIBUTES: dict[str, str] = {
         "id": "{{{xmi}}}id",
         "type": "{{{xmi}}}type",
@@ -81,7 +85,6 @@ class EaXmiConfig(ParsedConfigNamespace):
         "value": "value",
     }
 
-
     EA_EXTENDED_TAGS: dict[str, str] = {
         "elements": "elements",
         "element": "element",
@@ -116,12 +119,10 @@ class EaXmiConfig(ParsedConfigNamespace):
         "subject": "subject",
     }
 
-
     EA_DIAGRAMS_TYPES_MAPPING: dict[str, str] = {
         "Logical": DiagramType.CLASS,
         "Sequence": DiagramType.SEQUENCE,
     }
-
 
     EA_TYPE_ATTRIBUTE_MAPPING: dict[str, str] = {
         "uml:PrimitiveType": UmlElementType.PRIMITIVE_TYPE,
@@ -141,7 +142,6 @@ class EaXmiConfig(ParsedConfigNamespace):
         "EAJava_char": PrimitiveTypes.CHAR,
     }
 
-
     EA_HREF_ATTRIBUTE_MAPPING: dict[str, str] = {
         "http://schema.omg.org/spec/UML/2.1/uml.xml#Integer": PrimitiveTypes.INTEGER,
     }
@@ -159,4 +159,3 @@ class EaXmiConfig(ParsedConfigNamespace):
         DEPENDENCY = "uml:Dependency"
         GENERALIZATION = "uml:Generalization"
         REALIZATION = "uml:Realization"
-

@@ -18,7 +18,7 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
         self,
         pipe: Optional[ModelProcessingPipe] = None,
         format_detection_pipe: Optional[ModelProcessingPipe] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         self._pipe = pipe
         self._format_detection_pipe = format_detection_pipe

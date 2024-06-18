@@ -16,7 +16,9 @@ from umlars_translator.core.model.abstract.uml_model import IUmlModel
 from umlars_translator.core.deserialization.exceptions import (
     InvalidFormatException,
 )
-from umlars_translator.core.model.umlars_model.umlars_uml_model_builder import UmlModelBuilder
+from umlars_translator.core.model.umlars_model.umlars_uml_model_builder import (
+    UmlModelBuilder,
+)
 
 
 FILES_WITH_EA_XMI_FORMAT = [
@@ -36,7 +38,7 @@ def ea_xmi_deserialization_strategy_factory():
     class EaXmiDeserializationStrategyFactory:
         def create_strategy(self, model_builder):
             return EaXmiImportParsingStrategy(model_builder=model_builder)
-        
+
     return EaXmiDeserializationStrategyFactory()
 
 
@@ -81,49 +83,78 @@ def other_format_data_source():
     )
 
 
-def test_build_processing_pipe(umlars_model_builder, ea_xmi_deserialization_strategy_factory):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(model_builder=umlars_model_builder)
+def test_build_processing_pipe(
+    umlars_model_builder, ea_xmi_deserialization_strategy_factory
+):
+    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+        model_builder=umlars_model_builder
+    )
     pipe = strategy._build_processing_pipe()
     assert isinstance(pipe, RootPipe)
 
 
-def test_build_uml_model_processing_pipe(umlars_model_builder, ea_xmi_deserialization_strategy_factory):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(model_builder=umlars_model_builder)
+def test_build_uml_model_processing_pipe(
+    umlars_model_builder, ea_xmi_deserialization_strategy_factory
+):
+    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+        model_builder=umlars_model_builder
+    )
     root_pipe = strategy._build_processing_pipe()
     uml_model_pipe = strategy._build_uml_model_processing_pipe(root_pipe)
     assert isinstance(uml_model_pipe, UmlModelPipe)
 
 
-def test_build_extension_processing_pipe(umlars_model_builder, ea_xmi_deserialization_strategy_factory):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(model_builder=umlars_model_builder)
+def test_build_extension_processing_pipe(
+    umlars_model_builder, ea_xmi_deserialization_strategy_factory
+):
+    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+        model_builder=umlars_model_builder
+    )
     root_pipe = strategy._build_processing_pipe()
     extension_pipe = strategy._build_extension_processing_pipe(root_pipe)
     assert isinstance(extension_pipe, ExtensionPipe)
 
 
-def test_build_format_detection_pipe(umlars_model_builder, ea_xmi_deserialization_strategy_factory):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(model_builder=umlars_model_builder)
+def test_build_format_detection_pipe(
+    umlars_model_builder, ea_xmi_deserialization_strategy_factory
+):
+    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+        model_builder=umlars_model_builder
+    )
     detection_pipe = strategy._build_format_detection_pipe()
     assert isinstance(detection_pipe, EaXmiDetectionPipe)
 
 
-def test_when_retrieve_model_from_other_xmi_then_raise_exception(other_xmi_data_source, umlars_model_builder, ea_xmi_deserialization_strategy_factory):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(model_builder=umlars_model_builder)
+def test_when_retrieve_model_from_other_xmi_then_raise_exception(
+    other_xmi_data_source, umlars_model_builder, ea_xmi_deserialization_strategy_factory
+):
+    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+        model_builder=umlars_model_builder
+    )
     with pytest.raises(InvalidFormatException):
         strategy.retrieve_model(other_xmi_data_source)
 
 
-def test_when_retrieve_model_from_ea_xmi_then_return_model(ea_xmi_class_data_sources, umlars_model_builder, ea_xmi_deserialization_strategy_factory):
+def test_when_retrieve_model_from_ea_xmi_then_return_model(
+    ea_xmi_class_data_sources,
+    umlars_model_builder,
+    ea_xmi_deserialization_strategy_factory,
+):
     for data_source in ea_xmi_class_data_sources:
-        strategy = ea_xmi_deserialization_strategy_factory.create_strategy(model_builder=umlars_model_builder)
+        strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
         model = strategy.retrieve_model(data_source)
         assert isinstance(model, IUmlModel)
 
 
 def test_when_retrieve_model_from_other_format_then_raise_exception(
-    other_format_data_source, umlars_model_builder, ea_xmi_deserialization_strategy_factory
+    other_format_data_source,
+    umlars_model_builder,
+    ea_xmi_deserialization_strategy_factory,
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(model_builder=umlars_model_builder)
+    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+        model_builder=umlars_model_builder
+    )
     with pytest.raises(InvalidFormatException):
         strategy.retrieve_model(other_format_data_source)
-

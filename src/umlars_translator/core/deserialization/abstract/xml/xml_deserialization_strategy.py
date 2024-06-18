@@ -39,9 +39,15 @@ class XmlDeserializationStrategy(PipelineDeserializationStrategy):
 
     def _retrieve_namespaces(self, source: DataSource) -> dict[str, str]:
         namespaces = {}
-        xml_file_like_data_reference = source.file_path if source.file_path is not None else io.StringIO(source.retrieved_data)
+        xml_file_like_data_reference = (
+            source.file_path
+            if source.file_path is not None
+            else io.StringIO(source.retrieved_data)
+        )
 
-        for event, elem in ET.iterparse(xml_file_like_data_reference, events=('start-ns',)):
+        for event, elem in ET.iterparse(
+            xml_file_like_data_reference, events=("start-ns",)
+        ):
             prefix, uri = elem
             namespaces[prefix] = uri
         return namespaces

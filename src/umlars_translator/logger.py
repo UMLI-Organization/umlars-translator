@@ -7,7 +7,7 @@ def create_logger(level: int | str, logger_name: str, logs_file: str) -> Logger:
 
     if logger.hasHandlers():
         logger.handlers.clear()
-        
+
     stream_handler = StreamHandler()
     file_handler = FileHandler(logs_file)
     stream_handler.setLevel(level)

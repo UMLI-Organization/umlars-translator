@@ -21,11 +21,19 @@ class DeserializationStrategy(ABC):
     # TODO: improve this config approach - currently deserialization strategy has too much of a responsibility - some ConfigManager with dependency injection could be used
     CONFIG_NAMESPACE_CLASS: type["ConfigNamespace"]
 
-    def __init__(self, logger: Optional[Logger] = None,
-                 config_namespace: Optional[ConfigNamespace] = None, model_builder: Optional[IUmlModelBuilder] = None) -> None:
+    def __init__(
+        self,
+        logger: Optional[Logger] = None,
+        config_namespace: Optional[ConfigNamespace] = None,
+        model_builder: Optional[IUmlModelBuilder] = None,
+    ) -> None:
         self._logger = logger.getChild(self.__class__.__name__)
         self._model_builder = model_builder
-        self._config = config_namespace if config_namespace is not None else self.__class__.get_config_namespace_class()()
+        self._config = (
+            config_namespace
+            if config_namespace is not None
+            else self.__class__.get_config_namespace_class()()
+        )
 
     @property
     def config(self) -> ConfigNamespace:
@@ -40,7 +48,9 @@ class DeserializationStrategy(ABC):
         return cls.SUPPORTED_FORMAT_NAME
 
     @classmethod
-    def get_config_namespace_class(cls: type["DeserializationStrategy"]) -> type["ConfigNamespace"]:
+    def get_config_namespace_class(
+        cls: type["DeserializationStrategy"],
+    ) -> type["ConfigNamespace"]:
         return cls.CONFIG_NAMESPACE_CLASS
 
     def can_deserialize_format(

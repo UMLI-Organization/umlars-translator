@@ -1,4 +1,6 @@
-from umlars_translator.core.deserialization.formats.ea_xmi.ea_constants import EaXmiConfig
+from umlars_translator.core.deserialization.formats.ea_xmi.ea_constants import (
+    EaXmiConfig,
+)
 from umlars_translator.core.deserialization.abstract.xml.xml_deserialization_strategy import (
     XmiDeserializationStrategy,
 )
@@ -56,35 +58,47 @@ class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
         self._build_association_processing_pipe(package_pipe)
 
         return uml_model_pipe
-    
-    def _build_uml_class_processing_pipe(self, package_pipe: UmlPackagePipe) -> UmlClassPipe:
+
+    def _build_uml_class_processing_pipe(
+        self, package_pipe: UmlPackagePipe
+    ) -> UmlClassPipe:
         class_pipe = package_pipe.add_next(UmlClassPipe())
         self._build_classifier_processing_pipe(class_pipe)
 
         return class_pipe
 
-    def _build_uml_interface_processing_pipe(self, package_pipe: UmlPackagePipe) -> UmlInterfacePipe:
+    def _build_uml_interface_processing_pipe(
+        self, package_pipe: UmlPackagePipe
+    ) -> UmlInterfacePipe:
         interface_pipe = package_pipe.add_next(UmlInterfacePipe())
         self._build_classifier_processing_pipe(interface_pipe)
 
         return interface_pipe
 
-    def _build_uml_attribute_processing_pipe(self, parent_pipe: UmlClassPipe | UmlInterfacePipe) -> UmlAttributePipe:
+    def _build_uml_attribute_processing_pipe(
+        self, parent_pipe: UmlClassPipe | UmlInterfacePipe
+    ) -> UmlAttributePipe:
         attribute_pipe = parent_pipe.add_next(UmlAttributePipe())
         return attribute_pipe
-    
-    def _build_uml_operation_processing_pipe(self, parent_pipe: UmlClassPipe | UmlInterfacePipe) -> UmlOperationPipe:
+
+    def _build_uml_operation_processing_pipe(
+        self, parent_pipe: UmlClassPipe | UmlInterfacePipe
+    ) -> UmlOperationPipe:
         operation_pipe = parent_pipe.add_next(UmlOperationPipe())
         parameter_pipe = operation_pipe.add_next(UmlOperationParameterPipe())
         return operation_pipe
 
-    def _build_classifier_processing_pipe(self, parent_pipe: UmlClassPipe | UmlInterfacePipe) -> UmlClassPipe | UmlInterfacePipe:
+    def _build_classifier_processing_pipe(
+        self, parent_pipe: UmlClassPipe | UmlInterfacePipe
+    ) -> UmlClassPipe | UmlInterfacePipe:
         self._build_uml_attribute_processing_pipe(parent_pipe)
         self._build_uml_operation_processing_pipe(parent_pipe)
 
         return parent_pipe
-    
-    def _build_association_processing_pipe(self, parent_pipe: UmlPackagePipe) -> UmlAssociationPipe:
+
+    def _build_association_processing_pipe(
+        self, parent_pipe: UmlPackagePipe
+    ) -> UmlAssociationPipe:
         association_pipe = parent_pipe.add_next(UmlAssociationPipe())
         member_end_pipe = association_pipe.add_next(UmlAssociationMemberEndPipe())
         owned_end_pipe = association_pipe.add_next(UmlAssociationOwnedEndPipe())
