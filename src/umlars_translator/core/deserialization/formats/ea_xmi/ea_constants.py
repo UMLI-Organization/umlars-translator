@@ -22,7 +22,7 @@ class EaXmiConfig(ParsedConfigNamespace):
         "owned_attribute": "ownedAttribute",
         "sequence_behavior": "ownedBehavior",
         "attribute_type": "type",
-        "operation": "ownedOperation",
+        "owned_operation": "ownedOperation",
         "operation_parameter": "ownedParameter",
         "type": "type",
         "property_type": "type",
@@ -132,6 +132,11 @@ class EaXmiConfig(ParsedConfigNamespace):
         "uml:LiteralInteger": PrimitiveTypes.INTEGER,
         "uml:LiteralUnlimitedNatural": PrimitiveTypes.INTEGER,
         "EAnone_void": None,
+        "EAJava_boolean": PrimitiveTypes.BOOLEAN,
+        "EAJava_void": None,
+        "EAJava_int": PrimitiveTypes.INTEGER,
+        "EAJava_float": PrimitiveTypes.FLOAT,
+        "EAJava_char": PrimitiveTypes.CHAR,
     }
 
 

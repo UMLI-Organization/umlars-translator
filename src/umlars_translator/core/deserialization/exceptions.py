@@ -14,3 +14,9 @@ class ImproperlyInstantiatedObjectError(Exception):
     """
     Raised when one tries to call particular method on not fully or properly instantiated object.
     """
+
+
+class UnableToMapError(Exception):
+    """
+    Raised when value mapping fails.
+    """

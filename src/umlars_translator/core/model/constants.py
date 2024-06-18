@@ -24,6 +24,8 @@ class PrimitiveTypes(Enum):
 
     STRING = "String"
     INTEGER = "Integer"
+    FLOAT = "Float"
+    CHAR = "Char"
     BOOLEAN = "Boolean"
     REAL = "Real"
     UNLIMITED_NATURAL = "UnlimitedNatural"

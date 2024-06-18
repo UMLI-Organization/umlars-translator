@@ -8,7 +8,7 @@ from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pi
     FormatDetectionPipe,
     DataBatch,
 )
-from umlars_translator.core.deserialization.exceptions import InvalidFormatException
+from umlars_translator.core.deserialization.exceptions import InvalidFormatException, UnableToMapError
 from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
 from umlars_translator.core.configuration.config_proxy import ConfigProxy, get_configurable_value
 
@@ -181,18 +181,24 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         values_dict: dict[str, str],
         key_to_map: str,
         mapping_dict: dict[str, Any],
-        raise_when_missing: bool = True
-    ) -> str:
+        raise_when_missing: bool = True,
+        inplace: bool = True
+    ) -> str | None:
         try:
             value_to_map = values_dict[key_to_map]
-            values_dict[key_to_map] = mapping_dict[value_to_map]
+            mapped_value = mapping_dict[value_to_map]
+            if inplace:
+                values_dict[key_to_map] = mapped_value
+            else:
+                return mapped_value
+            
         except KeyError as ex:
             if raise_when_missing:
-                raise InvalidFormatException(
+                raise UnableToMapError(
                     f"Value {value_to_map} not found in mapping dict" 
                     f"or key {key_to_map} not found in values dict."
                 ) from ex
-
+            return None
 
 class XmlFormatDetectionPipe(FormatDetectionPipe, XmlModelProcessingPipe):
     """

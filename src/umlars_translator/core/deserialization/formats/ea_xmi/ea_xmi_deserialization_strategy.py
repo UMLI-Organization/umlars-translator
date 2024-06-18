@@ -6,9 +6,7 @@ from umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
 )
 from umlars_translator.core.deserialization.config import SupportedFormat
-from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_pipeline import (
-    EaXmiDetectionPipe,
-    EaXmiDocumentationDetectionPipe,
+from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
     RootPipe,
     DocumentationPipe,
     UmlModelPipe,
@@ -19,6 +17,11 @@ from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_pipeline impor
     DiagramsPipe,
     DiagramPipe,
     UmlAttributePipe,
+)
+
+from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
+    EaXmiDetectionPipe,
+    EaXmiDocumentationDetectionPipe,
 )
 
 
@@ -44,8 +47,7 @@ class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
         uml_model_pipe = root_pipe.add_next(UmlModelPipe())
         package_pipe = uml_model_pipe.add_next(UmlPackagePipe())
         self._build_uml_class_processing_pipe(package_pipe)
-        interface_pipe = package_pipe.add_next(UmlInterfacePipe())
-
+        self._build_uml_interface_processing_pipe(package_pipe)
 
         return uml_model_pipe
     
@@ -53,8 +55,14 @@ class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
         class_pipe = package_pipe.add_next(UmlClassPipe())
         attribute_pipe = class_pipe.add_next(UmlAttributePipe())
 
-
         return class_pipe
+
+    def _build_uml_interface_processing_pipe(self, package_pipe: RootPipe) -> UmlInterfacePipe:
+        interface_pipe = package_pipe.add_next(UmlInterfacePipe())
+        attribute_pipe = interface_pipe.add_next(UmlAttributePipe())
+
+        return interface_pipe
+
 
     def _build_extension_processing_pipe(self, root_pipe: RootPipe) -> ExtensionPipe:
         extension_pipe = root_pipe.add_next(ExtensionPipe())

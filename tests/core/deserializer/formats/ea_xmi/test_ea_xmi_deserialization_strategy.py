@@ -3,10 +3,12 @@ import pytest
 from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy import (
     EaXmiImportParsingStrategy,
 )
-from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_pipeline import (
+from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
     RootPipe,
     UmlModelPipe,
     ExtensionPipe,
+)
+from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
     EaXmiDetectionPipe,
 )
 from umlars_translator.core.deserialization.input_processor import InputProcessor
@@ -19,8 +21,8 @@ from umlars_translator.core.model.umlars_model.umlars_uml_model_builder import U
 
 
 FILES_WITH_EA_XMI_FORMAT = [
-    # "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_basic.xml",
-    # "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_library.xml",
+    "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_basic.xml",
+    "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_library.xml",
     "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_car-model-xmi-21.xml",
 ]
 
