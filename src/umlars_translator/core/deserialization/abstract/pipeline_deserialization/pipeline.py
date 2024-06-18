@@ -1,15 +1,25 @@
 from abc import ABC, abstractmethod
-from typing import Optional, NamedTuple, Any, Iterator
+from typing import Optional, NamedTuple, Any, Iterator, Callable
 from logging import Logger
 
 from kink import inject
 
 from umlars_translator.core.deserialization.exceptions import (
-    UnsupportedFormatException,
+    UnsupportedFormatException, ImproperlyInstantiatedObjectError
 )
-from umlars_translator.core.model.uml_model import UmlModel
-from umlars_translator.core.model.uml_model_builder import UmlModelBuilder
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
+from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 from umlars_translator.core.configuration.config_namespace import ConfigNamespace
+
+
+def require_instantiated_builder(method: Callable) -> Callable:
+    def inner(self: "ModelProcessingPipe", *args, **kwargs) -> Any:
+        if self.model_builder is None:
+            error_message = f"Method {method.__name__} requires the builder attribute to contain the properly instantiated UmlModelBuilder. Erro in class: {self.__class__.__name__}"
+            self._logger.error(error_message)
+            raise ImproperlyInstantiatedObjectError(error_message)
+        return method(self, *args, **kwargs)
+    return inner
 
 
 class DataBatch(NamedTuple):
@@ -29,23 +39,19 @@ class ModelProcessingPipe(ABC):
         self,
         successors: Optional[Iterator["ModelProcessingPipe"]] = None,
         predecessor: Optional["ModelProcessingPipe"] = None,
-        model_builder: Optional[UmlModelBuilder] = None,
+        model_builder: Optional[IUmlModelBuilder] = None,
         config: Optional[ConfigNamespace] = None,
         logger: Optional[Logger] = None,
     ) -> None:
         self._logger = logger.getChild(self.__class__.__name__)
         self._successors = successors if successors is not None else []
         self._predecessor = predecessor
-        self._model_builder = model_builder or UmlModelBuilder()
+        self._model_builder = model_builder
         self.set_config(config)
 
     @property
-    def model_builder(self) -> UmlModelBuilder:
+    def model_builder(self) -> IUmlModelBuilder:
         return self._model_builder
-
-    @model_builder.setter
-    def model_builder(self, new_model_builder: UmlModelBuilder) -> None:
-        self._model_builder = new_model_builder
 
     @property
     def predecessor(self) -> Optional["ModelProcessingPipe"]:
@@ -58,6 +64,16 @@ class ModelProcessingPipe(ABC):
     @property
     def config(self) -> dict[str, Any]:
         return self._config
+    
+    def set_model_builder(self, new_model_builder: Optional[ConfigNamespace], update_successors: bool = True) -> None:
+        """
+        Updates the config of the pipeline and all its successors.
+        """
+        self._model_builder = new_model_builder
+
+        if update_successors:
+            for successor in self._successors:
+                successor.set_model_builder(new_model_builder)
 
     def set_config(self, new_config: Optional[ConfigNamespace], update_successors: bool = True, configure: bool = True) -> None:
         """
@@ -77,10 +93,10 @@ class ModelProcessingPipe(ABC):
     ) -> "ModelProcessingPipe":
         self._successors.append(pipe)
         if share_builder:
-            pipe.model_builder = self.model_builder
+            pipe.set_model_builder(self.model_builder, update_successors=True)
         
         if share_config:
-            pipe.set_config(self.config)
+            pipe.set_config(self.config, update_successors=True)
 
         pipe.add_predecessor(self)
         return pipe
@@ -121,7 +137,8 @@ class ModelProcessingPipe(ABC):
             for successor in self._successors:
                 successor.process_if_possible(data_batch=data_batch)
 
-    def get_model(self) -> UmlModel:
+    @require_instantiated_builder
+    def get_model(self) -> IUmlModel:
         return self.model_builder.build()
 
     def can_run_for(

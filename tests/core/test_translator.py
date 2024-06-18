@@ -1,7 +1,7 @@
 from pytest import fixture
 
 from umlars_translator.core.translator import ModelTranslator
-from umlars_translator.core.model.uml_model import UmlModel
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
 
 # test_when_given_ea_data_deserialization_successful
 
@@ -37,4 +37,4 @@ def test_when_given_ea_format_deserialization_successful(ea_data, translator) ->
     result = translator.translate(ea_data)
 
     # Then
-    assert isinstance(result, UmlModel)
+    assert isinstance(result, IUmlModel)

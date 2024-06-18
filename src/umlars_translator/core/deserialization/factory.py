@@ -1,14 +1,14 @@
-from typing import Type, Optional, TYPE_CHECKING
+from typing import Type, Optional, Dict
 
 from kink import inject
 
 from umlars_translator.core.deserialization.config import SupportedFormat
 from umlars_translator.core.deserialization.data_source import DataSource
+from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 
-if TYPE_CHECKING:
-    from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
-        DeserializationStrategy,
-    )
+from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
+    DeserializationStrategy,
+)
 
 
 class DeserializationStrategyFactory:
@@ -17,7 +17,7 @@ class DeserializationStrategyFactory:
     """
 
     def __init__(self) -> None:
-        self._registered_strategies = {}
+        self._registered_strategies: Dict[SupportedFormat, DeserializationStrategy] = {}
 
     def register_strategy(
         self, strategy_class: Type["DeserializationStrategy"]
@@ -34,24 +34,28 @@ class DeserializationStrategyFactory:
         self,
         *,
         format: Optional[SupportedFormat] = None,
-        format_data_source: Optional[DataSource],
+        format_data_source: Optional[DataSource] = None,
+        model_builder: Optional[IUmlModelBuilder] = None,
         **kwargs,
     ) -> Optional["DeserializationStrategy"]:
         """
         Method used to retrieve a strategy for a specific format name.
         Using positional arguments is not allowed due to complexity of the method.
         """
+        def create_strategy(stategy_class: type["DeserializationStrategy"]) -> DeserializationStrategy: 
+            return stategy_class(model_builder=model_builder, **kwargs)
+
         strategy_class = (
             self._registered_strategies.get(format) if format is not None else None
         )
 
         if strategy_class is not None:
-            return strategy_class(**kwargs)
+            return create_strategy(strategy_class)
 
         strategies_instances_for_data = [
             strategy_instance
             for strategy_class in self._registered_strategies.values()
-            if (strategy_instance := strategy_class(**kwargs)).can_deserialize_format(
+            if (strategy_instance := create_strategy(strategy_class)).can_deserialize_format(
                 format, format_data_source
             )
         ]

@@ -2,9 +2,9 @@ from xml.etree import ElementTree as ET
 from typing import Callable, Iterator, Optional, NamedTuple, Any
 from dataclasses import dataclass
 
+from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
     ModelProcessingPipe,
-    UmlModelBuilder,
     FormatDetectionPipe,
     DataBatch,
 )
@@ -73,7 +73,7 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         ] = None,
         successors: Optional[Iterator["ModelProcessingPipe"]] = None,
         predecessor: Optional["ModelProcessingPipe"] = None,
-        model_builder: Optional[UmlModelBuilder] = None,
+        model_builder: Optional[IUmlModelBuilder] = None,
         config: Optional[ParsedConfigNamespace] = None,
         **kwargs
     ) -> None:

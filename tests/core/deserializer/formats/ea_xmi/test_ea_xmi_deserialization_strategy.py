@@ -10,11 +10,12 @@ from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_pipeline impor
     EaXmiDetectionPipe,
 )
 from umlars_translator.core.deserialization.input_processor import InputProcessor
-from umlars_translator.core.model.uml_model import UmlModel
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
 from umlars_translator.core.deserialization.exceptions import (
     UnsupportedFormatException,
     InvalidFormatException,
 )
+from umlars_translator.core.model.umlars_model.umlars_uml_model_builder import UmlarsUmlModelBuilder
 
 
 FILES_WITH_EA_XMI_FORMAT = [
@@ -22,6 +23,11 @@ FILES_WITH_EA_XMI_FORMAT = [
     # "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_library.xml",
     "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_car-model-xmi-21.xml",
 ]
+
+
+@pytest.fixture
+def umlars_model_builder():
+    return UmlarsUmlModelBuilder()
 
 
 @pytest.fixture
@@ -65,48 +71,48 @@ def other_format_data_source():
     )
 
 
-def test_build_processing_pipe():
-    strategy = EaXmiImportParsingStrategy()
+def test_build_processing_pipe(umlars_model_builder):
+    strategy = EaXmiImportParsingStrategy(model_builder=umlars_model_builder)
     pipe = strategy._build_processing_pipe()
     assert isinstance(pipe, RootPipe)
 
 
-def test_build_uml_model_processing_pipe():
-    strategy = EaXmiImportParsingStrategy()
+def test_build_uml_model_processing_pipe(umlars_model_builder):
+    strategy = EaXmiImportParsingStrategy(model_builder=umlars_model_builder)
     root_pipe = strategy._build_processing_pipe()
     uml_model_pipe = strategy._build_uml_model_processing_pipe(root_pipe)
     assert isinstance(uml_model_pipe, UmlModelPipe)
 
 
-def test_build_extension_processing_pipe():
-    strategy = EaXmiImportParsingStrategy()
+def test_build_extension_processing_pipe(umlars_model_builder):
+    strategy = EaXmiImportParsingStrategy(model_builder=umlars_model_builder)
     root_pipe = strategy._build_processing_pipe()
     extension_pipe = strategy._build_extension_processing_pipe(root_pipe)
     assert isinstance(extension_pipe, ExtensionPipe)
 
 
-def test_build_format_detection_pipe():
-    strategy = EaXmiImportParsingStrategy()
+def test_build_format_detection_pipe(umlars_model_builder):
+    strategy = EaXmiImportParsingStrategy(model_builder=umlars_model_builder)
     detection_pipe = strategy._build_format_detection_pipe()
     assert isinstance(detection_pipe, EaXmiDetectionPipe)
 
 
-def test_when_retrieve_model_from_ea_xmi_then_return_model(ea_xmi_class_data_sources):
+def test_when_retrieve_model_from_ea_xmi_then_return_model(ea_xmi_class_data_sources, umlars_model_builder):
     for data_source in ea_xmi_class_data_sources:
-        strategy = EaXmiImportParsingStrategy()
+        strategy = EaXmiImportParsingStrategy(model_builder=umlars_model_builder)
         model = strategy.retrieve_model(data_source)
-        assert isinstance(model, UmlModel)
+        assert isinstance(model, IUmlModel)
 
 
 def test_when_retrieve_model_from_other_format_then_raise_exception(
-    other_format_data_source,
+    other_format_data_source,umlars_model_builder
 ):
-    strategy = EaXmiImportParsingStrategy()
+    strategy = EaXmiImportParsingStrategy(model_builder=umlars_model_builder)
     with pytest.raises(UnsupportedFormatException):
         strategy.retrieve_model(other_format_data_source)
 
 
-def test_when_retrieve_model_from_other_xmi_then_raise_exception(other_xmi_data_source):
-    strategy = EaXmiImportParsingStrategy()
+def test_when_retrieve_model_from_other_xmi_then_raise_exception(other_xmi_data_source, umlars_model_builder):
+    strategy = EaXmiImportParsingStrategy(model_builder=umlars_model_builder)
     with pytest.raises(InvalidFormatException):
         strategy.retrieve_model(other_xmi_data_source)

@@ -6,8 +6,9 @@ from kink import inject
 
 from umlars_translator.core.deserialization.config import SupportedFormat
 from umlars_translator.core.deserialization.data_source import DataSource
-from umlars_translator.core.model.uml_model import UmlModel
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
 from umlars_translator.core.configuration.config_namespace import ConfigNamespace
+from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 
 
 @inject
@@ -20,13 +21,19 @@ class DeserializationStrategy(ABC):
     # TODO: improve this config approach - currently deserialization strategy has too much of a responsibility - some ConfigManager with dependency injection could be used
     CONFIG_NAMESPACE_CLASS: type["ConfigNamespace"]
 
-    def __init__(self, logger: Optional[Logger] = None, config_namespace: Optional[ConfigNamespace] = None) -> None:
+    def __init__(self, logger: Optional[Logger] = None,
+                 config_namespace: Optional[ConfigNamespace] = None, model_builder: Optional[IUmlModelBuilder] = None) -> None:
         self._logger = logger.getChild(self.__class__.__name__)
+        self._model_builder = model_builder
         self._config = config_namespace if config_namespace is not None else self.__class__.get_config_namespace_class()()
 
     @property
     def config(self) -> ConfigNamespace:
         return self._config
+
+    @property
+    def model_builder(self) -> IUmlModelBuilder:
+        return self._model_builder
 
     @classmethod
     def get_supported_format(cls: type["DeserializationStrategy"]) -> SupportedFormat:
@@ -57,7 +64,7 @@ class DeserializationStrategy(ABC):
         """
 
     @abstractmethod
-    def retrieve_model(self, data_source: DataSource) -> UmlModel:
+    def retrieve_model(self, data_source: DataSource) -> IUmlModel:
         """
         Method resposible for the main processing of the source data.
         It performs the transformations required to retrieve all the data from source format into the UML Model.

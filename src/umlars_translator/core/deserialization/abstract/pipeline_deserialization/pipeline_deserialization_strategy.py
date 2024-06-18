@@ -5,7 +5,7 @@ from umlars_translator.core.deserialization.abstract.base.deserialization_strate
     DeserializationStrategy,
 )
 from umlars_translator.core.deserialization.data_source import DataSource
-from umlars_translator.core.model.uml_model import UmlModel
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
 from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
     ModelProcessingPipe,
     FormatDetectionPipe,
@@ -43,21 +43,29 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
             self._create_new_format_detection_pipe()
         return self._format_detection_pipe
 
+    def synchronize_pipe(self, pipe: ModelProcessingPipe) -> None:
+        self.set_pipe_builder(pipe)
+        self.set_pipe_config(pipe)
+
     def set_pipe_config(self, pipe: ModelProcessingPipe) -> None:
         pipe.set_config(self.config)
+
+    def set_pipe_builder(self, pipe: ModelProcessingPipe) -> None:
+        pipe.set_model_builder(self.model_builder)
 
     def clear(self) -> None:
         self._pipe = None
         self._format_detection_pipe = None
         self._parsed_data = None
+        self._model_builder.clear()
 
-    def _create_new_processing_pipe(self) -> ModelProcessingPipe:
+    def _create_new_processing_pipe(self) -> None:
         self._pipe = self._build_processing_pipe()
-        self.set_pipe_config(self.pipe)
+        self.synchronize_pipe(self.pipe)
 
-    def _create_new_format_detection_pipe(self) -> FormatDetectionPipe:
+    def _create_new_format_detection_pipe(self) -> None:
         self._format_detection_pipe = self._build_format_detection_pipe()
-        self.set_pipe_config(self.format_detection_pipe)
+        self.synchronize_pipe(self.format_detection_pipe)
 
     def _can_deserialize_format_data(
         self, format_data: DataSource, cache_parsed_data: bool = True
@@ -79,7 +87,7 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
 
     def retrieve_model(
         self, data_source: DataSource, clear_afterwards: bool = True
-    ) -> UmlModel:
+    ) -> IUmlModel:
         self._parsed_data = (
             self._parse_format_data(data_source)
             if self._parsed_data is None
@@ -100,7 +108,7 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
         """
         return data_source.retrieved_data
 
-    def _process_data(self, data: Any) -> UmlModel:
+    def _process_data(self, data: Any) -> IUmlModel:
         self.pipe.process(data)
         return self.pipe.get_model()
 

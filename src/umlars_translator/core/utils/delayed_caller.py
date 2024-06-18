@@ -46,7 +46,15 @@ class DelayedCaller(ABC):
         :arg blocking - if set to True, it raises IdMismatchException when ID present as key in the evaluation
             queue is not present in the ID to instance mapping. Used for partial evaluation.
         """
-        for element_id, evaluation_queue in self._id_to_evaluation_queue.items():
+
+        try:
+            items_to_evaluate = self._id_to_evaluation_queue.items()
+        except AttributeError:
+            message = "No items to evaluate."
+            self._logger.info(message)
+            return
+
+        for element_id, evaluation_queue in items_to_evaluate:
             try:
                 element_instance = self._id_to_instance_mapping[element_id]
             except KeyError as ex:
