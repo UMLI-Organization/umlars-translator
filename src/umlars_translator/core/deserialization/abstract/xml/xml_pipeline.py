@@ -46,8 +46,9 @@ class XmlAttributeCondition:
 
         return attribute_condition
 
-    def evaluate_attribute_name(self, config: ParsedConfigNamespace) -> None:
+    def evaluate_attribute_condition(self, config: ParsedConfigNamespace) -> None:
         self.attribute_name = get_configurable_value(self.attribute_name, config)
+        self.expected_value = get_configurable_value(self.expected_value, config)
 
 
 class XmlModelProcessingPipe(ModelProcessingPipe):
@@ -100,7 +101,7 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         self, attribute_condition: XmlAttributeCondition | Callable
     ) -> Callable:
         if isinstance(attribute_condition, XmlAttributeCondition):
-            attribute_condition.evaluate_attribute_name(self.config)
+            attribute_condition.evaluate_attribute_condition(self.config)
             return attribute_condition.to_callable()
         return attribute_condition
 
@@ -180,16 +181,18 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         values_dict: dict[str, str],
         key_to_map: str,
         mapping_dict: dict[str, Any],
+        raise_when_missing: bool = True
     ) -> str:
         try:
             value_to_map = values_dict[key_to_map]
             values_dict[key_to_map] = mapping_dict[value_to_map]
         except KeyError as ex:
-            raise InvalidFormatException(
-                f"Value {value_to_map} not found in mapping dict {mapping_dict}" 
-                f"or key {key_to_map} not found in values dict {values_dict}."
-            ) from ex
-        
+            if raise_when_missing:
+                raise InvalidFormatException(
+                    f"Value {value_to_map} not found in mapping dict" 
+                    f"or key {key_to_map} not found in values dict."
+                ) from ex
+
 
 class XmlFormatDetectionPipe(FormatDetectionPipe, XmlModelProcessingPipe):
     """

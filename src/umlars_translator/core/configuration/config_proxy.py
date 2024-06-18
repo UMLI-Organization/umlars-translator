@@ -46,6 +46,14 @@ class OperationQueue:
         return result
 
 
+# TODO: make config proxy just store dict of values to be parsed -> 
+# -> then function calls just take values from the dict (mutable) -> 
+# -> this way even if a key to the __get_item__ is taken from config it can be parsed ->
+# -> if the received key to __getitem__ is ConfigProxy - it should be parsed 
+
+# TODO: also the best way it could be implemented is to evaluate the value represented by ConfigProxy 
+# whenever there is call to the check if some value is equal to it (__eq__  or  == ).
+# The issue with this approach is that it would require acquiring the config used for evaluation from the current scope - it may not be always available.
 class ConfigProxyMeta(type):
     def __getattr__(cls: type["OperationQueue"], name: str) -> "OperationQueue":
         proxy_instance = cls()

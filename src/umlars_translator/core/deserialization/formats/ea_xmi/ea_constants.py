@@ -4,7 +4,10 @@ from umlars_translator.core.model.constants import DiagramType, PrimitiveTypes, 
 from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
 
 
+# TODO: split config into parsed config and normal - so u can use normal enums etc
+
 class EaXmiConfig(ParsedConfigNamespace):
+    # TODO: use to check if namespace is allowed for data source
     ALLOWED_NAMESPACES: dict[str, list] = {
         "uml": ["{http://schema.omg.org/spec/UML/2.1}"],
         "xmi": ["{http://schema.omg.org/spec/XMI/2.1}"],
@@ -50,8 +53,8 @@ class EaXmiConfig(ParsedConfigNamespace):
         "exporterVersion": "exporterVersion",
         "exporterID": "exporterID",
         "name": "name",
-        "idre": "{{{xmi}}}idre",
-        "hre": "hre",
+        "idref": "{{{xmi}}}idref",
+        "href": "href",
         "visibility": "visibility",
         "lower_value": "value",
         "upper_value": "value",
@@ -93,14 +96,14 @@ class EaXmiConfig(ParsedConfigNamespace):
     }
 
     EA_EXTENDED_ATTRIBUTES: dict[str, str] = {
-        "idre": "{{{xmi}}}idre",
+        "idref": "{{{xmi}}}idref",
         "type": "{{{xmi}}}type",
         "name": "name",
         "package": "package",
-        "connector_idre": "{{{xmi}}}idre",
+        "connector_idref": "{{{xmi}}}idref",
         "connector_name": "name",
-        "source_idre": "{{{xmi}}}idre",
-        "target_idre": "{{{xmi}}}idre",
+        "source_idref": "{{{xmi}}}idref",
+        "target_idref": "{{{xmi}}}idref",
         "connector_type": "ea_type",
         "direction": "direction",
         "diagram_id": "{{{xmi}}}id",
@@ -127,6 +130,7 @@ class EaXmiConfig(ParsedConfigNamespace):
         "uml:Generalization": UmlElementType.GENERALIZATION,
         "uml:Realization": UmlElementType.REALIZATION,
         "uml:LiteralInteger": PrimitiveTypes.INTEGER,
+        "uml:LiteralUnlimitedNatural": PrimitiveTypes.INTEGER,
         "EAnone_void": None,
     }
 
@@ -135,6 +139,7 @@ class EaXmiConfig(ParsedConfigNamespace):
         "http://schema.omg.org/spec/UML/2.1/uml.xml#Integer": PrimitiveTypes.INTEGER,
     }
 
+    # TODO: move to file with non-parsed constants /enums
     class EaPackagedElementTypes(str, Enum):
         """
         String enum is used to allow comparison with xml data.
@@ -147,3 +152,4 @@ class EaXmiConfig(ParsedConfigNamespace):
         DEPENDENCY = "uml:Dependency"
         GENERALIZATION = "uml:Generalization"
         REALIZATION = "uml:Realization"
+

@@ -1,5 +1,5 @@
 from xml.etree import ElementTree as ET
-from typing import Iterator
+from typing import Iterator, Any
 
 from umlars_translator.core.deserialization.abstract.xml.xml_pipeline import (
     XmlModelProcessingPipe,
@@ -196,7 +196,10 @@ class UmlClassPipe(XmlModelProcessingPipe):
 
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
-                name=self.config.ATTRIBUTES["name"], visibility=self.config.ATTRIBUTES["visibility"]
+                name=self.config.ATTRIBUTES["name"]
+            )
+            optional_attributes = AliasToXmlKey.from_kwargs(
+                visibility=self.config.ATTRIBUTES["visibility"]
             )
         except KeyError as ex:
             raise ValueError(
@@ -204,7 +207,7 @@ class UmlClassPipe(XmlModelProcessingPipe):
             )
 
         aliases_to_values = self._get_attributes_values_for_aliases(
-            data, mandatory_attributes
+            data, mandatory_attributes, optional_attributes
         )
         self.model_builder.construct_uml_class(**aliases_to_values)
 
@@ -222,7 +225,10 @@ class UmlInterfacePipe(XmlModelProcessingPipe):
 
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
-                name=self.config.ATTRIBUTES["name"], visibility=self.config.ATTRIBUTES["visibility"]
+                name=self.config.ATTRIBUTES["name"]
+            )
+            optional_attributes = AliasToXmlKey.from_kwargs(
+                visibility=self.config.ATTRIBUTES["visibility"]
             )
         except KeyError as ex:
             raise ValueError(
@@ -230,7 +236,7 @@ class UmlInterfacePipe(XmlModelProcessingPipe):
             )
 
         aliases_to_values = self._get_attributes_values_for_aliases(
-            data, mandatory_attributes
+            data, mandatory_attributes, optional_attributes
         )
         self.model_builder.construct_uml_interface(**aliases_to_values)
 
@@ -248,12 +254,12 @@ class UmlAttributePipe(XmlModelProcessingPipe):
 
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
-                name=self.config.ATTRIBUTES["name"],
                 id=self.config.ATTRIBUTES["id"],
                 type=self.config.ATTRIBUTES["type"],
             )
 
             optional_attributes = AliasToXmlKey.from_kwargs(
+                name=self.config.ATTRIBUTES["name"],
                 visibility=self.config.ATTRIBUTES["visibility"],
                 is_static=self.config.ATTRIBUTES["is_static"],
                 is_ordered=self.config.ATTRIBUTES["is_ordered"],
@@ -276,22 +282,19 @@ class UmlAttributePipe(XmlModelProcessingPipe):
         aliases_to_values.update(self._process_attribute_multiplicity(data_batch))
 
         self.model_builder.construct_uml_attribute(**aliases_to_values)
-
         yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
 
-
-    def _process_attribute_type(self, data_batch: DataBatch) -> dict:
+    def _process_attribute_type(self, data_batch: DataBatch) -> dict[str, Any]:
         data = data_batch.data
         attribute_type_data = data.find(self.config.TAGS["type"])
         if attribute_type_data is None:
             return {}
         
         try:
-            mandatory_attributes = AliasToXmlKey.from_kwargs(
-                type=self.config.ATTRIBUTES["type"]
-            )
             optional_attributes = AliasToXmlKey.from_kwargs(
-                href=self.config.ATTRIBUTES["href"]
+                href=self.config.ATTRIBUTES["href"],
+                idref=self.config.ATTRIBUTES["idref"],
+                type=self.config.ATTRIBUTES["type"]
             )
         except KeyError as ex:
             raise ValueError(
@@ -299,25 +302,29 @@ class UmlAttributePipe(XmlModelProcessingPipe):
             )
 
         aliases_to_values = self._get_attributes_values_for_aliases(
-            attribute_type_data, mandatory_attributes, optional_attributes
+            attribute_type_data, optional_attributes=optional_attributes
         )
-        self._map_value_from_key(aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING)
 
-        if aliases_to_values["href"] is not None:
-            self._map_value_from_key(aliases_to_values, "href", self.config.EA_HREF_ATTRIBUTE_MAPPING)
-            aliases_to_values["type_metadata"] = {"referenced_type": aliases_to_values.pop("href")}
-        
+        self._map_value_from_key(aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING, raise_when_missing=False)
+        self._process_type_metadata(aliases_to_values)
+
         return aliases_to_values
-    
-    def _process_attribute_multiplicity(self, data_batch: DataBatch) -> dict:
+
+    def _process_type_metadata(self, aliases_to_values: dict[str, Any]) -> None:
+        aliases_to_values["type_metadata"] = {}
+        self._map_value_from_key(aliases_to_values, "href", self.config.EA_HREF_ATTRIBUTE_MAPPING, raise_when_missing=False)
+        aliases_to_values["type_metadata"].update({"referenced_type_href": aliases_to_values.pop("href", None)})
+        aliases_to_values["type_metadata"].update({"referenced_type_id": aliases_to_values.pop("idref", None)})
+
+    def _process_attribute_multiplicity(self, data_batch: DataBatch) -> dict[str, Any]:
         return self._process_attribute_lower_value(data_batch) | self._process_attribute_upper_value(data_batch)
     
-    def _process_attribute_lower_value(self, data_batch: DataBatch) -> dict:
+    def _process_attribute_lower_value(self, data_batch: DataBatch) -> dict[str, Any]:
         data = data_batch.data
         lower_value_data = data.find(self.config.TAGS["lower_value"])
         if lower_value_data is None:
             return {}
-        
+
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
                 id=self.config.ATTRIBUTES["id"], value=self.config.ATTRIBUTES["value"], type=self.config.ATTRIBUTES["type"]
@@ -335,7 +342,7 @@ class UmlAttributePipe(XmlModelProcessingPipe):
         
         return aliases_to_values
 
-    def _process_attribute_upper_value(self, data_batch: DataBatch) -> dict:
+    def _process_attribute_upper_value(self, data_batch: DataBatch) -> dict[str, Any]:
         data = data_batch.data
         upper_value_data = data.find(self.config.TAGS["upper_value"])
         if upper_value_data is None:
