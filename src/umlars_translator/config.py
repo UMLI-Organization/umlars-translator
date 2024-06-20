@@ -1,6 +1,8 @@
-supported_formats = {
-    "xmi-ea": "XMI 2.1 Enterprise Architect",
-    "xmi-papyrus": "XMI 2.1 Papyrus",
-    "xmi-genmymodel": "XMI 2.1 GenMyModel",
-    "mdj": "StarUML JSON",
-}
+"""
+Logger settings
+"""
+SYSTEM_NAME = "UMLARS"
+LOGGER_BASE_NAME = SYSTEM_NAME
+
+LOG_LEVEL = "DEBUG"
+LOG_FILE = "umlars.log"

@@ -11,3 +11,10 @@ notes
 .idea
 .hypothesis
 test_tmp_*.xml
+umlars.log
+venv
+
+src/umlars_translator/core/model/old_model
+src/umlars_translator/core/model/pyuml2
+src/umlars_translator/__trash
+
