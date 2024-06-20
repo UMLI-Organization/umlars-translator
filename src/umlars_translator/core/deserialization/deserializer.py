@@ -64,7 +64,7 @@ class ModelDeserializer:
             )
             self._logger.info("Multiple inputs accepted.")
 
-        self._logger.info(f"Deserializing data sources")
+        self._logger.info("Deserializing data sources")
         yield from self.deserialize_data_sources(data_sources, from_format)
 
     def deserialize_data_sources(

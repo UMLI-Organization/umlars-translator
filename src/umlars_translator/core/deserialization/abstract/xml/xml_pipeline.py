@@ -83,7 +83,6 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         config: Optional[ParsedConfigNamespace] = None,
         **kwargs,
     ) -> None:
-        super().__init__(successors, predecessor, model_builder, config, **kwargs)
         self._associated_xml_tag = (
             xml_tag if xml_tag is not None else self.__class__.get_associated_xml_tag()
         )
@@ -92,6 +91,8 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
             if attributes_conditions is not None
             else self.__class__.get_attributes_conditions()
         )
+        super().__init__(successors, predecessor, model_builder, config, **kwargs)
+
 
     def _configure(self) -> None:
         if self._config is not None:

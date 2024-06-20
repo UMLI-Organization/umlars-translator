@@ -39,8 +39,7 @@ class OperationQueue:
 
     def __call__(self, instance: Any) -> Any:
         result = instance
-        while self._operations:
-            operation = self._operations.popleft()
+        for operation in self._operations:
             result = operation(result)
 
         return result
@@ -56,6 +55,9 @@ class OperationQueue:
 # The issue with this approach is that it would require acquiring the config used for evaluation from the current scope - it may not be always available.
 class ConfigProxyMeta(type):
     def __getattr__(cls: type["OperationQueue"], name: str) -> "OperationQueue":
+        if name.startswith("__"):
+            return super().__getattr__(name)
+        
         proxy_instance = cls()
         proxy_instance.add_operation(SupportedOperationType.GETATTR, name)
         return proxy_instance
@@ -68,10 +70,13 @@ class ConfigProxyMeta(type):
 
 class ConfigProxy(OperationQueue, metaclass=ConfigProxyMeta):
     def __getattr__(self, name: str) -> "ConfigProxy":
-        if name == "__isabstractmethod__":
+        if name.startswith("__"):
             """
-            This is required for Python not to recognize the class as an abstract class."""
-            raise AttributeError("ConfigProxy class is not an abstract class.")
+            Python checks if class raises the AtributeError for particular dunder methods and based on the result determines its character.
+            E.g. __isabstractmethod__ is a dunder method that is used to check if the class is an abstract class. If it didn't raise AttributeError, other classes having and instance of this class as static attribute were considered abstract.
+            E.g. during debugging python looks for __iter__ method in _is_long_iter function to determine if the class is iterable.
+            """
+            return super().__getattr__(name)
         self.add_operation(SupportedOperationType.GETATTR, name)
         return self
 

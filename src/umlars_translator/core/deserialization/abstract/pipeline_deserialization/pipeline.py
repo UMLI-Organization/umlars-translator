@@ -17,7 +17,7 @@ from umlars_translator.core.configuration.config_namespace import ConfigNamespac
 def require_instantiated_builder(method: Callable) -> Callable:
     def inner(self: "ModelProcessingPipe", *args, **kwargs) -> Any:
         if self.model_builder is None:
-            error_message = f"Method {method.__name__} requires the builder attribute to contain the properly instantiated UmlModelBuilder. Erro in class: {self.__class__.__name__}"
+            error_message = f"Method {method.__name__} requires the builder attribute to contain the properly instantiated UmlModelBuilder. Error in class: {self.__class__.__name__}"
             self._logger.error(error_message)
             raise ImproperlyInstantiatedObjectError(error_message)
         return method(self, *args, **kwargs)
@@ -146,7 +146,7 @@ class ModelProcessingPipe(ABC):
 
         batches_of_data_processed_by_parent = self._process(data_batch=data_batch)
 
-        # It is a generator so iteration through it can be done only once.
+        # It is a generator so iteration through it can be done only once and has to be done exactly ones to make the operations execute.
         # TODO: this should be optimized not to iterate through all successors for each data batch IF some way of grouping successors is possible.
         for data_batch in batches_of_data_processed_by_parent:
             for successor in self._successors:
