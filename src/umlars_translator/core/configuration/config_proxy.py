@@ -57,7 +57,7 @@ class ConfigProxyMeta(type):
     def __getattr__(cls: type["OperationQueue"], name: str) -> "OperationQueue":
         if name.startswith("__"):
             return super().__getattr__(name)
-        
+
         proxy_instance = cls()
         proxy_instance.add_operation(SupportedOperationType.GETATTR, name)
         return proxy_instance

@@ -93,7 +93,6 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
         )
         super().__init__(successors, predecessor, model_builder, config, **kwargs)
 
-
     def _configure(self) -> None:
         if self._config is not None:
             self._configure_xml_tag()
