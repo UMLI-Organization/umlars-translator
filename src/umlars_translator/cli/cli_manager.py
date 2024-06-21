@@ -1,17 +1,22 @@
 import argparse
+from typing import Optional
+from logging import Logger
 
-import uvicorn
+from kink import inject
 
 from umlars_translator.core.deserialization.config import SupportedFormat
 from umlars_translator.core.translator import ModelTranslator
 from umlars_translator.core.utils.functions import get_enum_members_values
-from umlars_translator.app.main import app
+from umlars_translator.app.main import run_app
 
+
+@inject
 class CLIManager:
-    def __init__(self) -> None:
+    def __init__(self, logger: Optional[Logger] = None) -> None:
         self._parser = argparse.ArgumentParser(
             description="Tool for translating UML diagrams from external formats into other formats."
         )
+        self._logger = logger.getChild(self.__class__.__name__)
         self._add_arguments()
 
     def _add_supported_formats_argumets(self) -> None:
@@ -45,13 +50,11 @@ class CLIManager:
             self._parser.print_help()
 
     def _run_server(self) -> None:
-        print("Running REST API server...")
-        uvicorn.run(app, host="0.0.0.0", port=8020)
+        self._logger.info("Running REST API server...")
+        run_app()
         # TODO: Add logic to start the REST API server here
 
     def _translate_files(self, file_names, from_format) -> None:
-        print(f"Translating files {file_names} to {from_format}...")
+        self._logger.info(f"Translating files {file_names} from format {from_format}...")
         translator = ModelTranslator()
-        print(list(translator.translate(file_names, from_format)))
-
-        # TODO: Add logic to translate the file here
+        translator.translate(file_names, from_format)
