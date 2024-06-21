@@ -1,9 +1,11 @@
 import argparse
 
+import uvicorn
+
 from umlars_translator.core.deserialization.config import SupportedFormat
 from umlars_translator.core.translator import ModelTranslator
 from umlars_translator.core.utils.functions import get_enum_members_values
-
+from umlars_translator.app.main import app
 
 class CLIManager:
     def __init__(self) -> None:
@@ -44,6 +46,7 @@ class CLIManager:
 
     def _run_server(self) -> None:
         print("Running REST API server...")
+        uvicorn.run(app, host="0.0.0.0", port=8020)
         # TODO: Add logic to start the REST API server here
 
     def _translate_files(self, file_names, from_format) -> None:

@@ -1,4 +1,4 @@
-import importlib
+import importlib.metadata
 from logging import Logger
 from typing import Iterator, Optional
 
