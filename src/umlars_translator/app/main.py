@@ -4,19 +4,26 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi import Depends
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
 
 from umlars_translator.app.repository import UmlModelRepository
+from umlars_translator.app.repository import Base
 
 
 app = FastAPI()
-
-_db = {
-    "EXISTING": {"id": "EXISTING", "model": "MODEL"}
-}
+engine = create_engine("sqlite:///uml_model.db")
+Base.metadata.create_all(engine)
 
 
-def get_uml_model_repository():
-    return UmlModelRepository(_db)
+def get_db_session():
+    sesion = Session(engine)
+    with sesion.begin() as session:
+        yield session
+
+
+def get_uml_model_repository(session: Session = Depends(get_db_session)):
+    return UmlModelRepository(session)
 
 
 @app.get("/uml-models/{model_id}")

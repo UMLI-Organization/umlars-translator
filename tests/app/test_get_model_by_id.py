@@ -26,13 +26,13 @@ def test_when_get_model_for_existing_id_then_return_model(client: TestClient, si
     ID_TO_GET = "EXISTING"
 
     response = client.get(f"/uml-models/{ID_TO_GET}")
-    
-    assert response.json() == {"id": ID_TO_GET, "model": "MODEL"}
+    print(f"\n\n{response.json()}\n\n")
+    assert response.json() == {"id": ID_TO_GET, "name": "MODEL"}
 
 
 def test_when_new_test_run_db_is_empty(client: TestClient):
     ID_TO_GET = "EXISTING"
 
     response = client.get(f"/uml-models/{ID_TO_GET}")
-    
+
     assert response.status_code == 404
