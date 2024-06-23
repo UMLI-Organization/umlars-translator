@@ -57,4 +57,4 @@ class CLIManager:
     def _translate_files(self, file_names, from_format) -> None:
         self._logger.info(f"Translating files {file_names} from format {from_format}...")
         translator = ModelTranslator()
-        translator.translate(file_names, from_format)
+        translator.translate(file_paths=file_names, from_format=from_format)

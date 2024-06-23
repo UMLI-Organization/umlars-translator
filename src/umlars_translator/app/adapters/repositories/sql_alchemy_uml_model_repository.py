@@ -1,15 +1,9 @@
-from pydantic import BaseModel
-
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
+from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-
-class UmlModel(BaseModel):
-    id: str
-    name: str
-
-    class Config:
-        from_attributes = True
+from umlars_translator.app.dtos.uml_model import UmlModel
+from umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
 
 
 class Base(DeclarativeBase):
@@ -24,7 +18,7 @@ class _DbUmlModel(Base):
     name: Mapped[str]
 
 
-class UmlModelRepository:
+class SqlAlchemyUmlModelRepository(UmlModelRepository):
     def __init__(self, session: Session) -> None:
         self._session = session
 

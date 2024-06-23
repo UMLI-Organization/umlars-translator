@@ -1,7 +1,9 @@
 from typing import Any, Callable, Optional, Iterable
 from functools import cached_property
+from dataclasses import dataclass
 
 
+@dataclass
 class DataSource:
     def __init__(
         self, data: Optional[str | Callable] = None, file_path: Optional[str] = None
