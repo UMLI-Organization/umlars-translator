@@ -35,7 +35,7 @@ def get_uml_model_repository(db_client: MongoClient = Depends(get_db_client)) ->
 def get_uml_model(model_id: str, model_repo: UmlModelRepository = Depends(get_uml_model_repository)):
     model = model_repo.get(model_id)
     if model is None:
-        raise HTTPException(status_code=404, detail=f"Model with ID: {model_id} not found {x}")
+        raise HTTPException(status_code=404, detail=f"Model with ID: {model_id} not found")
 
     return model
 
