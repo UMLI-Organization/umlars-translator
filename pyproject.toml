@@ -46,5 +46,5 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry.plugins]
-[tool.poetry.plugins."umlars_translator.core.deserialization.abstract.base.deserialization_strategy"]
-ea_xmi = "umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy"
+[tool.poetry.plugins."src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy"]
+ea_xmi = "src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy"

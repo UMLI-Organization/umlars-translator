@@ -2,12 +2,12 @@ from typing import Any
 import io
 from xml.etree import ElementTree as ET
 
-from umlars_translator.core.deserialization.data_source import DataSource
-from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline_deserialization_strategy import (
+from src.umlars_translator.core.deserialization.data_source import DataSource
+from src.umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline_deserialization_strategy import (
     PipelineDeserializationStrategy,
 )
-from umlars_translator.core.deserialization.exceptions import InvalidFormatException
-from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
+from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException
+from src.umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
 
 
 class XmlDeserializationStrategy(PipelineDeserializationStrategy):

@@ -1,22 +1,21 @@
-import importlib
 from typing import Optional, Iterator, Dict, Iterator, TYPE_CHECKING
 from logging import Logger
 
 from kink import inject
 
-from umlars_translator.core.deserialization.input_processor import InputProcessor
-from umlars_translator.core.deserialization.data_source import DataSource
-from umlars_translator.core.deserialization.config import SupportedFormat
-from umlars_translator.core.model.abstract.uml_model import IUmlModel
-from umlars_translator.core.extensions_manager import ExtensionsManager
-from umlars_translator.core.deserialization import config
-from umlars_translator.core.deserialization.factory import (
+from src.umlars_translator.core.deserialization.input_processor import InputProcessor
+from src.umlars_translator.core.deserialization.data_source import DataSource
+from src.umlars_translator.core.deserialization.config import SupportedFormat
+from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
+from src.umlars_translator.core.extensions_manager import ExtensionsManager
+from src.umlars_translator.core.deserialization import config
+from src.umlars_translator.core.deserialization.factory import (
     DeserializationStrategyFactory,
 )
-from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
+from src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
     DeserializationStrategy,
 )
-from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 
 
 @inject

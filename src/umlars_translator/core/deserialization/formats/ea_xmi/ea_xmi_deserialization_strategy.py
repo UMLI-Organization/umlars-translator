@@ -1,14 +1,14 @@
-from umlars_translator.core.deserialization.formats.ea_xmi.ea_constants import (
+from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_constants import (
     EaXmiConfig,
 )
-from umlars_translator.core.deserialization.abstract.xml.xml_deserialization_strategy import (
+from src.umlars_translator.core.deserialization.abstract.xml.xml_deserialization_strategy import (
     XmiDeserializationStrategy,
 )
-from umlars_translator.core.deserialization.factory import (
+from src.umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
 )
-from umlars_translator.core.deserialization.config import SupportedFormat
-from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
+from src.umlars_translator.core.deserialization.config import SupportedFormat
+from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
     RootPipe,
     DocumentationPipe,
     UmlModelPipe,
@@ -26,7 +26,7 @@ from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processi
     UmlAssociationOwnedEndPipe,
 )
 
-from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
+from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
     EaXmiDetectionPipe,
     EaXmiDocumentationDetectionPipe,
 )

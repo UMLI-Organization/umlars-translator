@@ -4,14 +4,14 @@ from logging import Logger
 
 from kink import inject
 
-from umlars_translator.core.deserialization.exceptions import (
+from src.umlars_translator.core.deserialization.exceptions import (
     InvalidFormatException,
     UnsupportedFormatException,
     ImproperlyInstantiatedObjectError,
 )
-from umlars_translator.core.model.abstract.uml_model import IUmlModel
-from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
-from umlars_translator.core.configuration.config_namespace import ConfigNamespace
+from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
+from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from src.umlars_translator.core.configuration.config_namespace import ConfigNamespace
 
 
 def require_instantiated_builder(method: Callable) -> Callable:

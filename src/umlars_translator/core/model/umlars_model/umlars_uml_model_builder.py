@@ -3,9 +3,9 @@ from logging import Logger
 
 from kink import inject
 
-from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
-from umlars_translator.core.model.umlars_model.umlars_uml_model import UmlModel
-from umlars_translator.core.utils.delayed_caller import (
+from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from src.umlars_translator.core.model.umlars_model.umlars_uml_model import UmlModel
+from src.umlars_translator.core.utils.delayed_caller import (
     DelayedCaller,
     evaluate_elements_afterwards,
 )

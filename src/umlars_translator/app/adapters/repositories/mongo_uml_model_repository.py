@@ -2,8 +2,8 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from typing import Optional
 
-from umlars_translator.app.dtos.uml_model import UmlModel
-from umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
+from src.umlars_translator.app.dtos.uml_model import UmlModel
+from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
 
 
 class MongoDBUmlModelRepository(UmlModelRepository):

@@ -1,9 +1,9 @@
 from kink import di
 
-from umlars_translator.core.model.umlars_model.umlars_uml_model_builder import (
+from src.umlars_translator.core.model.umlars_model.umlars_uml_model_builder import (
     UmlModelBuilder,
 )
-from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 
 
 # TODO: for now if wanted to change the builder, it needs to be done here.

@@ -3,9 +3,9 @@ from logging import Logger
 
 from kink import inject
 
-from umlars_translator.core.deserialization.deserializer import ModelDeserializer
-from umlars_translator.core.deserialization.config import SupportedFormat
-from umlars_translator.core.deserialization.data_source import DataSource
+from src.umlars_translator.core.deserialization.deserializer import ModelDeserializer
+from src.umlars_translator.core.deserialization.config import SupportedFormat
+from src.umlars_translator.core.deserialization.data_source import DataSource
 
 
 # import umlars_translator.core.deserialization.formats.ea_xmi.deserialization_strategy

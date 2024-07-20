@@ -4,10 +4,10 @@ from logging import Logger
 
 from kink import inject
 
-from umlars_translator.core.deserialization.config import SupportedFormat
-from umlars_translator.core.translator import ModelTranslator
-from umlars_translator.core.utils.functions import get_enum_members_values
-from umlars_translator.app.main import run_app
+from src.umlars_translator.core.deserialization.config import SupportedFormat
+from src.umlars_translator.core.translator import ModelTranslator
+from src.umlars_translator.core.utils.functions import get_enum_members_values
+from src.umlars_translator.app.main import run_app
 
 
 @inject

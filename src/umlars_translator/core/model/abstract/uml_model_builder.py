@@ -6,7 +6,7 @@ import logging
 
 from kink import inject
 
-from umlars_translator.core.model.abstract.uml_model import IUmlModel
+from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
 
 
 def log_calls_and_return_self(log_level: int = logging.DEBUG) -> Callable:

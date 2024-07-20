@@ -4,7 +4,7 @@ from abc import ABC
 
 from kink import inject
 
-from umlars_translator.core.deserialization.data_source import DataSource
+from src.umlars_translator.core.deserialization.data_source import DataSource
 
 
 @inject

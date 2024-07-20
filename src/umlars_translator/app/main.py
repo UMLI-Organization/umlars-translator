@@ -7,11 +7,12 @@ from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi import Depends
 from pymongo import MongoClient
-from umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
-from umlars_translator.app.adapters.repositories.mongo_uml_model_repository import MongoDBUmlModelRepository
-from umlars_translator.app.dtos.uml_model import UmlModel
-from umlars_translator.app import config
-from umlars_translator.logger import create_logger
+from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
+from src.umlars_translator.app.adapters.repositories.mongo_uml_model_repository import MongoDBUmlModelRepository
+from src.umlars_translator.app.dtos.uml_model import UmlModel
+from src.umlars_translator.app.consumer import RabbitMQConsumer
+from src.umlars_translator.app import config
+from src.umlars_translator.logger import create_logger
 
 
 app = FastAPI()
@@ -36,7 +37,6 @@ def get_uml_model(model_id: str, model_repo: UmlModelRepository = Depends(get_um
     model = model_repo.get(model_id)
     if model is None:
         raise HTTPException(status_code=404, detail=f"Model with ID: {model_id} not found")
-
     return model
 
 
@@ -46,8 +46,10 @@ def translate_uml_model(uml_model: UmlModel, model_repo: UmlModelRepository = De
     return model_repo.save(uml_model)
 
 
-def run_app(port: int = 8020) -> None:
+def run_app(port: int = 8020, logger: Logger = Depends(create_app_logger)) -> None:
     port = int(os.getenv("EXPOSE_ON_PORT", port))
+    consumer = RabbitMQConsumer(logger, config.RABBITMQ_QUEUE_NAME, config.RABBITMQ_HOST)
+    consumer.start_consuming()
     return uvicorn.run(app, host="0.0.0.0", port=port)
 
 

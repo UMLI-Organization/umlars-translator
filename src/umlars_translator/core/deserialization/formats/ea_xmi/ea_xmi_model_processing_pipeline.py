@@ -1,14 +1,14 @@
 from xml.etree import ElementTree as ET
 from typing import Iterator, Any
 
-from umlars_translator.core.deserialization.abstract.xml.xml_pipeline import (
+from src.umlars_translator.core.deserialization.abstract.xml.xml_pipeline import (
     XmlModelProcessingPipe,
     XmlAttributeCondition,
     DataBatch,
     AliasToXmlKey,
 )
-from umlars_translator.core.deserialization.exceptions import UnableToMapError
-from umlars_translator.core.configuration.config_proxy import Config
+from src.umlars_translator.core.deserialization.exceptions import UnableToMapError
+from src.umlars_translator.core.configuration.config_proxy import Config
 
 
 class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
