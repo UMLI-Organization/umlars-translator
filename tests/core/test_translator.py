@@ -1,7 +1,7 @@
 from pytest import fixture
 
-from umlars_translator.core.translator import ModelTranslator
-from umlars_translator.core.model.abstract.uml_model import IUmlModel
+from src.umlars_translator.core.translator import ModelTranslator
+from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
 
 # test_when_given_ea_data_deserialization_successful
 

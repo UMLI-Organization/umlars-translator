@@ -26,13 +26,13 @@ class ModelDeserializer:
         deserialization_extensions_manager: ExtensionsManager,
         input_processor: Optional[InputProcessor] = None,
         model_builder: Optional[IUmlModelBuilder] = None,
-        logger: Optional[Logger] = None,
+        core_logger: Optional[Logger] = None,
     ) -> None:
         self._factory = factory
         self._deserialization_extensions_manager = deserialization_extensions_manager
         self._model_builder = model_builder
         self._input_processor = input_processor or InputProcessor()
-        self._logger = logger.getChild(self.__class__.__name__)
+        self._logger = core_logger.getChild(self.__class__.__name__)
         self.load_formats_support()
 
     def load_formats_support(

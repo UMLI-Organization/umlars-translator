@@ -15,6 +15,9 @@ services:
     # TODO: Change to production version when released
     # command: make server-start
     command: make server-start-dev
+
+    networks:
+      - net-backend
     ports:
       - 8080:8080
     env_file:
@@ -23,18 +26,28 @@ services:
     # TODO: Remove this volume mapping in production
     volumes:
       - .:/code
-    
+
     depends_on:
-      - mongodb 
+      - mongodb
 
   mongodb:
     image: "mongo:latest"
+
+    volumes:
+      - mongo_data:/data/db
+
+    networks:
+      - net-backend
+
     env_file:
       - ./.env.dev
     ports:
       - 27017:27017
-    volumes:
-      - mongo_data:/data/db
-    
+
 volumes:
   mongo_data:
+
+networks:
+  net-backend:
+    driver: bridge
+    name: umlars-net-backend

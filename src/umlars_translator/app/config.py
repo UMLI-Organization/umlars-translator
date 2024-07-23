@@ -14,7 +14,7 @@ DB_CONN_STR = f"mongodb://{(MONGO_INITDB_ROOT_USERNAME)}:{(MONGO_INITDB_ROOT_PAS
 # LOGGER
 APP_LOGGER_NAME = "APP_LOGGER"
 LOG_LEVEL = "DEBUG"
-LOG_FILE = "logs/server.log"
+LOG_FILE = "logs/umlars-server.log"
 
 # RABBITMQ
 RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "127.0.0.1")

@@ -9,8 +9,8 @@ from src.umlars_translator.core.deserialization.data_source import DataSource
 
 @inject
 class InputProcessor:
-    def __init__(self, logger: Optional[Logger] = None) -> None:
-        self._logger = logger.getChild(self.__class__.__name__)
+    def __init__(self, core_logger: Optional[Logger] = None) -> None:
+        self._logger = core_logger.getChild(self.__class__.__name__)
 
     def accept_input(
         self, data: Optional[str] = None, file_path: Optional[str] = None

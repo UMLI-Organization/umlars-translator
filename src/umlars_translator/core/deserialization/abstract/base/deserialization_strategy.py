@@ -23,11 +23,11 @@ class DeserializationStrategy(ABC):
 
     def __init__(
         self,
-        logger: Optional[Logger] = None,
+        core_logger: Optional[Logger] = None,
         config_namespace: Optional[ConfigNamespace] = None,
         model_builder: Optional[IUmlModelBuilder] = None,
     ) -> None:
-        self._logger = logger.getChild(self.__class__.__name__)
+        self._logger = core_logger.getChild(self.__class__.__name__)
         self._model_builder = model_builder
         self._config = (
             config_namespace

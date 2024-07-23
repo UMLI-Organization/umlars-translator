@@ -14,10 +14,10 @@ from src.umlars_translator.core.utils.delayed_caller import (
 @inject
 class UmlModelBuilder(DelayedCaller, IUmlModelBuilder):
     def __init__(
-        self, model: Optional[UmlModel] = None, logger: Optional[Logger] = None
+        self, model: Optional[UmlModel] = None, core_logger: Optional[Logger] = None
     ) -> None:
-        self._logger = logger.getChild(self.__class__.__name__)
-        super().__init__(logger=self._logger)
+        self._logger = core_logger.getChild(self.__class__.__name__)
+        super().__init__(core_logger=self._logger)
 
         self._model = model if model is not None else UmlModel()
 

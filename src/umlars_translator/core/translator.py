@@ -8,18 +8,15 @@ from src.umlars_translator.core.deserialization.config import SupportedFormat
 from src.umlars_translator.core.deserialization.data_source import DataSource
 
 
-# import umlars_translator.core.deserialization.formats.ea_xmi.deserialization_strategy
-
-
 @inject
 class ModelTranslator:
     def __init__(
         self,
         model_deseializer: Optional[ModelDeserializer] = None,
-        logger: Optional[Logger] = None,
+        core_logger: Optional[Logger] = None,
     ) -> None:
         self._model_deserializer = model_deseializer
-        self._logger = logger.getChild(self.__class__.__name__)
+        self._logger = core_logger.getChild(self.__class__.__name__)
         self._logger.info("ModelTranslator initialized")
 
         self._models = None

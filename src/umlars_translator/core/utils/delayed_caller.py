@@ -31,8 +31,8 @@ def evaluate_elements_afterwards(blocking: bool = False) -> Callable:
 
 @inject
 class DelayedCaller(ABC):
-    def __init__(self, logger: Optional[Logger] = None) -> None:
-        self._logger = logger.getChild(self.__class__.__name__)
+    def __init__(self, core_logger: Optional[Logger] = None) -> None:
+        self._logger = core_logger.getChild(self.__class__.__name__)
         self._id_to_instance_mapping: dict[str, Any] = dict()
         self._id_to_evaluation_queue: dict[str, deque[Callable]] = defaultdict(deque)
         """

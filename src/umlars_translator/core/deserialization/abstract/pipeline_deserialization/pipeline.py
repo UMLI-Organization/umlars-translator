@@ -44,9 +44,9 @@ class ModelProcessingPipe(ABC):
         predecessor: Optional["ModelProcessingPipe"] = None,
         model_builder: Optional[IUmlModelBuilder] = None,
         config: Optional[ConfigNamespace] = None,
-        logger: Optional[Logger] = None,
+        core_logger: Optional[Logger] = None,
     ) -> None:
-        self._logger = logger.getChild(self.__class__.__name__)
+        self._logger = core_logger.getChild(self.__class__.__name__)
         self._successors = successors if successors is not None else []
         self._predecessor = predecessor
         self._model_builder = model_builder

@@ -1,5 +1,5 @@
 """
-Logger settings
+Base logger settings
 """
 SYSTEM_NAME = "UMLARS"
 LOGGER_BASE_NAME = SYSTEM_NAME

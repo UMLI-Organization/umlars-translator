@@ -15,9 +15,9 @@ class ExtensionsManager:
     def __init__(
         self,
         extensions_modules_groups_names: Optional[Iterator[str]] = None,
-        logger: Optional[Logger] = None,
+        core_logger: Optional[Logger] = None,
     ) -> None:
-        self._logger = logger
+        self._logger = core_logger.getChild(self.__class__.__name__)
         self._extensions_modules_groups_names = extensions_modules_groups_names
 
     def activate_extensions(

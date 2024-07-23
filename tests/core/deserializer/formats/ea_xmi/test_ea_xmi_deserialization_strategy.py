@@ -2,23 +2,23 @@ import pytest
 
 from kink import di
 
-from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy import (
+from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy import (
     EaXmiImportParsingStrategy,
 )
-from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
+from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
     RootPipe,
     UmlModelPipe,
     ExtensionPipe,
 )
-from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
+from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
     EaXmiDetectionPipe,
 )
-from umlars_translator.core.deserialization.input_processor import InputProcessor
-from umlars_translator.core.model.abstract.uml_model import IUmlModel
-from umlars_translator.core.deserialization.exceptions import (
+from src.umlars_translator.core.deserialization.input_processor import InputProcessor
+from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
+from src.umlars_translator.core.deserialization.exceptions import (
     InvalidFormatException,
 )
-from umlars_translator.core.model.umlars_model.umlars_uml_model_builder import (
+from src.umlars_translator.core.model.umlars_model.umlars_uml_model_builder import (
     UmlModelBuilder,
 )
 
