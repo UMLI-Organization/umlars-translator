@@ -1,6 +1,5 @@
 import os
 import logging
-from functools import partial
 from contextlib import asynccontextmanager
 
 from kink import di
@@ -8,7 +7,8 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi import Depends
-from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
 from src.umlars_translator.app.adapters.repositories.mongo_uml_model_repository import MongoDBUmlModelRepository
 from src.umlars_translator.app.dtos.uml_model import UmlModel
@@ -29,18 +29,18 @@ def create_app_logger():
     return app_logger
 
 
-def start_consuming_messages() -> None:
+async def start_consuming_messages() -> None:
     try:
-        consumer = RabbitMQConsumer(config.RABBITMQ_QUEUE_NAME, config.RABBITMQ_HOST)
+        consumer = RabbitMQConsumer(config.MESSAGE_BROKER_QUEUE_NAME, config.MESSAGE_BROKER_HOST)
     except QueueUnavailableError as e:
         raise ServiceConnectionError("Failed to create a consumer for the message queue") from e
-    return consumer.start_consuming()
+    return await consumer.start_consuming()
 
 
 @asynccontextmanager
 async def lifespan_event_handler(app: FastAPI):
     try:
-        start_consuming_messages()
+        await start_consuming_messages()
         yield
     except ServiceConnectionError as ex:
         raise ServiceConnectionError("Failed to start consuming messages") from ex
@@ -49,31 +49,32 @@ async def lifespan_event_handler(app: FastAPI):
 app = FastAPI(lifespan=lifespan_event_handler)
 
 
-def get_db_client(logger: logging.Logger = Depends(create_app_logger)) -> MongoClient:
+async def get_db_client(logger: logging.Logger = Depends(create_app_logger)) -> AsyncIOMotorClient:
     try:
         connection_str = config.DB_CONN_STR
-        return MongoClient(connection_str)
+        return AsyncIOMotorClient(connection_str)
     except Exception as e:
         logger.error(f"Failed to connect to the database: {e}")
         raise HTTPException(status_code=500, detail="Failed to connect to the database")        
 
 
-def get_uml_model_repository(db_client: MongoClient = Depends(get_db_client)) -> UmlModelRepository:
+async def get_uml_model_repository(db_client: AsyncIOMotorClient = Depends(get_db_client)) -> UmlModelRepository:
     return MongoDBUmlModelRepository(db_client, config.DB_NAME, config.DB_COLLECTION_NAME)
 
 
 @app.get("/uml-models/{model_id}")
-def get_uml_model(model_id: str, model_repo: UmlModelRepository = Depends(get_uml_model_repository)):
-    model = model_repo.get(model_id)
+async def get_uml_model(model_id: str, model_repo: UmlModelRepository = Depends(get_uml_model_repository)):
+    model = await model_repo.get(model_id)
     if model is None:
         raise HTTPException(status_code=404, detail=f"Model with ID: {model_id} not found")
     return model
 
 
 @app.post("/uml-models")
-def translate_uml_model(uml_model: UmlModel, model_repo: UmlModelRepository = Depends(get_uml_model_repository)):
+async def translate_uml_model(uml_model: UmlModel, model_repo: UmlModelRepository = Depends(get_uml_model_repository)):
     # TODO: translate
-    return model_repo.save(uml_model)
+    await model_repo.save(uml_model)
+    return {"status": "success"}
 
 
 def run_app(port: int = 8080, host: str = "0.0.0.0", context: str = 'DEV', logger: logging.Logger = Depends(create_app_logger)) -> None:

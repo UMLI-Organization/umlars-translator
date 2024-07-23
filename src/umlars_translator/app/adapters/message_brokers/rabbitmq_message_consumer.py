@@ -1,14 +1,11 @@
 from typing import Optional
 import logging
-import socket
-# TODO: remove after successfull async implementation
-import time
 
-import pika
+import aio_pika
 from kink import inject
-
 from src.umlars_translator.app.exceptions import QueueUnavailableError
 from src.umlars_translator.app.adapters.message_brokers.message_consumer import MessageConsumer
+from src.umlars_translator.app.adapters.message_brokers import config
 
 
 @inject
@@ -16,37 +13,59 @@ class RabbitMQConsumer(MessageConsumer):
     def __init__(self, queue_name: str, rabbitmq_host: str, messaging_logger: Optional[logging.Logger] = None) -> None:
         self._logger = messaging_logger.getChild(self.__class__.__name__)
         self._queue_name = queue_name
-        self.connect_channel(rabbitmq_host)
+        self._rabbitmq_host = rabbitmq_host
+        self._connection = None
+        self._channel = None
+        self._queue = None
 
-    def connect_channel(self, rabbitmq_host: str) -> None:
+    async def connect_channel(self, rabbitmq_host: Optional[str] = None, queue_name: Optional[str] = None, is_queue_durable: bool = True) -> None:
         try:
-            self._connection = pika.BlockingConnection(pika.ConnectionParameters(rabbitmq_host))
-            self._channel = self._connection.channel()
-            self._queue = self._channel.queue_declare(queue=self._queue_name, durable=True)
-            rv = self._channel.basic_consume(queue=self._queue_name, on_message_callback=self._callback)
-            self._logger.info(f"Connected channgel -rv: {rv}")
-            # print(f"Connected channgel -rv: {rv}")
-        except socket.gaierror as ex:
+            if self._connection and not self._connection.is_closed:
+                await self._connection.close()
+
+            rabbitmq_host = rabbitmq_host or self._rabbitmq_host
+            queue_name = queue_name or self._queue_name
+
+            # TODO: add here event loop as argument to connect_robust
+            self._connection = await aio_pika.connect_robust(host=rabbitmq_host, port=config.MESSAGE_BROKER_PORT, login=config.MESSAGE_BROKER_USER, password=config.MESSAGE_BROKER_PASSWORD)
+            self._channel = await self._connection.channel()
+            await self._channel.set_qos(prefetch_count=config.MESSAGE_BROKER_PREFETCH_COUNT)
+            self._queue = await self._channel.declare_queue(queue_name, durable=is_queue_durable)
+            self._logger.info("Connected to RabbitMQ channel and queue")
+        except (aio_pika.exceptions.AMQPConnectionError, asyncio.CancelledError) as ex:
             self._logger.error(f"Failed to connect to the channel: {ex}")
-            # print(f"Failed to connect to the channel: {ex}")
             raise QueueUnavailableError("Failed to connect to the channel") from ex
-
-    def _callback(self, channel: pika.channel.Channel, method: pika.spec.Basic.Deliver, properties: pika.spec.BasicProperties, body: bytes) -> None:
-        self._logger.error(f"Called callback from logger")
-        # TODO: remove after successfull async implementation
-        time.sleep(10)
-
-        self._logger.error(f"Called callback - after sleep")
-        try:
-            # TODO translate
-            channel.basic_ack(delivery_tag=method.delivery_tag)
-        # TODO: specify exception and method argument
         except Exception as ex:
-            channel.basic_nack(delivery_tag=method.delivery_tag)
+            self._logger.error(f"Unexpected error: {ex}")
+            raise QueueUnavailableError("Unexpected error while connecting to the channel") from ex
 
-    def start_consuming(self):
+    async def _callback(self, message: aio_pika.IncomingMessage) -> None:
+        async with message.process(ignore_processed=True):
+            self._logger.info("Called callback from logger")
+            try:
+                # Replace with actual processing logic
+                await self.process_message(message)
+                await message.ack()
+                self._logger.info("Message acknowledged")
+            except Exception as ex:
+                self._logger.error(f"Failed to process message: {ex}")
+                await message.reject(requeue=False)
+
+    async def process_message(self, message: aio_pika.IncomingMessage) -> None:
+        # TODO: Add translation logic or other processing logic here
+        self._logger.info(f"Processed message: {message.body}")
+
+    async def start_consuming(self) -> None:
         try:
-            self._channel.start_consuming()
-        except pika.exceptions.ConnectionClosedByBroker as ex:
-            self._logger.error(f"Connection closed by broker: {ex}")
+            await self.connect_channel()
+            await self._queue.consume(self._callback)
+            self._logger.info("Starting to consume messages")
+        except aio_pika.exceptions.ConnectionClosed as ex:
+            self._logger.error(f"Connection closed: {ex}")
             raise QueueUnavailableError("Connection closed by broker") from ex
+        except QueueUnavailableError as ex:
+            self._logger.error(f"Queue unavailable: {ex}")
+            raise QueueUnavailableError("Queue unavailable") from ex
+        except Exception as ex:
+            self._logger.error(f"Unexpected error during messages consumtion: {ex}")
+            raise QueueUnavailableError("Unexpected error during messages consumption") from ex
