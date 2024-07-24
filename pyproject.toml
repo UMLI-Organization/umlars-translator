@@ -30,6 +30,7 @@ pydantic = "^2.7.4"
 watchfiles = "0.21.0"
 motor = "^3.5.1"
 aio-pika = "^9.4.2"
+aiohttp = "^3.9.5"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -2,7 +2,7 @@ from typing import Type, Optional, Dict
 
 from kink import inject
 
-from src.umlars_translator.core.deserialization.config import SupportedFormat
+from src.umlars_translator.config import SupportedFormat
 from src.umlars_translator.core.deserialization.data_source import DataSource
 from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 

@@ -7,7 +7,7 @@ from src.umlars_translator.core.deserialization.abstract.xml.xml_deserialization
 from src.umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
 )
-from src.umlars_translator.core.deserialization.config import SupportedFormat
+from src.umlars_translator.config import SupportedFormat
 from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
     RootPipe,
     DocumentationPipe,

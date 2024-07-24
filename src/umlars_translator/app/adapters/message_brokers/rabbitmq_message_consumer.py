@@ -1,11 +1,17 @@
 from typing import Optional
 import logging
+import asyncio
+import aiohttp
+import json
 
 import aio_pika
 from kink import inject
 from src.umlars_translator.app.exceptions import QueueUnavailableError
 from src.umlars_translator.app.adapters.message_brokers.message_consumer import MessageConsumer
-from src.umlars_translator.app.adapters.message_brokers import config
+from src.umlars_translator.app.adapters.message_brokers import config as messaging_config
+from src.umlars_translator.app.dtos.messages import ModelToTranslateMessage
+from src.umlars_translator.app.dtos.input import UmlModel
+from src.umlars_translator.app import config as app_config
 
 
 @inject
@@ -27,9 +33,9 @@ class RabbitMQConsumer(MessageConsumer):
             queue_name = queue_name or self._queue_name
 
             # TODO: add here event loop as argument to connect_robust
-            self._connection = await aio_pika.connect_robust(host=rabbitmq_host, port=config.MESSAGE_BROKER_PORT, login=config.MESSAGE_BROKER_USER, password=config.MESSAGE_BROKER_PASSWORD)
+            self._connection = await aio_pika.connect_robust(host=rabbitmq_host, port=messaging_config.MESSAGE_BROKER_PORT, login=messaging_config.MESSAGE_BROKER_USER, password=messaging_config.MESSAGE_BROKER_PASSWORD)
             self._channel = await self._connection.channel()
-            await self._channel.set_qos(prefetch_count=config.MESSAGE_BROKER_PREFETCH_COUNT)
+            await self._channel.set_qos(prefetch_count=messaging_config.MESSAGE_BROKER_PREFETCH_COUNT)
             self._queue = await self._channel.declare_queue(queue_name, durable=is_queue_durable)
             self._logger.info("Connected to RabbitMQ channel and queue")
         except (aio_pika.exceptions.AMQPConnectionError, asyncio.CancelledError) as ex:
@@ -52,6 +58,18 @@ class RabbitMQConsumer(MessageConsumer):
                 await message.reject(requeue=False)
 
     async def process_message(self, message: aio_pika.IncomingMessage) -> None:
+        message_data = json.loads(message.body)
+        model_to_translate_message = ModelToTranslateMessage(**message_data)
+        aiohttp_client = aiohttp.ClientSession()
+        async with aiohttp_client:
+            models_repository_api_url = f"{app_config.REPOSITORY_API_URL}/{app_config.REPOSITORY_SERVICE_MODELS_ENDPOINT}/{model_to_translate_message.id}"
+
+            async with aiohttp_client.get(models_repository_api_url) as response:
+                response_body = await response.text()
+                self._logger.info(f"Response from translation service: {response_body}")
+                uml_model = UmlModel(**json.loads(response_body))
+                self._logger.info(f"Response from translation service: {uml_model}")
+
         # TODO: Add translation logic or other processing logic here
         self._logger.info(f"Processed message: {message.body}")
 
