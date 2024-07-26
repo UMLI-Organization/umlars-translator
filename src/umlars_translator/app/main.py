@@ -9,6 +9,7 @@ from fastapi.exceptions import HTTPException
 from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from src.umlars_translator.app.utils.service_connector import ServiceConnector
 from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
 from src.umlars_translator.app.adapters.repositories.mongo_uml_model_repository import MongoDBUmlModelRepository
 from src.umlars_translator.app.dtos.uml_model import UmlModel
@@ -37,10 +38,24 @@ async def start_consuming_messages() -> None:
     return await consumer.start_consuming()
 
 
+async def connect_services():
+    try:
+        repository_service_connector = ServiceConnector(config.REPOSITORY_API_URL, config.REPOSITORY_SERVICE_CREATE_JWT_ENDPOINT)
+        await repository_service_connector.authenticate({"username": config.REPOSITORY_SERVICE_USER, "password": config.REPOSITORY_SERVICE_PASSWORD})
+    except Exception as e:
+        raise ServiceConnectionError("Failed to connect to the service") from e
+
+
 @asynccontextmanager
 async def lifespan_event_handler(app: FastAPI):
     try:
-        await start_consuming_messages()
+        try:
+            await start_consuming_messages()
+            await connect_services()
+        except Exception as ex:
+            import logging
+            logging.error(f"Failed to start consuming messages: {ex}")
+            print(f"Failed to start consuming messages: {ex}")
         yield
     except ServiceConnectionError as ex:
         raise ServiceConnectionError("Failed to start consuming messages") from ex

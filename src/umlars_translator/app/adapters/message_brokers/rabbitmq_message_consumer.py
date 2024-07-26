@@ -6,12 +6,14 @@ import json
 
 import aio_pika
 from kink import inject
+
 from src.umlars_translator.app.exceptions import QueueUnavailableError
 from src.umlars_translator.app.adapters.message_brokers.message_consumer import MessageConsumer
 from src.umlars_translator.app.adapters.message_brokers import config as messaging_config
 from src.umlars_translator.app.dtos.messages import ModelToTranslateMessage
 from src.umlars_translator.app.dtos.input import UmlModel
 from src.umlars_translator.app import config as app_config
+from src.umlars_translator.app.utils.service_connector import ServiceConnector
 
 
 @inject
@@ -63,8 +65,12 @@ class RabbitMQConsumer(MessageConsumer):
         aiohttp_client = aiohttp.ClientSession()
         async with aiohttp_client:
             models_repository_api_url = f"{app_config.REPOSITORY_API_URL}/{app_config.REPOSITORY_SERVICE_MODELS_ENDPOINT}/{model_to_translate_message.id}"
+            jwt_token = ServiceConnector.get_service_data(app_config.REPOSITORY_API_URL).jwt
+            headers = {"Authorization": f"Bearer {jwt_token}"}
 
-            async with aiohttp_client.get(models_repository_api_url) as response:
+            # In case of any problems with JWT - BasicAuth code works as well
+            # async with aiohttp_client.get(models_repository_api_url, auth=aiohttp.BasicAuth(app_config.REPOSITORY_SERVICE_USER, app_config.REPOSITORY_SERVICE_PASSWORD)) as response:
+            async with aiohttp_client.get(models_repository_api_url, headers=headers) as response:
                 response_body = await response.text()
                 self._logger.info(f"Response from translation service: {response_body}")
                 uml_model = UmlModel(**json.loads(response_body))
