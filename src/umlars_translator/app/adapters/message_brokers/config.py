@@ -3,8 +3,8 @@ import os
 
 # LOGGER
 APP_LOGGER_NAME = "MESSAGING_LOGGER"
-LOG_LEVEL = "DEBUG"
-LOG_FILE = "logs/umlars-messaging.log"
+LOG_LEVEL = os.getenv("MESSAGING_LOG_LEVEL", "DEBUG")
+LOG_FILE = os.getenv("MESSAGINGE_LOG_FILE", "logs/umlars-messaging.log")
 
 
 # RABBITMQ

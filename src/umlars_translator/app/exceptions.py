@@ -4,3 +4,7 @@ class ServiceConnectionError(Exception):
 
 class QueueUnavailableError(Exception):
     """Service outage error."""
+
+
+class NotYetAvailableError(Exception):
+    """Service outage error."""

@@ -1,4 +1,5 @@
 from enum import Enum
+import os
 
 
 class SupportedFormat(Enum):
@@ -18,5 +19,5 @@ Base logger settings
 SYSTEM_NAME = "UMLARS"
 LOGGER_BASE_NAME = SYSTEM_NAME
 
-LOG_LEVEL = "DEBUG"
-LOG_FILE = "logs/umlars.log"
+LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG")
+LOG_FILE = os.getenv("LOG_FILE", "logs/umlars.log")

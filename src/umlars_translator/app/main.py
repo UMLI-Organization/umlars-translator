@@ -2,20 +2,20 @@ import os
 import logging
 from contextlib import asynccontextmanager
 
-from kink import di
+from kink import di, inject
 import uvicorn
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from src.umlars_translator.app.utils.service_connector import ServiceConnector
 from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
 from src.umlars_translator.app.adapters.repositories.mongo_uml_model_repository import MongoDBUmlModelRepository
 from src.umlars_translator.app.dtos.uml_model import UmlModel
 from src.umlars_translator.app.adapters.message_brokers.rabbitmq_message_consumer import RabbitMQConsumer
 from src.umlars_translator.app import config
 from src.umlars_translator.app.exceptions import ServiceConnectionError, QueueUnavailableError
+from src.umlars_translator.logger import add_file_handler
 
 
 def create_app_logger():
@@ -24,9 +24,10 @@ def create_app_logger():
     New logger for the application is created as a child of the main logger, 
     used in the core module.
     """
+    logs_file = config.LOG_FILE
     app_logger = di[logging.Logger].getChild(config.APP_LOGGER_NAME)
     app_logger.setLevel(config.LOG_LEVEL)
-    app_logger.addHandler(logging.FileHandler(config.LOG_FILE))
+    add_file_handler(app_logger, logs_file, config.LOG_LEVEL)
     return app_logger
 
 
@@ -40,25 +41,26 @@ async def start_consuming_messages() -> None:
 
 async def connect_services():
     try:
-        repository_service_connector = ServiceConnector(config.REPOSITORY_API_URL, config.REPOSITORY_SERVICE_CREATE_JWT_ENDPOINT)
-        await repository_service_connector.authenticate({"username": config.REPOSITORY_SERVICE_USER, "password": config.REPOSITORY_SERVICE_PASSWORD})
+        repository_service_connector = di["repository_api_connector"]
+        await repository_service_connector.authenticate(create_token_endpoint = config.REPOSITORY_SERVICE_CREATE_JWT_ENDPOINT, user={"username": config.REPOSITORY_SERVICE_USER, "password": config.REPOSITORY_SERVICE_PASSWORD})
     except Exception as e:
-        raise ServiceConnectionError("Failed to connect to the service") from e
+        raise ServiceConnectionError(f"Failed to connect to the service: {e}") from e
 
 
+@inject
 @asynccontextmanager
-async def lifespan_event_handler(app: FastAPI):
+async def lifespan_event_handler(app: FastAPI, logger: logging.Logger):
     try:
         try:
-            await start_consuming_messages()
             await connect_services()
+            await start_consuming_messages()
         except Exception as ex:
-            import logging
-            logging.error(f"Failed to start consuming messages: {ex}")
-            print(f"Failed to start consuming messages: {ex}")
+            error_message = f"Error occured during the application startup: {ex}"
+            logger.error(error_message)
+            raise ServiceConnectionError(error_message) from ex
         yield
     except ServiceConnectionError as ex:
-        raise ServiceConnectionError("Failed to start consuming messages") from ex
+        raise ServiceConnectionError("Error occured before the application startup") from ex
 
 
 app = FastAPI(lifespan=lifespan_event_handler)
