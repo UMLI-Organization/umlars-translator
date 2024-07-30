@@ -55,7 +55,7 @@ async def lifespan_event_handler(app: FastAPI, logger: logging.Logger):
             await connect_services()
             await start_consuming_messages()
         except Exception as ex:
-            error_message = f"Error occured during the application startup: {ex}"
+            error_message = f"Error occured during the application startup: {type(ex)} - {ex}"
             logger.error(error_message)
             raise ServiceConnectionError(error_message) from ex
         yield
