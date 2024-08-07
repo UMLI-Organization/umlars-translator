@@ -79,16 +79,11 @@ class RabbitMQConsumer(MessageConsumer):
         uml_model = UmlModelDTO(**response_body)
         self._logger.info(f"Response from translation service: {uml_model}")
 
-        data_sources_gen = map(lambda uml_file: uml_file.to_datasource())
+        data_sources_gen = map(lambda uml_file: uml_file.to_datasource(), uml_model.source_files)
+        self._logger.info(f"Processed message: {message.body}")
         translated_model = self._model_translator.translate(data_sources=data_sources_gen)
 
-        for source_file in uml_model.source_files:
-            self._logger.error(f"Processing source file: {source_file.filename}")
-            translated_model = self._model_translator.translate(data=source_file.data, from_format=source_file.format)
-            self._logger.error(f"Translated model: {translated_model}")
-
-        # TODO: Add translation logic or other processing logic here
-        self._logger.info(f"Processed message: {message.body}")
+        self._logger.info(f"Translated model: {translated_model}")
 
     async def start_consuming(self) -> None:
         try:
