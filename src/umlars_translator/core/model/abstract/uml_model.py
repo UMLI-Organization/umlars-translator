@@ -1,2 +1,5 @@
-class IUmlModel:
+from abc import ABC
+
+
+class IUmlModel(ABC):
     ...

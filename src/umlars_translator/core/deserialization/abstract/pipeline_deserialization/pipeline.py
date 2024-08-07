@@ -42,7 +42,7 @@ class ModelProcessingPipe(ABC):
         self,
         successors: Optional[Iterator["ModelProcessingPipe"]] = None,
         predecessor: Optional["ModelProcessingPipe"] = None,
-        model_builder: Optional[IUmlModelBuilder] = None,
+        model_builder: IUmlModelBuilder | None = None,
         config: Optional[ConfigNamespace] = None,
         core_logger: Optional[Logger] = None,
     ) -> None:

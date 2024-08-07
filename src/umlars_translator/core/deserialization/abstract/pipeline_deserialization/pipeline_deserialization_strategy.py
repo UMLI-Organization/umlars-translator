@@ -85,7 +85,7 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
             self._parsed_data = parsed_data
         return self.format_detection_pipe.is_supported_format(parsed_data)
 
-    def retrieve_model(
+    def _retrieve_model(
         self, data_source: DataSource, clear_afterwards: bool = True
     ) -> IUmlModel:
         self._parsed_data = (
@@ -94,6 +94,7 @@ class PipelineDeserializationStrategy(DeserializationStrategy):
             else self._parsed_data
         )
         retrieved_model = self._process_data(self._parsed_data)
+        
         if clear_afterwards:
             self.clear()
 

@@ -34,6 +34,14 @@ class IUmlModelBuilder(ABC):
     _logger: Logger
     _model: IUmlModel
 
+    @property
+    def model(self) -> IUmlModel:
+        return self._model
+    
+    @model.setter
+    def model(self, new_model: IUmlModel) -> None:
+        self._model = new_model
+
     @abstractmethod
     def build(self) -> IUmlModel:
         ...

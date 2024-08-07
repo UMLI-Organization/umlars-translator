@@ -33,7 +33,6 @@ class DeserializationStrategyFactory:
     def get_strategy(
         self,
         *,
-        format: Optional[SupportedFormat] = None,
         format_data_source: Optional[DataSource] = None,
         model_builder: Optional[IUmlModelBuilder] = None,
         **kwargs,
@@ -49,7 +48,7 @@ class DeserializationStrategyFactory:
             return stategy_class(model_builder=model_builder, **kwargs)
 
         strategy_class = (
-            self._registered_strategies.get(format) if format is not None else None
+            self._registered_strategies.get(format_data_source.format) if format_data_source.format is not None else None
         )
 
         if strategy_class is not None:
@@ -60,7 +59,7 @@ class DeserializationStrategyFactory:
             for strategy_class in self._registered_strategies.values()
             if (
                 strategy_instance := create_strategy(strategy_class)
-            ).can_deserialize_format(format, format_data_source)
+            ).can_deserialize_format(format_data_source.format, format_data_source)
         ]
 
         if len(strategies_instances_for_data) > 1:

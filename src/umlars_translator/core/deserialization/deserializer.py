@@ -1,4 +1,4 @@
-from typing import Optional, Iterator, Dict, Iterator, TYPE_CHECKING
+from typing import Optional, Iterator, Dict, Iterator
 from logging import Logger
 
 from kink import inject
@@ -16,6 +16,7 @@ from src.umlars_translator.core.deserialization.abstract.base.deserialization_st
     DeserializationStrategy,
 )
 from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from src.umlars_translator.core.model.umlars_model.umlars_uml_model_builder import UmlModelBuilder
 
 
 @inject
@@ -25,12 +26,12 @@ class ModelDeserializer:
         factory: DeserializationStrategyFactory,
         deserialization_extensions_manager: ExtensionsManager,
         input_processor: Optional[InputProcessor] = None,
-        model_builder: Optional[IUmlModelBuilder] = None,
+        model_builder: IUmlModelBuilder | None = None,
         core_logger: Optional[Logger] = None,
     ) -> None:
         self._factory = factory
         self._deserialization_extensions_manager = deserialization_extensions_manager
-        self._model_builder = model_builder
+        self._model_builder = model_builder or UmlModelBuilder()
         self._input_processor = input_processor or InputProcessor()
         self._logger = core_logger.getChild(self.__class__.__name__)
         self.load_formats_support()
@@ -50,7 +51,9 @@ class ModelDeserializer:
         data_batches: Optional[Iterator[str]] = None,
         data_sources: Optional[Iterator[DataSource]] = None,
         from_format: Optional[SupportedFormat] = None,
-    ) -> Iterator[IUmlModel]:
+        model_to_extend: Optional[IUmlModel] = None,
+        clear_builder_afterwards: bool = True,
+    ) -> IUmlModel:
         """
         TODO: Support for accepting dictionary assigning from_format to file_name or data_batch.
         """
@@ -59,31 +62,42 @@ class ModelDeserializer:
         )
         if not data_sources:
             data_sources = self._input_processor.accept_multiple_inputs(
-                data_batches, file_paths
+                data_batches, file_paths, format_for_all=from_format
             )
             self._logger.info("Multiple inputs accepted.")
 
         self._logger.info("Deserializing data sources")
-        yield from self.deserialize_data_sources(data_sources, from_format)
+        return self.deserialize_data_sources(data_sources, model_to_extend, clear_builder_afterwards)
 
     def deserialize_data_sources(
         self,
         data_sources: Iterator[DataSource],
-        from_format: Optional[SupportedFormat] = None,
-    ) -> Iterator[IUmlModel]:
+        model_to_extend: Optional[IUmlModel] = None,
+        clear_builder_afterwards: bool = True,
+    ) -> IUmlModel:
+        model: IUmlModel = model_to_extend
+
         for source in data_sources:
             self._logger.info(
                 f"Choosing deserialization strategy for data source: {source}"
             )
-            import_parsing_strategy = self.get_strategy_for_source(source, from_format)
+            import_parsing_strategy = self.get_strategy_for_source(source)
             self._logger.info(f"Retrieving model from data source: {source}")
-            yield import_parsing_strategy.retrieve_model(source)
+            model = import_parsing_strategy.retrieve_model(source, model, self._model_builder, clear_afterwards=False)
+
+        if clear_builder_afterwards:
+            self._model_builder.clear()
+
+        return model
+
 
     def get_strategy_for_source(
-        self, source: DataSource, from_format: Optional[SupportedFormat] = None
+        self, source: DataSource
     ) -> DeserializationStrategy:
         return self._factory.get_strategy(
             format_data_source=source,
-            format=from_format,
             model_builder=self._model_builder,
         )
+
+    def clear(self) -> None:
+        self._model_builder.clear()

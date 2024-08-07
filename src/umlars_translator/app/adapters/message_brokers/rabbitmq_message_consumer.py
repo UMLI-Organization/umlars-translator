@@ -10,17 +10,19 @@ from src.umlars_translator.app.exceptions import QueueUnavailableError, NotYetAv
 from src.umlars_translator.app.adapters.message_brokers.message_consumer import MessageConsumer
 from src.umlars_translator.app.adapters.message_brokers import config as messaging_config
 from src.umlars_translator.app.dtos.messages import ModelToTranslateMessage
-from src.umlars_translator.app.dtos.input import UmlModel
+from src.umlars_translator.app.dtos.input import UmlModelDTO
 from src.umlars_translator.app import config as app_config
 from src.umlars_translator.app.adapters.apis.rest_api_connector import RestApiConnector
 from src.umlars_translator.app.utils.functions import retry_async
+from src.umlars_translator.core.translator import ModelTranslator
 
 
 @inject
 class RabbitMQConsumer(MessageConsumer):
-    def __init__(self, queue_name: str, rabbitmq_host: str, repository_api_connector: RestApiConnector, messaging_logger: Optional[logging.Logger] = None) -> None:
+    def __init__(self, queue_name: str, rabbitmq_host: str, repository_api_connector: RestApiConnector, messaging_logger: Optional[logging.Logger] = None, model_translator: Optional[ModelTranslator] = None) -> None:
         self._logger = messaging_logger.getChild(self.__class__.__name__)
         self._repository_api_connector = repository_api_connector
+        self._model_translator = model_translator or ModelTranslator()
         self._queue_name = queue_name
         self._rabbitmq_host = rabbitmq_host
         self._connection = None
@@ -69,12 +71,21 @@ class RabbitMQConsumer(MessageConsumer):
     async def process_message(self, message: aio_pika.IncomingMessage) -> None:
         message_data = json.loads(message.body)
         model_to_translate_message = ModelToTranslateMessage(**message_data)
+        # TODO: add filter - only changed or added files
         models_repository_api_url = f"{app_config.REPOSITORY_API_URL}/{app_config.REPOSITORY_SERVICE_MODELS_ENDPOINT}/{model_to_translate_message.id}"
 
         response_body = await self._repository_api_connector.get_data(models_repository_api_url)
         self._logger.info(f"Response from translation service: {response_body}")
-        uml_model = UmlModel(**response_body)
+        uml_model = UmlModelDTO(**response_body)
         self._logger.info(f"Response from translation service: {uml_model}")
+
+        data_sources_gen = map(lambda uml_file: uml_file.to_datasource())
+        translated_model = self._model_translator.translate(data_sources=data_sources_gen)
+
+        for source_file in uml_model.source_files:
+            self._logger.error(f"Processing source file: {source_file.filename}")
+            translated_model = self._model_translator.translate(data=source_file.data, from_format=source_file.format)
+            self._logger.error(f"Translated model: {translated_model}")
 
         # TODO: Add translation logic or other processing logic here
         self._logger.info(f"Processed message: {message.body}")
