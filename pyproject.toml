@@ -31,6 +31,7 @@ watchfiles = "0.21.0"
 motor = "^3.5.1"
 aio-pika = "^9.4.2"
 aiohttp = "^3.9.5"
+dataclass-wizard = "^0.22.3"
 
 
 [tool.poetry.group.dev.dependencies]

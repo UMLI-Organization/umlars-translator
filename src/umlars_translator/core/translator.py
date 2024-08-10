@@ -7,7 +7,6 @@ from src.umlars_translator.core.deserialization.deserializer import ModelDeseria
 from src.umlars_translator.config import SupportedFormat
 from src.umlars_translator.core.deserialization.data_source import DataSource
 from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
-from src.umlars_translator.core.model.umlars_model.umlars_uml_model import UmlModel
 
 
 @inject

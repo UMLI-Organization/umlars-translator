@@ -18,7 +18,7 @@ from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
 from src.umlars_translator.core.deserialization.exceptions import (
     InvalidFormatException,
 )
-from src.umlars_translator.core.model.umlars_model.umlars_uml_model_builder import (
+from src.umlars_translator.core.model.umlars_model.uml_model_builder import (
     UmlModelBuilder,
 )
 

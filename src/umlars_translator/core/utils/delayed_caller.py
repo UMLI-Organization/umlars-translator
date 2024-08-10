@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Type
 from collections import deque, defaultdict
 from functools import wraps
 from logging import Logger
@@ -19,9 +19,9 @@ def evaluate_elements_afterwards(blocking: bool = False) -> Callable:
 
     def wrapper(func: Callable) -> Callable:
         @wraps(func)
-        def inner(self: DelayedCaller, *args, **kwargs) -> Any:
+        def inner(self: DalayedIdToInstanceMapper, *args, **kwargs) -> Any:
             returned_value = func(self, *args, **kwargs)
-            self._evaluate_elements(blocking)
+            self._evaluate_queues(blocking)
             return returned_value
 
         return inner
@@ -30,17 +30,46 @@ def evaluate_elements_afterwards(blocking: bool = False) -> Callable:
 
 
 @inject
-class DelayedCaller(ABC):
+class IdToInstanceMapper:
+    _id_to_instance_mapping: dict[str, Any]
+    _type_to_id_to_instance_mapping: dict[Type, dict[str, Any]]
+
     def __init__(self, core_logger: Optional[Logger] = None) -> None:
         self._logger = core_logger.getChild(self.__class__.__name__)
-        self._id_to_instance_mapping: dict[str, Any] = dict()
+        self._id_to_instance_mapping = {}
+        self._type_to_id_to_instance_mapping = defaultdict(dict) 
+
+    def register_if_not_present(self, element: Any, old_id: Optional[str] = None, clear_old_id: bool = True, register_as_type: Optional[Type] = None) -> None:
+        """
+        Registers an element in the id-to-instance mapping if not already present.
+        """
+        try:
+            element_id = element.id
+        except AttributeError as ex:
+            self._logger.debug(f"Element {element} has no ID, skipping registration. Error: {ex}")
+            return
+
+        type_of_element = register_as_type or type(element)        
+        if element_id not in self._id_to_instance_mapping:
+            self._id_to_instance_mapping[element_id] = element
+            self._type_to_id_to_instance_mapping[type_of_element][element_id] = element
+
+        if old_id is not None and clear_old_id:
+            self._id_to_instance_mapping.pop(old_id, None)
+            self._type_to_id_to_instance_mapping[type_of_element].pop(old_id, None)
+
+
+class DalayedIdToInstanceMapper(IdToInstanceMapper, ABC):
+    def __init__(self, core_logger: Optional[Logger] = None) -> None:
+        self._logger = core_logger.getChild(self.__class__.__name__)
         self._id_to_evaluation_queue: dict[str, deque[Callable]] = defaultdict(deque)
         """
         Queue of functions to be called when Instance of the Object with given ID is available.
         The Instance has to be given as an argument to function call.
         """
-
-    def _evaluate_elements(self, blocking: bool = False) -> None:
+        super().__init__(core_logger=core_logger)
+    
+    def _evaluate_queues(self, blocking: bool = False) -> None:
         """
         Function that evaluates all elements from the evaluation queue.
         :arg blocking - if set to True, it raises IdMismatchException when ID present as key in the evaluation

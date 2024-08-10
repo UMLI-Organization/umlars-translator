@@ -16,7 +16,7 @@ from src.umlars_translator.core.deserialization.abstract.base.deserialization_st
     DeserializationStrategy,
 )
 from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
-from src.umlars_translator.core.model.umlars_model.umlars_uml_model_builder import UmlModelBuilder
+from src.umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
 
 
 @inject
