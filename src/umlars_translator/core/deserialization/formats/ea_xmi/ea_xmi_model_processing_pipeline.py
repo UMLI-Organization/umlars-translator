@@ -240,6 +240,7 @@ class UmlClassPipe(EaXmiModelProcessingPipe):
 
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
+                id=self.config.ATTRIBUTES["id"],
                 name=self.config.ATTRIBUTES["name"]
             )
             optional_attributes = AliasToXmlKey.from_kwargs(

@@ -97,3 +97,15 @@ class DalayedIdToInstanceMapper(IdToInstanceMapper, ABC):
             while evaluation_queue:
                 function_to_call = evaluation_queue.popleft()
                 function_to_call(element_instance)
+
+    def register_dalayed_call_for_id(self, element_id: str, function_to_call: Callable) -> None:
+        """
+        Registers a function to be called when an instance with given ID is available.
+        """
+        self._id_to_evaluation_queue[element_id].append(function_to_call)
+
+    def get_instance_by_id(self, element_id: str) -> Any:
+        """
+        Returns an instance of an object with given ID.
+        """
+        return self._id_to_instance_mapping.get(element_id, None)

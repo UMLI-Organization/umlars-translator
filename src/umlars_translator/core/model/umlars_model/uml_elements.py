@@ -1,96 +1,13 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, Union, ClassVar, TYPE_CHECKING
+from typing import List, Optional, Union, TYPE_CHECKING
 from enum import Enum
-import uuid
 
-from dataclass_wizard import property_wizard, JSONWizard
-if TYPE_CHECKING:
-    from src.umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
-    from src.umlars_translator.core.model.umlars_model.uml_model import UmlModel
+from dataclass_wizard import property_wizard
+
+from src.umlars_translator.core.model.umlars_model.uml_element import UmlElement, UmlNamedElement
 
 
-@dataclass
-class UmlElement(JSONWizard, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]]
-    id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    builder: Optional['UmlModelBuilder'] = field(default=None, repr=False, init=True)
-    model: Optional['UmlModel'] = field(default=None, repr=False, init=True)
-
-    @classmethod
-    def element_name(cls) -> str:
-        try:
-            return cls.__ELEMENT_NAME
-        except AttributeError:
-            return cls.__name__
-
-    @property
-    def id(self):
-        try:
-            return self._id
-        except AttributeError:
-            return None
-
-    @id.setter
-    def id(self, new_id: str) -> None:
-        old_id = self.id
-        self._id = new_id
-        if self.builder:
-            self.builder.register_if_not_present(self, old_id)
-
-    @property
-    def builder(self) -> Optional['UmlModelBuilder']:
-        try:
-            builder = self._builder
-            self._model = builder.model
-        except AttributeError:
-            try:
-                builder = self._model.builder
-                self._builder = builder
-            except AttributeError:
-                return None
-        
-        return builder
-
-    @builder.setter
-    def builder(self, new_builder: 'UmlModelBuilder'):
-        self._builder = new_builder
-        if new_builder:
-            self._model = new_builder.model
-
-    @property
-    def model(self) -> Optional['UmlModel']:
-        try:
-            model = self._model
-            self._builder = model.builder
-        except AttributeError:
-            try:
-                model = self._builder.model
-                self._model = model
-            except AttributeError:
-                return None
-        
-        return model
-        
-    @model.setter
-    def model(self, new_model: 'UmlModel'):
-        self._model = new_model
-        if new_model:
-            self._builder = new_model.builder
-
-@dataclass(kw_only=True)
-class UmlNamedElement(UmlElement):
-    name: Optional[str] = None
-
-    @property
-    def name(self) -> Optional[str]:
-        return self._name
-
-    @name.setter
-    def name(self, new_name: Optional[str]):
-        self._name = new_name
-
-
-class VisibilityEnum(str, Enum):
+class UmlVisibilityEnum(str, Enum):
     PUBLIC = "public"
     PRIVATE = "private"
     PROTECTED = "protected"
@@ -112,7 +29,7 @@ class UmlPrimitiveTypeEnum(str, Enum):
 
 
 @dataclass(kw_only=True)
-class UmlPrimitiveType(UmlNamedElement):
+class UmlPrimitiveType(UmlNamedElement, metaclass=property_wizard):
     kind: UmlPrimitiveTypeEnum
 
     @property
@@ -126,7 +43,8 @@ class UmlPrimitiveType(UmlNamedElement):
 
 # Classifiers
 @dataclass(kw_only=True)
-class Classifier(UmlNamedElement):
+class UmlClassifier(UmlNamedElement, metaclass=property_wizard):
+    visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
     attributes: List['UmlAttribute'] = field(default_factory=list)
     operations: List['UmlOperation'] = field(default_factory=list)
 
@@ -154,9 +72,9 @@ class Classifier(UmlNamedElement):
 
 
 @dataclass(kw_only=True)
-class UmlClass(Classifier):
+class UmlClass(UmlClassifier, metaclass=property_wizard):
     super_classes: List['UmlGeneralization'] = field(default_factory=list)
-    interfaces: List['Interface'] = field(default_factory=list)
+    interfaces: List['UmlInterface'] = field(default_factory=list)
 
     @property
     def super_classes(self) -> List['UmlGeneralization']:
@@ -170,11 +88,11 @@ class UmlClass(Classifier):
                 self.builder.register_if_not_present(super_class)
 
     @property
-    def interfaces(self) -> List['Interface']:
+    def interfaces(self) -> List['UmlInterface']:
         return self._interfaces
 
     @interfaces.setter
-    def interfaces(self, new_interfaces: List['Interface']):
+    def interfaces(self, new_interfaces: List['UmlInterface']):
         self._interfaces = new_interfaces
         if self.builder:
             for interface in new_interfaces:
@@ -182,17 +100,17 @@ class UmlClass(Classifier):
 
 
 @dataclass(kw_only=True)
-class Interface(Classifier):
+class UmlInterface(UmlClassifier, metaclass=property_wizard):
     pass
 
 
 @dataclass(kw_only=True)
-class DataType(Classifier):
+class UmlDataType(UmlClassifier, metaclass=property_wizard):
     pass
 
 
 @dataclass(kw_only=True)
-class Enumeration(UmlNamedElement):
+class UmlEnumeration(UmlNamedElement, metaclass=property_wizard):
     literals: List[str] = field(default_factory=list)
 
     @property
@@ -206,52 +124,63 @@ class Enumeration(UmlNamedElement):
 
 # Attributes and Operations
 @dataclass(kw_only=True)
-class UmlAttribute(UmlNamedElement):
-    type: Union[UmlPrimitiveType, UmlClass, Interface, DataType, Enumeration]
-    visibility: VisibilityEnum = VisibilityEnum.PUBLIC
-    is_static: bool = False
+class UmlAttribute(UmlNamedElement, metaclass=property_wizard):
+    type: Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]
+    visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
+    is_static: Optional[bool] = None
+    is_ordered: Optional[bool] = None
+    is_unique: Optional[bool] = None
+    is_read_only: Optional[bool] = None
+    is_query: Optional[bool] = None
+    is_derived: Optional[bool] = None
+    is_derived_union: Optional[bool] = None
 
     @property
-    def type(self) -> Union[UmlPrimitiveType, UmlClass, Interface, DataType, Enumeration]:
+    def type(self) -> Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]:
         return self._type
 
     @type.setter
-    def type(self, new_type: Union[UmlPrimitiveType, UmlClass, Interface, DataType, Enumeration]):
+    def type(self, new_type: Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]):
         self._type = new_type
         if self.builder:
             self.builder.register_if_not_present(new_type)
 
 
 @dataclass(kw_only=True)
-class UmlParameter(UmlNamedElement):
-    type: Union[UmlPrimitiveType, UmlClass, Interface, DataType, Enumeration]
+class UmlParameter(UmlNamedElement, metaclass=property_wizard):
+    type: Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]
 
     @property
-    def type(self) -> Union[UmlPrimitiveType, UmlClass, Interface, DataType, Enumeration]:
+    def type(self) -> Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]:
         return self._type
 
     @type.setter
-    def type(self, new_type: Union[UmlPrimitiveType, UmlClass, Interface, DataType, Enumeration]):
+    def type(self, new_type: Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]):
         self._type = new_type
         if self.builder:
             self.builder.register_if_not_present(new_type)
 
 
 @dataclass(kw_only=True)
-class UmlOperation(UmlNamedElement):
-    return_type: Optional[Union[UmlPrimitiveType, UmlClass, Interface, DataType, Enumeration]] = None
+class UmlOperation(UmlNamedElement, metaclass=property_wizard):
+    return_type: Optional[Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]] = None
     parameters: List[UmlParameter] = field(default_factory=list)
-    visibility: VisibilityEnum = VisibilityEnum.PUBLIC
-    is_static: bool = False
+    visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
+    is_static: Optional[bool] = None
+    is_ordered: Optional[bool] = None
+    is_unique: Optional[bool] = None
+    is_query: Optional[bool] = None
+    is_derived: Optional[bool] = None
+    is_derived_union: Optional[bool] = None
     is_abstract: bool = False
     exceptions: List[str] = field(default_factory=list)
 
     @property
-    def return_type(self) -> Optional[Union[UmlPrimitiveType, UmlClass, Interface, DataType, Enumeration]]:
+    def return_type(self) -> Optional[Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]]:
         return self._return_type
 
     @return_type.setter
-    def return_type(self, new_return_type: Optional[Union[UmlPrimitiveType, UmlClass, Interface, DataType, Enumeration]]):
+    def return_type(self, new_return_type: Optional[Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]]):
         self._return_type = new_return_type
         if self.builder:
             self.builder.register_if_not_present(new_return_type)
@@ -270,7 +199,7 @@ class UmlOperation(UmlNamedElement):
 
 # Relationships
 @dataclass(kw_only=True)
-class UmlGeneralization(UmlElement):
+class UmlGeneralization(UmlElement, metaclass=property_wizard):
     specific: UmlClass
     general: UmlClass
 
@@ -296,48 +225,48 @@ class UmlGeneralization(UmlElement):
 
 
 @dataclass(kw_only=True)
-class UmlDependency(UmlElement):
-    client: Classifier
-    supplier: Classifier
+class UmlDependency(UmlElement, metaclass=property_wizard):
+    client: UmlClassifier
+    supplier: UmlClassifier
 
     @property
-    def client(self) -> Classifier:
+    def client(self) -> UmlClassifier:
         return self._client
 
     @client.setter
-    def client(self, new_client: Classifier):
+    def client(self, new_client: UmlClassifier):
         self._client = new_client
         if self.builder:
             self.builder.register_if_not_present(new_client)
 
     @property
-    def supplier(self) -> Classifier:
+    def supplier(self) -> UmlClassifier:
         return self._supplier
 
     @supplier.setter
-    def supplier(self, new_supplier: Classifier):
+    def supplier(self, new_supplier: UmlClassifier):
         self._supplier = new_supplier
         if self.builder:
             self.builder.register_if_not_present(new_supplier)
 
 
 @dataclass(kw_only=True)
-class UmlAssociationEnd(UmlElement):
-    end: Classifier
+class UmlAssociationEnd(UmlElement, metaclass=property_wizard):
+    end: UmlClassifier
     role: Optional[str] = None
     multiplicity: UmlMultiplicityEnum = UmlMultiplicityEnum.ONE
     navigability: bool = True
-    visibility: VisibilityEnum = VisibilityEnum.PUBLIC
+    visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
     aggregation_kind: Optional[str] = None
 
 
 @dataclass(kw_only=True)
-class UmlOwnedEnd(UmlAssociationEnd):
+class UmlOwnedEnd(UmlAssociationEnd, metaclass=property_wizard):
     pass
 
 
 @dataclass(kw_only=True)
-class UmlMemberEnd(UmlAssociationEnd):
+class UmlMemberEnd(UmlAssociationEnd, metaclass=property_wizard):
     pass
 
 
@@ -348,7 +277,7 @@ class AssociationTypeEnum(str, Enum):
 
 
 @dataclass(kw_only=True)
-class UmlAssociationBase(UmlElement):
+class UmlAssociationBase(UmlElement, metaclass=property_wizard):
     end1: Union[UmlOwnedEnd, UmlMemberEnd]
     end2: Union[UmlOwnedEnd, UmlMemberEnd]
     association_type: AssociationTypeEnum = AssociationTypeEnum.ASSOCIATION
@@ -362,23 +291,23 @@ class UmlAssociationBase(UmlElement):
 
 
 @dataclass(kw_only=True)
-class UmlAggregation(UmlAssociationBase):
+class UmlAggregation(UmlAssociationBase, metaclass=property_wizard):
     aggregation_type: AssociationTypeEnum = AssociationTypeEnum.AGGREGATION
 
 
 @dataclass(kw_only=True)
-class UmlComposition(UmlAssociationBase):
+class UmlComposition(UmlAssociationBase, metaclass=property_wizard):
     composition_type: AssociationTypeEnum = AssociationTypeEnum.COMPOSITION
 
 
 # Interaction Elements
 @dataclass(kw_only=True)
-class UmlLifeline(UmlNamedElement):
+class UmlLifeline(UmlNamedElement, metaclass=property_wizard):
     represents: UmlClass
 
 
 @dataclass(kw_only=True)
-class UmlMessage(UmlElement):
+class UmlMessage(UmlElement, metaclass=property_wizard):
     sender: UmlLifeline
     receiver: UmlLifeline
     message_type: Optional[str] = None
@@ -386,7 +315,14 @@ class UmlMessage(UmlElement):
 
 
 @dataclass(kw_only=True)
-class UmlInteraction(UmlElement):
+class UmlFragment(UmlElement, metaclass=property_wizard):
+    covered_lifelines: List[UmlLifeline] = field(default_factory=list)
+    covered_messages: List[UmlMessage] = field(default_factory=list)
+    
+
+
+@dataclass(kw_only=True)
+class UmlInteraction(UmlElement, metaclass=property_wizard):
     lifelines: List[UmlLifeline] = field(default_factory=list)
     messages: List[UmlMessage] = field(default_factory=list)
 
@@ -414,8 +350,10 @@ class UmlInteraction(UmlElement):
 
 
 @dataclass(kw_only=True)
-class UmlPackage(UmlNamedElement):
-    packaged_elements: List[UmlElement] = field(default_factory=list)
+class UmlPackage(UmlNamedElement, metaclass=property_wizard):
+    packaged_elements: List[UmlElement] = field(default_factory=list, repr=False)
+    visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
+
 
     @property
     def packaged_elements(self) -> List[UmlElement]:
