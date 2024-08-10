@@ -1,15 +1,16 @@
-from typing import Any, Optional
+from typing import Any, Optional, TYPE_CHECKING
 from logging import Logger
 
 from kink import inject
 
-from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlLifeline, UmlAssociationEnd, UmlAssociationBase
 from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 from src.umlars_translator.core.model.umlars_model.uml_model import UmlModel
 from src.umlars_translator.core.utils.delayed_caller import (
     DalayedIdToInstanceMapper,
     evaluate_elements_afterwards,
 )
+if TYPE_CHECKING:
+    from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlLifeline, UmlAssociationEnd, UmlAssociationBase
 
 
 @inject

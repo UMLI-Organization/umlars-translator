@@ -1,15 +1,25 @@
-from typing import Optional
+from __future__ import annotations
+from typing import Optional, TYPE_CHECKING
 from dataclasses import dataclass
 
 from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
-from src.umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
 from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlLifeline, UmlAssociationBase
+if TYPE_CHECKING:
+    from src.umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
 
 
 @dataclass
 class UmlModel(IUmlModel):
     def __init__(self, builder: Optional[UmlModelBuilder] = None) -> None:
-        self.builder = builder or UmlModelBuilder()
+        self._builder = builder
+
+    @property
+    def builder(self) -> Optional[UmlModelBuilder]:
+        return self._builder
+    
+    @builder.setter
+    def builder(self, new_builder: UmlModelBuilder):
+        self._builder = new_builder
 
     def add_class(self, uml_class: UmlClass):
         uml_class.builder = self.builder

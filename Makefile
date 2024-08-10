@@ -3,10 +3,10 @@ setup:
 	poetry install
 
 test:
-	poetry run pytest
+	poetry run python -m pytest
 
 tox-test:
-	poetry run tox
+	poetry run python -m tox
 
 docs:
 	poetry run mkdocs serve
