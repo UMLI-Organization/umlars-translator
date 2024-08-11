@@ -9,8 +9,6 @@ from dataclass_wizard import asdict
 
 
 class JSONUmlSerializer(UmlSerializer):
-    INDENT = 4
-
     def serialize(self, model: UmlModel) -> str:
         return model.accept(self)
 
@@ -18,8 +16,7 @@ class JSONUmlSerializer(UmlSerializer):
         return json.dumps(asdict(uml_element), indent=self.__class__.INDENT)
 
     def visit_uml_model(self, model: UmlModel) -> str:
-        return model.to_dict(indent=self.__class__.INDENT, exclude=['builder'])
-        return model.to_json(indent=self.__class__.INDENT, exclude=['builder'])
+        return model.to_json()
     
     def visit_class(self, class_: UmlClass) -> str:
         raise NotImplementedError

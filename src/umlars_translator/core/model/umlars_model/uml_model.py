@@ -2,18 +2,16 @@ from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 from dataclasses import dataclass, field
 
-from dataclass_wizard import property_wizard, JSONWizard, json_field
+from dataclass_wizard import property_wizard, JSONWizard
 
 from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
 from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlLifeline, UmlAssociationBase, UmlVisibilityEnum, UmlPackage, UmlInterface, UmlInteraction
-if TYPE_CHECKING:
-    from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagram
-    from src.umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
+from src.umlars_translator.core.model.umlars_model.mixins import RegisteredInBuilderMixin
+from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagram
 
 
 @dataclass
-class UmlModel(IUmlModel, JSONWizard, metaclass=property_wizard):
-    builder: Optional['UmlModelBuilder'] = json_field('', default=None, repr=False, init=True, dump=False)
+class UmlModel(RegisteredInBuilderMixin, IUmlModel, metaclass=property_wizard):
     metadata: dict = field(default_factory=dict)
     name: Optional[str] = None
     visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
@@ -26,15 +24,8 @@ class UmlModel(IUmlModel, JSONWizard, metaclass=property_wizard):
 
 
     diagrams: list[UmlDiagram] = field(default_factory=list)
-
-
-    @property
-    def builder(self) -> Optional[UmlModelBuilder]:
-        return self._builder
-    
-    @builder.setter
-    def builder(self, new_builder: UmlModelBuilder):
-        self._builder = new_builder
+        
+ 
 
     def add_class(self, uml_class: UmlClass):
         uml_class.builder = self.builder

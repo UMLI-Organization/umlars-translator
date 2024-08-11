@@ -11,7 +11,7 @@ class UmlSerializer(IVisitor):
         ...
 
     @abstractmethod
-    def visit_model(self, model: IUmlModel) -> str:
+    def visit_uml_model(self, model: IUmlModel) -> str:
         ...
     
     @abstractmethod

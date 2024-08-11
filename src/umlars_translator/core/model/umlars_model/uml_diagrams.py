@@ -3,14 +3,14 @@ from abc import abstractmethod
 
 from dataclass_wizard import property_wizard
 
-from src.umlars_translator.core.model.umlars_model.uml_elements import UmlElement, UmlNamedElement, UmlClass, UmlLifeline, UmlAssociationEnd, UmlAssociationBase, UmlInterface, UmlPackage, UmlPrimitiveType, UmlAttribute, UmlOperation, UmlLifeline, UmlAssociationEnd, UmlAssociation, UmlAggregation, UmlComposition, UmlDependency, UmlRealization, UmlGeneralization, UmlMessage 
+from src.umlars_translator.core.model.umlars_model.uml_elements import UmlElement, UmlClass, UmlLifeline, UmlAssociationEnd, UmlAssociationBase, UmlInterface, UmlPackage, UmlPrimitiveType, UmlAttribute, UmlOperation, UmlLifeline, UmlAssociationEnd, UmlAssociation, UmlAggregation, UmlComposition, UmlDependency, UmlRealization, UmlGeneralization, UmlMessage 
 from src.umlars_translator.core.model.abstract.uml_diagrams import IUmlDiagram, IUmlClassDiagram, IUmlSequenceDiagram
-
+from src.umlars_translator.core.model.umlars_model.mixins import NamedElementMixin, RegisteredInModelMixin
 
 
 @dataclass
 #TODO: inheirit from JSONSerializable / JSONWIzard from property_wizard ?
-class UmlDiagram(UmlNamedElement, IUmlDiagram, metaclass=property_wizard):
+class UmlDiagram(RegisteredInModelMixin, NamedElementMixin, IUmlDiagram, metaclass=property_wizard):
     @abstractmethod
     def add_element(self, element: UmlElement) -> None:
         ...

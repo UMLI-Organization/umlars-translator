@@ -3,13 +3,13 @@ from typing import List, Optional, Union, ClassVar
 
 from dataclass_wizard import property_wizard
 
-from src.umlars_translator.core.model.umlars_model.mixins import RegisteredInBuilderMixin, NamedElementMixin
+from src.umlars_translator.core.model.umlars_model.mixins import RegisteredInModelMixin, NamedElementMixin
 from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlNamedElement, IUmlPrimitiveType, IUmlClassifier, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration, IUmlAttribute, IUmlParameter, IUmlOperation, IUmlGeneralization, IUmlDependency, IUmlAssociationEnd, IUmlOwnedEnd, IUmlMemberEnd, IUmlAssociationBase, IUmlAssociation, IUmlDirectedAssociation, IUmlAggregation, IUmlComposition, IUmlRealization, IUmlLifeline, IUmlMessage, IUmlFragment, IUmlInteractionOperand, IUmlInteraction, IUmlPackage
 from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum, UmlPrimitiveTypeTypes, UmlAssoctioationDirectionEnum
 
 
 @dataclass
-class UmlElement(RegisteredInBuilderMixin, IUmlElement, metaclass=property_wizard):
+class UmlElement(RegisteredInModelMixin, IUmlElement, metaclass=property_wizard):
     __ELEMENT_NAME: ClassVar[Optional[str]]
 
     @classmethod
