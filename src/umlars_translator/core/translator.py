@@ -4,6 +4,7 @@ from logging import Logger
 from kink import inject
 
 from src.umlars_translator.core.deserialization.deserializer import ModelDeserializer
+from src.umlars_translator.core.serialization.umlars_model.json_serializer import JSONUmlSerializer
 from src.umlars_translator.config import SupportedFormat
 from src.umlars_translator.core.deserialization.data_source import DataSource
 from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
@@ -35,8 +36,9 @@ class ModelTranslator:
         deserialized_model: IUmlModel = self.deserialize(
             data, file_name, file_paths, data_batches, data_sources, from_format, model_to_extend
         )
-        # TODO: serialize
-        return deserialized_model
+        # TODO: serializer should accept many implementations of IUmlModel
+        serialized_model = JSONUmlSerializer().serialize(deserialized_model)
+        return serialized_model
 
 
     def deserialize(

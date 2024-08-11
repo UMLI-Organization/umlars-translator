@@ -2,30 +2,30 @@ from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 from dataclasses import dataclass, field
 
-from dataclass_wizard import property_wizard, JSONWizard
+from dataclass_wizard import property_wizard, JSONWizard, json_field
 
 from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
 from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlLifeline, UmlAssociationBase, UmlVisibilityEnum, UmlPackage, UmlInterface, UmlInteraction
 if TYPE_CHECKING:
-    from src.umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
     from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagram
+    from src.umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
 
 
 @dataclass
 class UmlModel(IUmlModel, JSONWizard, metaclass=property_wizard):
-    builder: Optional[UmlModelBuilder] = field(default=None, repr=False, init=True)
+    builder: Optional['UmlModelBuilder'] = json_field('', default=None, repr=False, init=True, dump=False)
     metadata: dict = field(default_factory=dict)
     name: Optional[str] = None
     visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
 
-    packages: list[UmlPackage] = None
-    classes: list[UmlClass] = None
-    interfaces: list[UmlInterface] = None
-    associations: list[UmlAssociationBase] = None
-    interactions: list[UmlInteraction] = None
+    packages: list[UmlPackage] = field(default_factory=list)
+    classes: list[UmlClass] = field(default_factory=list)
+    interfaces: list[UmlInterface] = field(default_factory=list)
+    associations: list[UmlAssociationBase] = field(default_factory=list)
+    interactions: list[UmlInteraction] = field(default_factory=list)
 
 
-    diagrams: list[UmlDiagram] = None
+    diagrams: list[UmlDiagram] = field(default_factory=list)
 
 
     @property

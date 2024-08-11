@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Optional, TYPE_CHECKING
 import uuid
 
-from dataclass_wizard import property_wizard
+from dataclass_wizard import property_wizard, json_field
 
 if TYPE_CHECKING:
     from src.umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
@@ -13,8 +13,8 @@ if TYPE_CHECKING:
 @dataclass
 class RegisteredInBuilderMixin(metaclass=property_wizard):
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    builder: Optional['UmlModelBuilder'] = field(default=None, repr=False, init=True)
-    model: Optional['UmlModel'] = field(default=None, repr=False, init=True)
+    builder: Optional['UmlModelBuilder'] = json_field('', default=None, repr=False, init=True, dump=False)
+    model: Optional['UmlModel'] = json_field('', default=None, repr=False, init=True, dump=False)
 
     @property
     def id(self):
