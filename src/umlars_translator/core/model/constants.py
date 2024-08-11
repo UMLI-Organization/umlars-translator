@@ -1,7 +1,40 @@
 from enum import Enum
 
 
-class DiagramType(Enum):
+class UmlVisibilityEnum(str, Enum):
+    PUBLIC = "public"
+    PRIVATE = "private"
+    PROTECTED = "protected"
+
+
+class UmlMultiplicityEnum(str, Enum):
+    ZERO_OR_ONE = "0..1"
+    ONE = "1"
+    ZERO_OR_MORE = "0..*"
+    ONE_OR_MORE = "1..*"
+
+
+# TODO: new deserialized type has to supply mapping of primitive types
+class UmlPrimitiveTypeTypes(Enum):
+    """Enum class for primitive types"""
+
+    STRING = "String"
+    INTEGER = "Integer"
+    FLOAT = "Float"
+    CHAR = "Char"
+    BOOLEAN = "Boolean"
+    REAL = "Real"
+    UNLIMITED_NATURAL = "UnlimitedNatural"
+    VOID = "Void"
+    ANY = "Any"
+
+
+class UmlAssoctioationDirectionEnum(str, Enum):
+    DIRECTED = "directed"
+    BIDIRECTIONAL = "bidirectional"
+
+
+class UmlDiagramType(Enum):
     """Enum class for diagram types"""
 
     CLASS = "Class"
@@ -17,20 +50,6 @@ class DiagramType(Enum):
     INTERACTION_OVERVIEW = "InteractionOverview"
     CUSTOM = "Custom"
     NONE = "None"
-
-
-class PrimitiveTypes(Enum):
-    """Enum class for primitive types"""
-
-    STRING = "String"
-    INTEGER = "Integer"
-    FLOAT = "Float"
-    CHAR = "Char"
-    BOOLEAN = "Boolean"
-    REAL = "Real"
-    UNLIMITED_NATURAL = "UnlimitedNatural"
-    VOID = "Void"
-    ANY = "Any"
 
 
 class UmlElementType(Enum):

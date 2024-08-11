@@ -1,27 +1,20 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, Union, ClassVar, TYPE_CHECKING
-from enum import Enum
+from typing import Optional, TYPE_CHECKING
 import uuid
 
-from dataclass_wizard import property_wizard, JSONWizard
+from dataclass_wizard import property_wizard
+
 if TYPE_CHECKING:
     from src.umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
     from src.umlars_translator.core.model.umlars_model.uml_model import UmlModel
 
 
+# TODO: decide if use JSONSerializable / JSONWizard here
 @dataclass
-class UmlElement(JSONWizard, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]]
+class RegisteredInBuilderMixin(metaclass=property_wizard):
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     builder: Optional['UmlModelBuilder'] = field(default=None, repr=False, init=True)
     model: Optional['UmlModel'] = field(default=None, repr=False, init=True)
-
-    @classmethod
-    def element_name(cls) -> str:
-        try:
-            return cls.__ELEMENT_NAME
-        except AttributeError:
-            return cls.__name__
 
     @property
     def id(self):
@@ -77,8 +70,9 @@ class UmlElement(JSONWizard, metaclass=property_wizard):
         if new_model:
             self._builder = new_model.builder
 
-@dataclass(kw_only=True)
-class UmlNamedElement(UmlElement):
+
+@dataclass
+class NamedElementMixin(metaclass=property_wizard):
     name: Optional[str] = None
 
     @property
@@ -88,4 +82,3 @@ class UmlNamedElement(UmlElement):
     @name.setter
     def name(self, new_name: Optional[str]):
         self._name = new_name
-

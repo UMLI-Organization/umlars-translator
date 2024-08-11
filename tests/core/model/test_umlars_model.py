@@ -3,31 +3,25 @@ from pytest import fixture
 from src.umlars_translator.core.model.umlars_model.uml_elements import (
     UmlElement,
     UmlNamedElement,
-    VisibilityEnum,
-    UmlPrimitiveTypeEnum,
     UmlPrimitiveType,
-    Classifier,
     UmlClass,
-    Interface,
-    DataType,
-    Enumeration,
+    UmlInterface,
     UmlAttribute,
-    UmlParameter,
     UmlOperation,
     UmlGeneralization,
     UmlDependency,
     UmlAssociationEnd,
     UmlOwnedEnd,
     UmlMemberEnd,
-    AssociationTypeEnum,
-    UmlAssociationBase,
     UmlAggregation,
     UmlComposition,
     UmlLifeline,
     UmlMessage,
     UmlInteraction,
     UmlPackage,
+    UmlParameter
 )
+from src.umlars_translator.core.model.constants import UmlPrimitiveTypeTypes
 
 
 @fixture
@@ -42,7 +36,7 @@ def uml_named_element() -> UmlNamedElement:
 
 @fixture
 def uml_primitive_type() -> UmlPrimitiveType:
-    return UmlPrimitiveType(kind=UmlPrimitiveTypeEnum.INTEGER)
+    return UmlPrimitiveType(kind=UmlPrimitiveTypeTypes.INTEGER)
 
 
 @fixture
@@ -51,8 +45,8 @@ def uml_class() -> UmlClass:
 
 
 @fixture
-def interface() -> Interface:
-    return Interface()
+def interface() -> UmlInterface:
+    return UmlInterface()
 
 
 @fixture
@@ -130,7 +124,7 @@ def test_uml_named_element_name(uml_named_element):
     
 
 def test_uml_primitive_type_kind(uml_primitive_type):
-    assert uml_primitive_type.kind == UmlPrimitiveTypeEnum.INTEGER
+    assert uml_primitive_type.kind == UmlPrimitiveTypeTypes.INTEGER
 
 
 def test_uml_class_super_classes(uml_class):
@@ -195,7 +189,7 @@ def test_uml_generalization_specific(uml_generalization):
 
 def test_uml_dependency_client(uml_dependency):
     # Given
-    client = Classifier()
+    client = UmlClass(name="client")
     uml_dependency.client = client
 
     # When
@@ -207,7 +201,7 @@ def test_uml_dependency_client(uml_dependency):
 
 def test_uml_association_end_end(uml_association_end):
     # Given
-    end = Classifier()
+    end = UmlClass(name="client")
     uml_association_end.end = end
 
     # When
@@ -219,7 +213,7 @@ def test_uml_association_end_end(uml_association_end):
 
 def test_uml_owned_end_end(uml_owned_end):
     # Given
-    end = Classifier()
+    end = UmlClass(name="client")
     uml_owned_end.end = end
 
     # When
@@ -231,7 +225,7 @@ def test_uml_owned_end_end(uml_owned_end):
 
 def test_uml_member_end_end(uml_member_end):
     # Given
-    end = Classifier()
+    end = UmlClass(name="client")
     uml_member_end.end = end
 
     # When

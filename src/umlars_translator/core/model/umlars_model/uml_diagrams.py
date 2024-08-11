@@ -1,25 +1,23 @@
-from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from dataclass_wizard import property_wizard
 
-from src.umlars_translator.core.model.umlars_model.uml_element import UmlElement, UmlNamedElement
-from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlLifeline, UmlAssociationEnd, UmlAssociationBase, UmlInterface, UmlPackage, UmlPrimitiveType, UmlAttribute, UmlOperation, UmlLifeline, UmlAssociationEnd, UmlAssociationBase, UmlAssociationBase
-
+from src.umlars_translator.core.model.umlars_model.uml_elements import UmlElement, UmlNamedElement, UmlClass, UmlLifeline, UmlAssociationEnd, UmlAssociationBase, UmlInterface, UmlPackage, UmlPrimitiveType, UmlAttribute, UmlOperation, UmlLifeline, UmlAssociationEnd, UmlAssociation, UmlAggregation, UmlComposition, UmlDependency, UmlRealization, UmlGeneralization, UmlMessage 
+from src.umlars_translator.core.model.abstract.uml_diagrams import IUmlDiagram, IUmlClassDiagram, IUmlSequenceDiagram
 
 
 
 @dataclass
 #TODO: inheirit from JSONSerializable / JSONWIzard from property_wizard ?
-class UmlDiagram(UmlNamedElement, metaclass=property_wizard):
+class UmlDiagram(UmlNamedElement, IUmlDiagram, metaclass=property_wizard):
     @abstractmethod
     def add_element(self, element: UmlElement) -> None:
         ...
 
 
 @dataclass
-class UmlClassDiagram(UmlDiagram):
+class UmlClassDiagram(UmlDiagram, IUmlClassDiagram):
     classes: list[UmlClass] = field(default_factory=list)
     associations: list[UmlAssociationBase] = field(default_factory=list)
     generalizations: list[UmlAssociationBase] = field(default_factory=list)
@@ -51,7 +49,7 @@ class UmlClassDiagram(UmlDiagram):
 
 
 @dataclass
-class UmlSequenceDiagram(UmlDiagram):
+class UmlSequenceDiagram(UmlDiagram, IUmlSequenceDiagram):
     lifelines: list[UmlLifeline] = field(default_factory=list)
     messages: list[UmlAssociationEnd] = field(default_factory=list)
     fragments: list[UmlAssociationBase] = field(default_factory=list)

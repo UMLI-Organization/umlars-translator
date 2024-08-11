@@ -81,3 +81,11 @@ class IUmlModelBuilder(ABC):
     @log_calls_and_return_self()
     def construct_uml_package(self, *args, **kwargs) -> "IUmlModelBuilder":
         ...
+
+    @log_calls_and_return_self()
+    def construct_uml_operation(self, *args, **kwargs) -> "IUmlModelBuilder":
+        ...
+
+    @log_calls_and_return_self()
+    def construct_uml_parameter(self, *args, **kwargs) -> "IUmlModelBuilder":
+        ...

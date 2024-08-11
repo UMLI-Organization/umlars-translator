@@ -1,8 +1,8 @@
 from enum import Enum
 
 from src.umlars_translator.core.model.constants import (
-    DiagramType,
-    PrimitiveTypes,
+    UmlPrimitiveTypeTypes,
+    UmlDiagramType,
     UmlElementType,
 )
 from src.umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
@@ -120,8 +120,8 @@ class EaXmiConfig(ParsedConfigNamespace):
     }
 
     EA_DIAGRAMS_TYPES_MAPPING: dict[str, str] = {
-        "Logical": DiagramType.CLASS,
-        "Sequence": DiagramType.SEQUENCE,
+        "Logical": UmlDiagramType.CLASS,
+        "Sequence": UmlDiagramType.SEQUENCE,
     }
 
     EA_TYPE_ATTRIBUTE_MAPPING: dict[str, str] = {
@@ -132,18 +132,18 @@ class EaXmiConfig(ParsedConfigNamespace):
         "uml:Dependency": UmlElementType.DEPENDENCY,
         "uml:Generalization": UmlElementType.GENERALIZATION,
         "uml:Realization": UmlElementType.REALIZATION,
-        "uml:LiteralInteger": PrimitiveTypes.INTEGER,
-        "uml:LiteralUnlimitedNatural": PrimitiveTypes.INTEGER,
+        "uml:LiteralInteger": UmlPrimitiveTypeTypes.INTEGER,
+        "uml:LiteralUnlimitedNatural": UmlPrimitiveTypeTypes.INTEGER,
         "EAnone_void": None,
-        "EAJava_boolean": PrimitiveTypes.BOOLEAN,
+        "EAJava_boolean": UmlPrimitiveTypeTypes.BOOLEAN,
         "EAJava_void": None,
-        "EAJava_int": PrimitiveTypes.INTEGER,
-        "EAJava_float": PrimitiveTypes.FLOAT,
-        "EAJava_char": PrimitiveTypes.CHAR,
+        "EAJava_int": UmlPrimitiveTypeTypes.INTEGER,
+        "EAJava_float": UmlPrimitiveTypeTypes.FLOAT,
+        "EAJava_char": UmlPrimitiveTypeTypes.CHAR,
     }
 
     EA_HREF_ATTRIBUTE_MAPPING: dict[str, str] = {
-        "http://schema.omg.org/spec/UML/2.1/uml.xml#Integer": PrimitiveTypes.INTEGER,
+        "http://schema.omg.org/spec/UML/2.1/uml.xml#Integer": UmlPrimitiveTypeTypes.INTEGER,
     }
 
     # TODO: move to file with non-parsed constants /enums

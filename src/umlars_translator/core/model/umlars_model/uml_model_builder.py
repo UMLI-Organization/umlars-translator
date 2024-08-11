@@ -5,16 +5,13 @@ from kink import inject
 
 from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 from src.umlars_translator.core.model.umlars_model.uml_model import UmlModel
-from src.umlars_translator.core.model.umlars_model.uml_element import UmlElement
+from src.umlars_translator.core.model.umlars_model.uml_elements import UmlElement
 from src.umlars_translator.core.utils.delayed_caller import (
     DalayedIdToInstanceMapper,
     evaluate_elements_afterwards,
 )
 from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlLifeline, UmlAssociationEnd, UmlAssociationBase, UmlVisibilityEnum, UmlInterface, UmlPackage, UmlPrimitiveType, UmlAttribute, UmlOperation, UmlLifeline, UmlAssociationEnd, UmlAssociationBase
 from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagram
-
-
-
 
 
 @inject
