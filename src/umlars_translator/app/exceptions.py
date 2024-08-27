@@ -19,3 +19,7 @@ class ServiceUnexpectedBehaviorError(Exception):
 
 class ExternalServiceOperationError(Exception):
     """External service failure error."""
+
+
+class InputDataError(Exception):
+    """Input data error."""

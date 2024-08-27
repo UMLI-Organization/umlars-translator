@@ -3,10 +3,11 @@ import logging
 import asyncio
 import json
 
+from pydantic import ValidationError
 import aio_pika
 from kink import inject
 
-from src.umlars_translator.app.exceptions import QueueUnavailableError, NotYetAvailableError
+from src.umlars_translator.app.exceptions import QueueUnavailableError, NotYetAvailableError, InputDataError
 from src.umlars_translator.app.adapters.message_brokers.message_consumer import MessageConsumer
 from src.umlars_translator.app.adapters.message_brokers import config as messaging_config
 from src.umlars_translator.app.dtos.messages import ModelToTranslateMessage
@@ -15,14 +16,15 @@ from src.umlars_translator.app import config as app_config
 from src.umlars_translator.app.adapters.apis.rest_api_connector import RestApiConnector
 from src.umlars_translator.app.utils.functions import retry_async
 from src.umlars_translator.core.translator import ModelTranslator
-
+from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
 
 @inject
 class RabbitMQConsumer(MessageConsumer):
-    def __init__(self, queue_name: str, rabbitmq_host: str, repository_api_connector: RestApiConnector, messaging_logger: Optional[logging.Logger] = None, model_translator: Optional[ModelTranslator] = None) -> None:
+    def __init__(self, queue_name: str, rabbitmq_host: str, repository_api_connector: RestApiConnector, uml_model_repository: UmlModelRepository, messaging_logger: Optional[logging.Logger] = None, model_translator: Optional[ModelTranslator] = None) -> None:
         self._logger = messaging_logger.getChild(self.__class__.__name__)
         self._repository_api_connector = repository_api_connector
         self._model_translator = model_translator or ModelTranslator()
+        self._uml_model_repository = uml_model_repository
         self._queue_name = queue_name
         self._rabbitmq_host = rabbitmq_host
         self._connection = None
@@ -76,10 +78,16 @@ class RabbitMQConsumer(MessageConsumer):
 
         response_body = await self._repository_api_connector.get_data(models_repository_api_url)
         self._logger.info(f"Response from translation service: {response_body}")
-        uml_model = UmlModelDTO(**response_body)
+        try:
+            uml_model = UmlModelDTO(**response_body)
+        except ValidationError as ex:
+            error_message = f"Failed to deserialize response from the repository service: {ex}. Invalid structure."
+            self._logger.error(error_message)
+            raise InputDataError(error_message) from ex
+
         self._logger.info(f"Response from translation service: {uml_model}")
 
-        data_sources_gen = map(lambda uml_file: uml_file.to_datasource(), uml_model.source_files)
+        data_sources_gen = map(lambda uml_file: uml_file.to_data_source(), uml_model.source_files)
         self._logger.info(f"Processed message: {message.body}")
         translated_model = self._model_translator.translate(data_sources=data_sources_gen)
 

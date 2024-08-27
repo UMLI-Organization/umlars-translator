@@ -8,8 +8,9 @@ class SupportedFormat(Enum):
     """
 
     XMI_EA = "xmi-ea"
-    XMI_PAPYRUS = "xmi-papyrus"
-    MDJ = "mdj"
+    UML_PAPYRUS = "uml-papyrus"
+    NOTATION_PAPYRUS = "notation-papyrus"
+    MDJ_STARTUML = "mdj_staruml"
     UNKNOWN = "unknown"
 
 
