@@ -12,6 +12,7 @@ from src.umlars_translator.core.model.constants import (
     UmlInteractionOperatorEnum,
     UmlMessageSortEnum,
     UmlMessageKindEnum,
+    UmlPrimitiveTypeKindEnum,
 )
 
 
@@ -88,7 +89,6 @@ class UmlAttribute(UmlNamedElement):
         ]
     ) -> dict:
         return serialize_field_to_id_reference(type)
-
 
 
 class UmlParameter(UmlNamedElement):
@@ -190,14 +190,13 @@ class UmlEnumeration(UmlNamedElement):
     literals: List[str] = Field(default_factory=list)
 
 
-
 class UmlPrimitiveType(UmlNamedElement):
-    type: UmlPrimitiveTypeTypesEnum | str
+    kind: UmlPrimitiveTypeKindEnum | str
 
 
 class UmlAssociationEnd(UmlElement):
     multiplicity: UmlMultiplicityEnum = UmlMultiplicityEnum.ONE
-    object: Union[
+    element: Union[
         "UmlPrimitiveType",
         "UmlClass",
         "UmlInterface",
@@ -209,9 +208,9 @@ class UmlAssociationEnd(UmlElement):
     role: Optional[str] = None
     navigability: bool = True
 
-    @field_serializer("object")
-    def object_to_json(
-        object: Union[
+    @field_serializer("element")
+    def element_to_json(
+        element: Union[
             "UmlPrimitiveType",
             "UmlClass",
             "UmlInterface",
@@ -221,7 +220,7 @@ class UmlAssociationEnd(UmlElement):
             "UmlIdReference",
         ]
     ) -> dict:
-        return serialize_field_to_id_reference(object)
+        return serialize_field_to_id_reference(element)
 
 
 class UmlAssociation(UmlNamedElement):
@@ -332,7 +331,7 @@ class UmlCombinedFragment(UmlNamedElement):
     
 
 class UmlOperand(UmlElement):
-    fragments: List[Union["UmlOccurrenceSpecification", "UmlCombinedFragment"]] = Field(
+    fragments: List[Union["UmlOccurrenceSpecification", "UmlCombinedFragment", "UmlInteractionUse"]] = Field(
         default_factory=list
     )
     guard: Optional[str] = None
@@ -393,18 +392,15 @@ class UmlInteraction(UmlNamedElement):
 class UmlModelElements(BaseModel):
     classes: List[UmlClass] = Field(default_factory=list)
     interfaces: List[UmlInterface] = Field(default_factory=list)
-    dataTypes: List[UmlDataType] = Field(default_factory=list)
+    data_types: List[UmlDataType] = Field(default_factory=list)
     enumerations: List[UmlEnumeration] = Field(default_factory=list)
-    primitiveTypes: List[UmlPrimitiveType] = Field(default_factory=list)
+    primitive_types: List[UmlPrimitiveType] = Field(default_factory=list)
     associations: List[Union["UmlAssociation", "UmlDirectedAssociation"]] = Field(default_factory=list)
     generalizations: List[UmlGeneralization] = Field(default_factory=list)
     dependencies: List[UmlDependency] = Field(default_factory=list)
     realizations: List[UmlRealization] = Field(default_factory=list)
     
     interactions: List[UmlInteraction] = Field(default_factory=list)
-
-
-
 
     @model_validator(mode="before")
     def check_unique_ids(cls, values: Dict[str, Any]) -> Dict[str, Any]:
@@ -438,7 +434,6 @@ class UmlModelElements(BaseModel):
 class UmlDiagram(UmlNamedElement):
     description: Optional[str] = None
 
-    
 
 class UmlSequenceDiagramElements(BaseModel):
     interactions: List[Union["UmlInteraction","UmlIdReference"]] = Field(default_factory=list)
@@ -455,9 +450,9 @@ class UmlSequenceDiagram(UmlDiagram):
 class UmlClassDiagramElements(BaseModel):
     classes: List[Union["UmlClass","UmlIdReference"]] = Field(default_factory=list)
     interfaces: List[Union["UmlInterface","UmlIdReference"]] = Field(default_factory=list)
-    dataTypes: List[Union["UmlDataType","UmlIdReference"]] = Field(default_factory=list)
+    data_types: List[Union["UmlDataType","UmlIdReference"]] = Field(default_factory=list)
     enumerations: List[Union["UmlEnumeration","UmlIdReference"]] = Field(default_factory=list)
-    primitiveTypes: List[Union["UmlPrimitiveType","UmlIdReference"]] = Field(default_factory=list)
+    primitive_types: List[Union["UmlPrimitiveType","UmlIdReference"]] = Field(default_factory=list)
     associations: List[Union["UmlAssociation","UmlIdReference"]] = Field(default_factory=list)
     generalizations: List[Union["UmlGeneralization","UmlIdReference"]] = Field(default_factory=list)
     dependencies: List[Union["UmlDependency","UmlIdReference"]] = Field(default_factory=list)
@@ -471,17 +466,17 @@ class UmlClassDiagramElements(BaseModel):
     def interfaces_to_json(interfaces: List[Union["UmlInterface","UmlIdReference"]]) -> List[dict]:
         return [serialize_field_to_id_reference(interface) for interface in interfaces]
                 
-    @field_serializer("dataTypes")
-    def dataTypes_to_json(dataTypes: List[Union["UmlDataType","UmlIdReference"]]) -> List[dict]:
-        return [serialize_field_to_id_reference(dataType) for dataType in dataTypes]
+    @field_serializer("data_types")
+    def data_types_to_json(data_types: List[Union["UmlDataType","UmlIdReference"]]) -> List[dict]:
+        return [serialize_field_to_id_reference(dataType) for dataType in data_types]
                 
     @field_serializer("enumerations")
     def enumerations_to_json(enumerations: List[Union["UmlEnumeration","UmlIdReference"]]) -> List[dict]:
         return [serialize_field_to_id_reference(enumeration) for enumeration in enumerations]
                 
-    @field_serializer("primitiveTypes")
-    def primitiveTypes_to_json(primitiveTypes: List[Union["UmlPrimitiveType","UmlIdReference"]]) -> List[dict]:
-        return [serialize_field_to_id_reference(primitiveType) for primitiveType in primitiveTypes]
+    @field_serializer("primitive_types")
+    def primitive_types_to_json(primitive_types: List[Union["UmlPrimitiveType","UmlIdReference"]]) -> List[dict]:
+        return [serialize_field_to_id_reference(primitiveType) for primitiveType in primitive_types]
                 
     @field_serializer("associations")
     def associations_to_json(associations: List[Union["UmlAssociation","UmlIdReference"]]) -> List[dict]:

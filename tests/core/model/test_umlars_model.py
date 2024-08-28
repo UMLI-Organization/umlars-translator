@@ -21,7 +21,7 @@ from src.umlars_translator.core.model.umlars_model.uml_elements import (
     UmlPackage,
     UmlParameter
 )
-from src.umlars_translator.core.model.constants import UmlPrimitiveTypeTypes
+from src.umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum
 
 
 @fixture
@@ -36,7 +36,7 @@ def uml_named_element() -> UmlNamedElement:
 
 @fixture
 def uml_primitive_type() -> UmlPrimitiveType:
-    return UmlPrimitiveType(kind=UmlPrimitiveTypeTypes.INTEGER)
+    return UmlPrimitiveType(kind=UmlPrimitiveTypeKindEnum.INTEGER)
 
 
 @fixture
@@ -71,17 +71,17 @@ def uml_dependency() -> UmlDependency:
 
 @fixture
 def uml_association_end() -> UmlAssociationEnd:
-    return UmlAssociationEnd(end=uml_class)
+    return UmlAssociationEnd(element=uml_class)
 
 
 @fixture
 def uml_owned_end() -> UmlOwnedEnd:
-    return UmlOwnedEnd(end=uml_class)
+    return UmlOwnedEnd(element=uml_class)
 
 
 @fixture
 def uml_member_end() -> UmlMemberEnd:
-    return UmlMemberEnd(end=uml_class)
+    return UmlMemberEnd(element=uml_class)
 
 
 @fixture
@@ -124,7 +124,7 @@ def test_uml_named_element_name(uml_named_element):
     
 
 def test_uml_primitive_type_kind(uml_primitive_type):
-    assert uml_primitive_type.kind == UmlPrimitiveTypeTypes.INTEGER
+    assert uml_primitive_type.kind == UmlPrimitiveTypeKindEnum.INTEGER
 
 
 def test_uml_class_super_classes(uml_class):
@@ -237,7 +237,7 @@ def test_uml_member_end_end(uml_member_end):
 
 def test_uml_aggregation_end1(uml_aggregation):
     # Given
-    end1 = UmlOwnedEnd(end=UmlClass())
+    end1 = UmlOwnedEnd(element=UmlClass())
     uml_aggregation.end1 = end1
 
     # When
@@ -249,7 +249,7 @@ def test_uml_aggregation_end1(uml_aggregation):
 
 def test_uml_composition_end2(uml_composition):
     # Given
-    end2 = UmlMemberEnd(end=UmlClass())
+    end2 = UmlMemberEnd(element=UmlClass())
     uml_composition.end2 = end2
 
     # When

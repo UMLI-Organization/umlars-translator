@@ -14,7 +14,6 @@ class UmlFileDTO(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-
     def to_data_source(self) -> DataSource:
         return DataSource(self.data, format=self.format)
 

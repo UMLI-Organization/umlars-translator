@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Callable
+from typing import Any, Callable, Optional, Union
 from functools import wraps
 from logging import Logger
 import logging
@@ -30,7 +30,6 @@ class IUmlModelBuilder(ABC):
     Main requirement for a subclass is to provide methods `build` and `clear`.
     If other methods are not implemented, calling them won't disrupt the process and the call wll just be logged.
     """
-
     _logger: Logger
     _model: IUmlModel
 

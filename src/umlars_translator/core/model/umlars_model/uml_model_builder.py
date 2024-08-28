@@ -35,7 +35,6 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         self.register_if_not_present(element)
         return self
 
-
     def construct_uml_model(self, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum | str] = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_model({args}, {kwargs})")
         self._model.name = name
@@ -50,7 +49,6 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         self._logger.debug(f"Method called: bind_element_to_diagram({args}, {kwargs})")
         element = element if element is not None else self.get_instance_by_id(element_id)
         diagram = diagram if diagram is not None else self.get_instance_by_id(diagram_id)
-
 
         if element is None:
             self._bind_not_initialized_element_to_diagram(element_id, diagram, diagram_id)

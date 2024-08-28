@@ -40,7 +40,6 @@ class ModelTranslator:
         serialized_model = JSONUmlSerializer().serialize(deserialized_model)
         return serialized_model
 
-
     def deserialize(
         self,
         data: Optional[str] = None,

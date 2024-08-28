@@ -1,7 +1,7 @@
 from enum import Enum
 
 from src.umlars_translator.core.model.constants import (
-    UmlPrimitiveTypeTypes,
+    UmlPrimitiveTypeKindEnum,
     UmlDiagramType,
     UmlElementType,
 )
@@ -132,18 +132,18 @@ class EaXmiConfig(ParsedConfigNamespace):
         "uml:Dependency": UmlElementType.DEPENDENCY,
         "uml:Generalization": UmlElementType.GENERALIZATION,
         "uml:Realization": UmlElementType.REALIZATION,
-        "uml:LiteralInteger": UmlPrimitiveTypeTypes.INTEGER,
-        "uml:LiteralUnlimitedNatural": UmlPrimitiveTypeTypes.INTEGER,
+        "uml:LiteralInteger": UmlPrimitiveTypeKindEnum.INTEGER,
+        "uml:LiteralUnlimitedNatural": UmlPrimitiveTypeKindEnum.INTEGER,
         "EAnone_void": None,
-        "EAJava_boolean": UmlPrimitiveTypeTypes.BOOLEAN,
+        "EAJava_boolean": UmlPrimitiveTypeKindEnum.BOOLEAN,
         "EAJava_void": None,
-        "EAJava_int": UmlPrimitiveTypeTypes.INTEGER,
-        "EAJava_float": UmlPrimitiveTypeTypes.FLOAT,
-        "EAJava_char": UmlPrimitiveTypeTypes.CHAR,
+        "EAJava_int": UmlPrimitiveTypeKindEnum.INTEGER,
+        "EAJava_float": UmlPrimitiveTypeKindEnum.FLOAT,
+        "EAJava_char": UmlPrimitiveTypeKindEnum.CHAR,
     }
 
     EA_HREF_ATTRIBUTE_MAPPING: dict[str, str] = {
-        "http://schema.omg.org/spec/UML/2.1/uml.xml#Integer": UmlPrimitiveTypeTypes.INTEGER,
+        "http://schema.omg.org/spec/UML/2.1/uml.xml#Integer": UmlPrimitiveTypeKindEnum.INTEGER,
     }
 
     # TODO: move to file with non-parsed constants /enums

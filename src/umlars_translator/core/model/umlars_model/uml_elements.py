@@ -4,8 +4,8 @@ from typing import List, Optional, Union, ClassVar
 from dataclass_wizard import property_wizard
 
 from src.umlars_translator.core.model.umlars_model.mixins import RegisteredInModelMixin, NamedElementMixin
-from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlNamedElement, IUmlPrimitiveType, IUmlClassifier, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration, IUmlAttribute, IUmlParameter, IUmlOperation, IUmlGeneralization, IUmlDependency, IUmlAssociationEnd, IUmlOwnedEnd, IUmlMemberEnd, IUmlAssociationBase, IUmlAssociation, IUmlDirectedAssociation, IUmlAggregation, IUmlComposition, IUmlRealization, IUmlLifeline, IUmlMessage, IUmlFragment, IUmlInteractionOperand, IUmlInteraction, IUmlPackage
-from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum, UmlPrimitiveTypeTypes, UmlAssoctioationDirectionEnum
+from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlNamedElement, IUmlPrimitiveType, IUmlClassifier, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration, IUmlAttribute, IUmlParameter, IUmlOperation, IUmlGeneralization, IUmlDependency, IUmlAssociationEnd, IUmlAssociationBase, IUmlAssociation, IUmlDirectedAssociation, IUmlAggregation, IUmlComposition, IUmlRealization, IUmlLifeline, IUmlMessage, IUmlFragment, IUmlInteractionOperand, IUmlInteraction, IUmlPackage
+from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum, UmlPrimitiveTypeKindEnum, UmlAssociationDirectionEnum
 
 
 @dataclass
@@ -30,14 +30,14 @@ class UmlNamedElement(UmlElement, NamedElementMixin, IUmlNamedElement, metaclass
 @dataclass(kw_only=True)
 class UmlPrimitiveType(IUmlPrimitiveType, UmlNamedElement, metaclass=property_wizard):
     __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlPrimitiveType'
-    kind: UmlPrimitiveTypeTypes
+    kind: UmlPrimitiveTypeKindEnum
 
     @property
-    def kind(self) -> UmlPrimitiveTypeTypes:
+    def kind(self) -> UmlPrimitiveTypeKindEnum:
         return self._kind
 
     @kind.setter
-    def kind(self, new_kind: UmlPrimitiveTypeTypes):
+    def kind(self, new_kind: UmlPrimitiveTypeKindEnum):
         self._kind = new_kind
 
 
@@ -216,105 +216,96 @@ class UmlOperation(IUmlOperation, UmlNamedElement, metaclass=property_wizard):
 @dataclass(kw_only=True)
 class UmlAssociationEnd(IUmlAssociationEnd, UmlElement, metaclass=property_wizard):
     __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlAssociationEnd'
-    end: UmlClassifier
+    element: UmlClassifier
     role: Optional[str] = None
     multiplicity: UmlMultiplicityEnum = UmlMultiplicityEnum.ONE
     navigability: bool = True
-    visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
     aggregation_kind: Optional[str] = None
 
     @property
-    def end(self) -> UmlClassifier:
+    def element(self) -> UmlClassifier:
         return self._end
     
-    @end.setter
-    def end(self, new_end: UmlClassifier):
+    @element.setter
+    def element(self, new_end: UmlClassifier):
         self._end = new_end
         if self.builder:
             self.builder.register_if_not_present(new_end)
 
 
 @dataclass(kw_only=True)
-class UmlOwnedEnd(IUmlOwnedEnd, UmlAssociationEnd, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlOwnedEnd'
-
-
-@dataclass(kw_only=True)
-class UmlMemberEnd(IUmlMemberEnd, UmlAssociationEnd, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlMemberEnd'
-    
-
-@dataclass(kw_only=True)
 class UmlAssociationBase(IUmlAssociationBase, UmlElement):
-    end1: Union[UmlOwnedEnd, UmlMemberEnd]
-    end2: Union[UmlOwnedEnd, UmlMemberEnd]
+    end1: UmlAssociationEnd
+    end2: UmlAssociationEnd
 
     def __post_init__(self):
         if self.builder:
             self.end1.builder = self.builder
             self.end2.builder = self.builder
-            self.builder.register_if_not_present(self.end1.end)
-            self.builder.register_if_not_present(self.end2.end)
+            self.builder.register_if_not_present(self.end1.element)
+            self.builder.register_if_not_present(self.end2.element)
 
 
+@dataclass(kw_only=True)
 class UmlAssociation(UmlAssociationBase, metaclass=property_wizard):
     """
     Standard (bi-directional) association.
     """
     __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlAssociation'
-    direction: UmlAssoctioationDirectionEnum = UmlAssoctioationDirectionEnum.BIDIRECTIONAL
+    direction: UmlAssociationDirectionEnum = UmlAssociationDirectionEnum.BIDIRECTIONAL
 
     @property
-    def end1(self) -> Union[UmlOwnedEnd, UmlMemberEnd]:
+    def end1(self) -> UmlAssociationEnd:
         return self._end1
     
     @end1.setter
-    def end1(self, new_end1: Union[UmlOwnedEnd, UmlMemberEnd]):
+    def end1(self, new_end1: UmlAssociationEnd):
         self._end1 = new_end1
         if self.builder:
             new_end1.builder = self.builder
-            self.builder.register_if_not_present(new_end1.end)
+            self.builder.register_if_not_present(new_end1.element)
 
     @property
-    def end2(self) -> Union[UmlOwnedEnd, UmlMemberEnd]:
+    def end2(self) -> UmlAssociationEnd:
         return self._end2
     
     @end2.setter
-    def end2(self, new_end2: Union[UmlOwnedEnd, UmlMemberEnd]):
+    def end2(self, new_end2: UmlAssociationEnd):
         self._end2 = new_end2
         if self.builder:
             new_end2.builder = self.builder
-            self.builder.register_if_not_present(new_end2.end)
+            self.builder.register_if_not_present(new_end2.element)
 
 
+@dataclass(kw_only=True)
 class UmlDirectedAssociation(UmlAssociationBase, metaclass=property_wizard):
     """
     Directed association.
     """
     __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlDirectedAssociation'
-    direction: UmlAssoctioationDirectionEnum = UmlAssoctioationDirectionEnum.DIRECTED
+    direction: UmlAssociationDirectionEnum = UmlAssociationDirectionEnum.DIRECTED
 
     @property
-    def source(self) -> Union[UmlOwnedEnd, UmlMemberEnd]:
+    def source(self) -> UmlAssociationEnd:
         return self._end1
     
     @source.setter
-    def source(self, new_source: Union[UmlOwnedEnd, UmlMemberEnd]):
+    def source(self, new_source: UmlAssociationEnd):
         self._end1 = new_source
         if self.builder:
             new_source.builder = self.builder
-            self.builder.register_if_not_present(new_source.end)
+            self.builder.register_if_not_present(new_source.element)
 
     @property
-    def target(self) -> Union[UmlOwnedEnd, UmlMemberEnd]:
+    def target(self) -> UmlAssociationEnd:
         return self._end2
     
     @target.setter
-    def target(self, new_target: Union[UmlOwnedEnd, UmlMemberEnd]):
+    def target(self, new_target: UmlAssociationEnd):
         self._end2 = new_target
         if self.builder:
             new_target.builder = self.builder
-            self.builder.register_if_not_present(new_target.end)
+            self.builder.register_if_not_present(new_target.element)
 
 
 @dataclass(kw_only=True)

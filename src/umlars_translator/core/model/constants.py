@@ -59,7 +59,7 @@ class UmlMultiplicityEnum(str, Enum):
 
 
 # TODO: new deserialized type has to supply mapping of primitive types
-class UmlPrimitiveTypeTypes(Enum):
+class UmlPrimitiveTypeKindEnum(Enum):
     """Enum class for primitive types"""
 
     STRING = "String"
