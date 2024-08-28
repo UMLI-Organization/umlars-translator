@@ -3,8 +3,7 @@ from typing import List, Union, TYPE_CHECKING
 
 from src.umlars_translator.core.utils.visitor import IVisitable, IVisitor
 
-if TYPE_CHECKING:
-    from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration, IUmlPrimitiveType, IUmlAssociation, IUmlDirectedAssociation, IUmlGeneralization, IUmlDependency, IUmlRealization, IUmlInteraction
+from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration, IUmlPrimitiveType, IUmlAssociation, IUmlDirectedAssociation, IUmlGeneralization, IUmlDependency, IUmlRealization, IUmlInteraction
 
 
 class IUmlDiagram(IVisitable, ABC):
@@ -90,4 +89,19 @@ class IUmlSequenceDiagram(IUmlDiagram):
     @property
     @abstractmethod
     def elements(self) -> IUmlSequenceDiagramElements:
+        ...
+
+
+class IUmlDiagrams(IVisitable, ABC):
+    def accept(self, visitor: IVisitor):
+        return visitor.visit_uml_diagrams(self)
+
+    @property
+    @abstractmethod
+    def class_diagrams(self) -> List["IUmlClassDiagram"]:
+        ...
+
+    @property
+    @abstractmethod
+    def sequence_diagrams(self) -> List["IUmlSequenceDiagram"]:
         ...

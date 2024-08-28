@@ -76,8 +76,8 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
     
     def add_class(self, uml_class: UmlClass) -> "IUmlModelBuilder":
         self.add_element(uml_class)
-        self.model.classes.append(uml_class)
-                             
+        self.model.elements.classes.append(uml_class)
+
     def construct_uml_attribute(self, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum | str] = None, type_id: Optional[str] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_read_only: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_attribute({args}, {kwargs})")
         type = self.get_instance_by_id(type_id)
@@ -141,11 +141,6 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
             self.register_dalayed_call_for_id(diagram_id, _queued_assign_element_to_diagram)
         else:
             raise ValueError("Either diagram or diagram_id should be provided.")
-
-
-
-
-
 
 
     # TODO: remove after final definition of the builder interface

@@ -1,31 +1,50 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
-from dataclasses import dataclass, field
-
-from dataclass_wizard import property_wizard, JSONWizard
 
 from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
-from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlLifeline, UmlAssociationBase, UmlVisibilityEnum, UmlPackage, UmlInterface, UmlInteraction
+from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlModelElements, UmlAssociationBase, UmlVisibilityEnum, UmlPackage, UmlInterface, UmlInteraction, UmlLifeline
 from src.umlars_translator.core.model.umlars_model.mixins import RegisteredInBuilderMixin
-from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagram
+from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagrams
 
 
-@dataclass
-class UmlModel(RegisteredInBuilderMixin, IUmlModel, metaclass=property_wizard):
-    metadata: dict = field(default_factory=dict)
-    name: Optional[str] = None
-    visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
+class UmlModel(RegisteredInBuilderMixin, IUmlModel):
+    def __init__(self, id: Optional[str] = None, builder: Optional['UmlModelBuilder'] = None, name: Optional[str] = None,  elements: Optional[UmlModelElements] = None, diagrams: Optional[UmlDiagrams] = None, **kwargs):
+        super().__init__(id=id, builder=builder, **kwargs)
+        self.name = name
+        self.elements = elements or UmlModelElements()
+        self.diagrams = diagrams or UmlDiagrams()
 
-    packages: list[UmlPackage] = field(default_factory=list)
-    classes: list[UmlClass] = field(default_factory=list)
-    interfaces: list[UmlInterface] = field(default_factory=list)
-    associations: list[UmlAssociationBase] = field(default_factory=list)
-    interactions: list[UmlInteraction] = field(default_factory=list)
+    @property
+    def elements(self) -> UmlModelElements:
+        return self._elements
+    
+    @elements.setter
+    def elements(self, new_elements: UmlModelElements):
+        self._elements = new_elements
+        if self._elements and self.builder:
+            for class_element in self._elements.classes:
+                self.builder.add_class(class_element)
+            for association in self._elements.associations:
+                self.builder.add_association(association)
+            for interface in self._elements.interfaces:
+                self.builder.add_class(interface)
+            for package in self._elements.packages:
+                self.builder.add_class(package)
+            for interaction in self._elements.interactions:
+                self.builder.add_class(interaction)
 
-
-    diagrams: list[UmlDiagram] = field(default_factory=list)
-        
- 
+    @property
+    def diagrams(self) -> UmlDiagrams:
+        return self._diagrams
+    
+    @diagrams.setter
+    def diagrams(self, new_diagrams: UmlDiagrams):
+        self._diagrams = new_diagrams
+        if self._diagrams and self.builder:
+            for diagram in self._diagrams.class_diagrams:
+                self.builder.add_diagram(diagram)
+            for diagram in self._diagrams.sequence_diagrams:
+                self.builder.add_diagram(diagram)
 
     def add_class(self, uml_class: UmlClass):
         uml_class.builder = self.builder
@@ -40,6 +59,3 @@ class UmlModel(RegisteredInBuilderMixin, IUmlModel, metaclass=property_wizard):
         self.builder.add_association(association)
 
     # TODO: Add other proxy methods as needed or maybe move to the IUmlModel interface
-
-
-

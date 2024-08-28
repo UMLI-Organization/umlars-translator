@@ -374,7 +374,6 @@ class UmlMessage(UmlNamedElement):
         signature: Union["UmlOperation", "UmlIdReference"]
     ) -> dict:
         return serialize_field_to_id_reference(signature)
-    
 
 
 class UmlInteraction(UmlNamedElement):
@@ -389,6 +388,16 @@ class UmlInteraction(UmlNamedElement):
     """
 
 
+class UmlPackage(UmlNamedElement):
+    elements: Union["UmlModelElements", "UmlIdReference"]
+
+    @field_serializer("elements")
+    def elements_to_json(
+        elements: Union["UmlModelElements", "UmlIdReference"]
+    ) -> dict:
+        return serialize_field_to_id_reference(elements)
+
+
 class UmlModelElements(BaseModel):
     classes: List[UmlClass] = Field(default_factory=list)
     interfaces: List[UmlInterface] = Field(default_factory=list)
@@ -399,8 +408,10 @@ class UmlModelElements(BaseModel):
     generalizations: List[UmlGeneralization] = Field(default_factory=list)
     dependencies: List[UmlDependency] = Field(default_factory=list)
     realizations: List[UmlRealization] = Field(default_factory=list)
-    
+
     interactions: List[UmlInteraction] = Field(default_factory=list)
+
+    packages: List["UmlPackage"] = Field(default_factory=list)
 
     @model_validator(mode="before")
     def check_unique_ids(cls, values: Dict[str, Any]) -> Dict[str, Any]:
@@ -507,9 +518,8 @@ class UmlModelDiagrams(BaseModel):
 class UmlModel(UmlNamedElement):
     elements: UmlModelElements
     diagrams: UmlModelDiagrams
-    
-    model_config = ConfigDict(from_attributes=True)
 
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_mongo(cls, mongo_dict: dict) -> "UmlModel":

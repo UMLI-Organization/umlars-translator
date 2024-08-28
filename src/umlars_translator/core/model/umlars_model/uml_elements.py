@@ -1,36 +1,47 @@
-from dataclasses import dataclass, field
-from typing import List, Optional, Union, ClassVar
-
-from dataclass_wizard import property_wizard
-
-from src.umlars_translator.core.model.umlars_model.mixins import RegisteredInModelMixin, NamedElementMixin
-from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlNamedElement, IUmlPrimitiveType, IUmlClassifier, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration, IUmlAttribute, IUmlParameter, IUmlOperation, IUmlGeneralization, IUmlDependency, IUmlAssociationEnd, IUmlAssociationBase, IUmlAssociation, IUmlDirectedAssociation, IUmlAggregation, IUmlComposition, IUmlRealization, IUmlLifeline, IUmlMessage, IUmlFragment, IUmlInteractionOperand, IUmlInteraction, IUmlPackage
-from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum, UmlPrimitiveTypeKindEnum, UmlAssociationDirectionEnum
+from typing import List, Optional, Union, ClassVar, TYPE_CHECKING
 
 
-@dataclass
-class UmlElement(RegisteredInModelMixin, IUmlElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]]
-
-    @classmethod
-    def element_name(cls) -> str:
-        try:
-            return cls.__ELEMENT_NAME
-        except AttributeError:
-            return cls.__name__
+from src.umlars_translator.core.model.umlars_model.mixins import RegisteredInModelMixin
+from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlNamedElement, IUmlPrimitiveType, IUmlClassifier, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration, IUmlAttribute, IUmlParameter, IUmlOperation, IUmlGeneralization, IUmlDependency, IUmlAssociationEnd, IUmlAssociationBase, IUmlAssociation, IUmlDirectedAssociation, IUmlAggregation, IUmlComposition, IUmlRealization, IUmlLifeline, IUmlMessage, IUmlCombinedFragment, IUmlInteractionUse, IUmlInteraction, IUmlPackage, IUmlOccurrenceSpecification, IUmlOperand, IUmlModelElements
+from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum, UmlPrimitiveTypeKindEnum, UmlAssociationDirectionEnum, UmlParameterDirectionEnum, UmlInteractionOperatorEnum, UmlMessageSortEnum, UmlMessageKindEnum
 
 
-@dataclass(kw_only=True)
-class UmlNamedElement(UmlElement, NamedElementMixin, IUmlNamedElement, metaclass=property_wizard):
+# Base and Common Elements
+class UmlElement(RegisteredInModelMixin, IUmlElement):
+    ...
+
+
+class UmlNamedElement(UmlElement, IUmlNamedElement):
     """
     Base class for all UML elements that have a name.
     """
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, id: Optional[str] = None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        self._name = name
+        self._visibility = visibility
+        
+    @property
+    def name(self) -> Optional[str]:
+        return self._name
+    
+    @name.setter
+    def name(self, new_name: Optional[str]):
+        self._name = new_name
+
+    @property
+    def visibility(self) -> UmlVisibilityEnum:
+        return self._visibility
+    
+    @visibility.setter
+    def visibility(self, new_visibility: UmlVisibilityEnum):
+        self._visibility = new_visibility
 
 
-@dataclass(kw_only=True)
-class UmlPrimitiveType(IUmlPrimitiveType, UmlNamedElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlPrimitiveType'
-    kind: UmlPrimitiveTypeKindEnum
+# Primitive Types
+class UmlPrimitiveType(IUmlPrimitiveType, UmlNamedElement):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, kind: UmlPrimitiveTypeKindEnum = UmlPrimitiveTypeKindEnum.STRING, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self.kind = kind
 
     @property
     def kind(self) -> UmlPrimitiveTypeKindEnum:
@@ -42,22 +53,22 @@ class UmlPrimitiveType(IUmlPrimitiveType, UmlNamedElement, metaclass=property_wi
 
 
 # Classifiers
-@dataclass(kw_only=True)
-class UmlClassifier(IUmlClassifier, UmlNamedElement, metaclass=property_wizard):
-    visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
-    attributes: List['UmlAttribute'] = field(default_factory=list)
-    operations: List['UmlOperation'] = field(default_factory=list)
+class UmlClassifier(IUmlClassifier, UmlNamedElement):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, attributes: Optional[List["UmlAttribute"]] = None, operations: Optional[List["UmlOperation"]] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self.attributes = attributes or []
+        self.operations = operations or []
 
     @property
     def attributes(self) -> List['UmlAttribute']:
         return self._attributes
 
     @attributes.setter
-    def attributes(self, new_attributes: List['UmlAttribute']):
+    def attributes(self, new_attributes: List['UmlAttribute']) -> None:
         self._attributes = new_attributes
         if self.builder:
-            for attr in new_attributes:
-                self.builder.register_if_not_present(attr)
+            for attribute in new_attributes:
+                self.builder.register_if_not_present(attribute)
 
     @property
     def operations(self) -> List['UmlOperation']:
@@ -67,26 +78,26 @@ class UmlClassifier(IUmlClassifier, UmlNamedElement, metaclass=property_wizard):
     def operations(self, new_operations: List['UmlOperation']):
         self._operations = new_operations
         if self.builder:
-            for op in new_operations:
-                self.builder.register_if_not_present(op)
+            for operation in new_operations:
+                self.builder.register_if_not_present(operation)
 
 
-@dataclass(kw_only=True)
-class UmlClass(IUmlClass, UmlClassifier, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlClass'
-    super_classes: List['UmlGeneralization'] = field(default_factory=list)
-    interfaces: List['UmlInterface'] = field(default_factory=list)
+class UmlClass(UmlClassifier, IUmlClass):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, generalizations: Optional[List["UmlGeneralization"]] = None, interfaces: Optional[List["UmlInterface"]] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self.generalizations = generalizations or []
+        self.interfaces = interfaces or []
 
     @property
-    def super_classes(self) -> List['UmlGeneralization']:
-        return self._super_classes
+    def generalizations(self) -> List['UmlGeneralization']:
+        return self._generalizations
 
-    @super_classes.setter
-    def super_classes(self, new_super_classes: List['UmlGeneralization']):
-        self._super_classes = new_super_classes
+    @generalizations.setter
+    def generalizations(self, new_generalizations: List['UmlGeneralization']):
+        self._generalizations = new_generalizations
         if self.builder:
-            for super_class in new_super_classes:
-                self.builder.register_if_not_present(super_class)
+            for generalization in new_generalizations:
+                self.builder.register_if_not_present(generalization)
 
     @property
     def interfaces(self) -> List['UmlInterface']:
@@ -100,20 +111,20 @@ class UmlClass(IUmlClass, UmlClassifier, metaclass=property_wizard):
                 self.builder.register_if_not_present(interface)
 
 
-@dataclass(kw_only=True)
-class UmlInterface(IUmlInterface, UmlClassifier, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlInterface'
+class UmlInterface(UmlClassifier, IUmlInterface):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
 
 
-@dataclass(kw_only=True)
-class UmlDataType(IUmlDataType, UmlClassifier, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlDataType'
+class UmlDataType(UmlClassifier, IUmlDataType):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
 
 
-@dataclass(kw_only=True)
-class UmlEnumeration(IUmlEnumeration, UmlNamedElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlEnumeration'
-    literals: List[str] = field(default_factory=list)
+class UmlEnumeration(UmlNamedElement, IUmlEnumeration):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, literals: Optional[List[str]] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self.literals = literals or []
 
     @property
     def literals(self) -> List[str]:
@@ -125,416 +136,718 @@ class UmlEnumeration(IUmlEnumeration, UmlNamedElement, metaclass=property_wizard
 
 
 # Attributes and Operations
-@dataclass(kw_only=True)
-class UmlAttribute(IUmlAttribute, UmlNamedElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlAttribute'
-    type: Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]
-    visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
-    is_static: Optional[bool] = None
-    is_ordered: Optional[bool] = None
-    is_unique: Optional[bool] = None
-    is_read_only: Optional[bool] = None
-    is_query: Optional[bool] = None
-    is_derived: Optional[bool] = None
-    is_derived_union: Optional[bool] = None
+class UmlAttribute(UmlNamedElement, IUmlAttribute):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, type: Optional[Union[IUmlPrimitiveType, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration]] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_read_only: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self.type = type
+        self.is_static = is_static
+        self.is_ordered = is_ordered
+        self.is_unique = is_unique
+        self.is_read_only = is_read_only
+        self.is_query = is_query
+        self.is_derived = is_derived
+        self.is_derived_union = is_derived_union
 
     @property
-    def type(self) -> Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]:
+    def type(self) -> Union[IUmlPrimitiveType, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration]:
         return self._type
-
+    
     @type.setter
-    def type(self, new_type: Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]):
+    def type(self, new_type: Union[IUmlPrimitiveType, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration]):
         self._type = new_type
         if self.builder:
             self.builder.register_if_not_present(new_type)
 
-
-@dataclass(kw_only=True)
-class UmlParameter(IUmlParameter, UmlNamedElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlParameter'
-    type: Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]
+    @property
+    def is_static(self) -> Optional[bool]:
+        return self._is_static
+    
+    @is_static.setter
+    def is_static(self, new_is_static: Optional[bool]):
+        self._is_static = new_is_static
 
     @property
-    def type(self) -> Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]:
-        return self._type
+    def is_ordered(self) -> Optional[bool]:
+        return self._is_ordered
+    
+    @is_ordered.setter
+    def is_ordered(self, new_is_ordered: Optional[bool]):
+        self._is_ordered = new_is_ordered
 
+    @property
+    def is_unique(self) -> Optional[bool]:
+        return self._is_unique
+    
+    @is_unique.setter
+    def is_unique(self, new_is_unique: Optional[bool]):
+        self._is_unique = new_is_unique
+
+    @property
+    def is_read_only(self) -> Optional[bool]:
+        return self._is_read_only
+    
+    @is_read_only.setter
+    def is_read_only(self, new_is_read_only: Optional[bool]):
+        self._is_read_only = new_is_read_only
+
+    @property
+    def is_query(self) -> Optional[bool]:
+        return self._is_query
+    
+    @is_query.setter
+    def is_query(self, new_is_query: Optional[bool]):
+        self._is_query = new_is_query
+
+    @property
+    def is_derived(self) -> Optional[bool]:
+        return self._is_derived
+    
+    @is_derived.setter
+    def is_derived(self, new_is_derived: Optional[bool]):
+        self._is_derived = new_is_derived
+
+    @property
+    def is_derived_union(self) -> Optional[bool]:
+        return self._is_derived_union
+    
+    @is_derived_union.setter
+    def is_derived_union(self, new_is_derived_union: Optional[bool]):
+        self._is_derived_union = new_is_derived_union
+
+    
+class UmlParameter(UmlNamedElement, IUmlParameter):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, type: Optional[Union[IUmlPrimitiveType, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration]] = None, direction: UmlParameterDirectionEnum = UmlParameterDirectionEnum.IN, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self.type = type
+        self.direction = direction
+
+    @property
+    def type(self) -> Union[IUmlPrimitiveType, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration]:
+        return self._type
+    
     @type.setter
-    def type(self, new_type: Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]):
+    def type(self, new_type: Union[IUmlPrimitiveType, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration]):
         self._type = new_type
         if self.builder:
             self.builder.register_if_not_present(new_type)
 
+    @property
+    def direction(self) -> UmlParameterDirectionEnum:
+        return self._direction
+    
+    @direction.setter
+    def direction(self, new_direction: UmlParameterDirectionEnum):
+        self._direction = new_direction
 
-@dataclass(kw_only=True)
-class UmlOperation(IUmlOperation, UmlNamedElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlOperation'
-    return_type: Optional[Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]] = None
-    parameters: List[UmlParameter] = field(default_factory=list)
-    visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
-    is_static: Optional[bool] = None
-    is_ordered: Optional[bool] = None
-    is_unique: Optional[bool] = None
-    is_query: Optional[bool] = None
-    is_derived: Optional[bool] = None
-    is_derived_union: Optional[bool] = None
-    is_abstract: bool = False
-    exceptions: List[str] = field(default_factory=list)
+
+class UmlOperation(UmlNamedElement, IUmlOperation):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, return_type: Optional[Union[IUmlPrimitiveType, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration]] = None, parameters: Optional[List[IUmlParameter]] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None, is_abstract: bool = False, exceptions: Optional[List[str]] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self.return_type = return_type
+        self.parameters = parameters or []
+        self.is_static = is_static
+        self.is_ordered = is_ordered
+        self.is_unique = is_unique
+        self.is_query = is_query
+        self.is_derived = is_derived
+        self.is_derived_union = is_derived_union
+        self.is_abstract = is_abstract
+        self.exceptions = exceptions or []
 
     @property
-    def return_type(self) -> Optional[Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]]:
+    def return_type(self) -> Optional[Union[IUmlPrimitiveType, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration]]:
         return self._return_type
-
+    
     @return_type.setter
-    def return_type(self, new_return_type: Optional[Union[UmlPrimitiveType, UmlClass, UmlInterface, UmlDataType, UmlEnumeration]]):
+    def return_type(self, new_return_type: Optional[Union[IUmlPrimitiveType, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration]]):
         self._return_type = new_return_type
         if self.builder:
             self.builder.register_if_not_present(new_return_type)
 
     @property
-    def parameters(self) -> List[UmlParameter]:
+    def parameters(self) -> List[IUmlParameter]:
         return self._parameters
-
+    
     @parameters.setter
-    def parameters(self, new_parameters: List[UmlParameter]):
+    def parameters(self, new_parameters: List[IUmlParameter]):
         self._parameters = new_parameters
         if self.builder:
-            for param in new_parameters:
-                self.builder.register_if_not_present(param)
+            for parameter in new_parameters:
+                self.builder.register_if_not_present(parameter)
+
+    @property
+    def is_static(self) -> Optional[bool]:
+        return self._is_static
+    
+    @is_static.setter
+    def is_static(self, new_is_static: Optional[bool]):
+        self._is_static = new_is_static
+
+    @property
+    def is_ordered(self) -> Optional[bool]:
+        return self._is_ordered
+    
+    @is_ordered.setter
+    def is_ordered(self, new_is_ordered: Optional[bool]):
+        self._is_ordered = new_is_ordered
+
+    @property
+    def is_unique(self) -> Optional[bool]:
+        return self._is_unique
+    
+    @is_unique.setter
+    def is_unique(self, new_is_unique: Optional[bool]):
+        self._is_unique = new_is_unique
+
+    @property
+    def is_query(self) -> Optional[bool]:
+        return self._is_query
+    
+    @is_query.setter
+    def is_query(self, new_is_query: Optional[bool]):
+        self._is_query = new_is_query
+
+    @property
+    def is_derived(self) -> Optional[bool]:
+        return self._is_derived
+    
+    @is_derived.setter
+    def is_derived(self, new_is_derived: Optional[bool]):
+        self._is_derived = new_is_derived
+
+    @property
+    def is_derived_union(self) -> Optional[bool]:
+        return self._is_derived_union
+    
+    @is_derived_union.setter
+    def is_derived_union(self, new_is_derived_union: Optional[bool]):
+        self._is_derived_union = new_is_derived_union
+
+    @property
+    def is_abstract(self) -> bool:
+        return self._is_abstract
+    
+    @is_abstract.setter
+    def is_abstract(self, new_is_abstract: bool):
+        self._is_abstract = new_is_abstract
 
     @property
     def exceptions(self) -> List[str]:
         return self._exceptions
     
     @exceptions.setter
-    def exceptions(self, new_exceptions: List[str]) -> None:
+    def exceptions(self, new_exceptions: List[str]):
         self._exceptions = new_exceptions
 
-
-
+    
 # Relationships
-
-@dataclass(kw_only=True)
-class UmlAssociationEnd(IUmlAssociationEnd, UmlElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlAssociationEnd'
-    element: UmlClassifier
-    role: Optional[str] = None
-    multiplicity: UmlMultiplicityEnum = UmlMultiplicityEnum.ONE
-    navigability: bool = True
-    aggregation_kind: Optional[str] = None
+class UmlGeneralization(UmlElement, IUmlGeneralization):
+    def __init__(self, specific: IUmlClass, general: IUmlClass, id: Optional[str] = None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        self.specific = specific
+        self.general = general
 
     @property
-    def element(self) -> UmlClassifier:
-        return self._end
-    
-    @element.setter
-    def element(self, new_end: UmlClassifier):
-        self._end = new_end
-        if self.builder:
-            self.builder.register_if_not_present(new_end)
-
-
-@dataclass(kw_only=True)
-class UmlAssociationBase(IUmlAssociationBase, UmlElement):
-    end1: UmlAssociationEnd
-    end2: UmlAssociationEnd
-
-    def __post_init__(self):
-        if self.builder:
-            self.end1.builder = self.builder
-            self.end2.builder = self.builder
-            self.builder.register_if_not_present(self.end1.element)
-            self.builder.register_if_not_present(self.end2.element)
-
-
-@dataclass(kw_only=True)
-class UmlAssociation(UmlAssociationBase, metaclass=property_wizard):
-    """
-    Standard (bi-directional) association.
-    """
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlAssociation'
-    direction: UmlAssociationDirectionEnum = UmlAssociationDirectionEnum.BIDIRECTIONAL
-
-    @property
-    def end1(self) -> UmlAssociationEnd:
-        return self._end1
-    
-    @end1.setter
-    def end1(self, new_end1: UmlAssociationEnd):
-        self._end1 = new_end1
-        if self.builder:
-            new_end1.builder = self.builder
-            self.builder.register_if_not_present(new_end1.element)
-
-    @property
-    def end2(self) -> UmlAssociationEnd:
-        return self._end2
-    
-    @end2.setter
-    def end2(self, new_end2: UmlAssociationEnd):
-        self._end2 = new_end2
-        if self.builder:
-            new_end2.builder = self.builder
-            self.builder.register_if_not_present(new_end2.element)
-
-
-@dataclass(kw_only=True)
-class UmlDirectedAssociation(UmlAssociationBase, metaclass=property_wizard):
-    """
-    Directed association.
-    """
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlDirectedAssociation'
-    direction: UmlAssociationDirectionEnum = UmlAssociationDirectionEnum.DIRECTED
-
-    @property
-    def source(self) -> UmlAssociationEnd:
-        return self._end1
-    
-    @source.setter
-    def source(self, new_source: UmlAssociationEnd):
-        self._end1 = new_source
-        if self.builder:
-            new_source.builder = self.builder
-            self.builder.register_if_not_present(new_source.element)
-
-    @property
-    def target(self) -> UmlAssociationEnd:
-        return self._end2
-    
-    @target.setter
-    def target(self, new_target: UmlAssociationEnd):
-        self._end2 = new_target
-        if self.builder:
-            new_target.builder = self.builder
-            self.builder.register_if_not_present(new_target.element)
-
-
-@dataclass(kw_only=True)
-class UmlAggregation(UmlDirectedAssociation, IUmlAggregation, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlAggregation'
-
-
-@dataclass(kw_only=True)
-class UmlComposition(UmlDirectedAssociation, IUmlComposition, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlComposition'
-
-
-@dataclass(kw_only=True)
-class UmlRealization(UmlDirectedAssociation, IUmlRealization, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlRealization'
-
-@dataclass(kw_only=True)
-class UmlGeneralization(UmlElement, IUmlGeneralization, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlGeneralization'
-    specific: UmlClass
-    general: UmlClass
-
-    @property
-    def source(self) -> UmlClass:
-        return self.specific
-    
-    @source.setter
-    def source(self, new_source: UmlClass):
-        self.specific = new_source
-    
-    @property
-    def target(self) -> UmlClass:
-        return self.general
-
-    @target.setter
-    def target(self, new_target: UmlClass):
-        self.general = new_target
-
-    @property
-    def specific(self) -> UmlClass:
+    def specific(self) -> IUmlClass:
         return self._specific
-
+    
     @specific.setter
-    def specific(self, new_specific: UmlClass):
+    def specific(self, new_specific: IUmlClass):
         self._specific = new_specific
         if self.builder:
             self.builder.register_if_not_present(new_specific)
 
     @property
-    def general(self) -> UmlClass:
+    def general(self) -> IUmlClass:
         return self._general
-
+    
     @general.setter
-    def general(self, new_general: UmlClass):
+    def general(self, new_general: IUmlClass):
         self._general = new_general
         if self.builder:
             self.builder.register_if_not_present(new_general)
-
-
-@dataclass(kw_only=True)
-class UmlDependency(IUmlDependency, UmlElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlDependency'
-    client: UmlClassifier
-    supplier: UmlClassifier
-
-    @property
-    def source(self) -> UmlClassifier:
-        return self.client
     
-    @source.setter
-    def source(self, new_source: UmlClassifier):
-        self.client = new_source
+
+class UmlDependency(UmlElement, IUmlDependency):
+    def __init__(self, client: IUmlElement, supplier: IUmlElement, id: Optional[str] = None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        self.client = client
+        self.supplier = supplier
 
     @property
-    def target(self) -> UmlClassifier:
-        return self.supplier
-    
-    @target.setter
-    def target(self, new_target: UmlClassifier):
-        self.supplier = new_target
-
-    @property
-    def client(self) -> UmlClassifier:
+    def client(self) -> IUmlElement:
         return self._client
-
+    
     @client.setter
-    def client(self, new_client: UmlClassifier):
+    def client(self, new_client: IUmlElement):
         self._client = new_client
         if self.builder:
             self.builder.register_if_not_present(new_client)
 
     @property
-    def supplier(self) -> UmlClassifier:
+    def supplier(self) -> IUmlElement:
         return self._supplier
-
+    
     @supplier.setter
-    def supplier(self, new_supplier: UmlClassifier):
+    def supplier(self, new_supplier: IUmlElement):
         self._supplier = new_supplier
         if self.builder:
             self.builder.register_if_not_present(new_supplier)
 
 
-# Interaction Elements
-@dataclass(kw_only=True)
-class UmlLifeline(IUmlLifeline, UmlNamedElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlLifeline'
-    represents: UmlClass
-    fragments: List['UmlFragment'] = field(default_factory=list)
+class UmlRealization(UmlDependency, IUmlRealization):
+    ...
+
+
+# Associations
+class UmlAssociationEnd(UmlElement, IUmlAssociationEnd):
+    def __init__(self, multiplicity: UmlMultiplicityEnum = UmlMultiplicityEnum.ONE, navigibility: Optional[bool] = None, role: Optional[str] = None, element: Optional[IUmlClassifier] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        self.multiplicity = multiplicity
+        self.navigibility = navigibility
+        self.role = role
+        self.element = element
 
     @property
-    def represents(self) -> UmlClass:
-        return self._represents
+    def element(self) -> IUmlClassifier:
+        return self._element
     
-    @represents.setter
-    def represents(self, new_represents: UmlClass):
-        self._represents = new_represents
+    @element.setter
+    def element(self, new_element: IUmlClassifier):
+        self._element = new_element
         if self.builder:
-            self.builder.register_if_not_present(new_represents)
+            self.builder.register_if_not_present(new_element)
 
     @property
-    def fragments(self) -> List['UmlFragment']:
+    def role(self) -> Optional[str]:
+        return self._role
+    
+    @role.setter
+    def role(self, new_role: Optional[str]):
+        self._role = new_role
+
+    @property
+    def multiplicity(self) -> UmlMultiplicityEnum:
+        return self._multiplicity
+    
+    @multiplicity.setter
+    def multiplicity(self, new_multiplicity: UmlMultiplicityEnum):
+        self._multiplicity = new_multiplicity
+
+    @property
+    def navigability(self) -> bool:
+        return self._navigability
+    
+    @navigability.setter
+    def navigability(self, new_navigability: bool):
+        self._navigability = new_navigability
+
+
+class UmlAssociationBase(UmlElement, IUmlAssociationBase):
+    ASSOCIATION_DIRECTION: ClassVar[UmlAssociationDirectionEnum]
+
+    @property
+    def end1(self) -> IUmlAssociationEnd:
+        return self._end1
+    
+    @property
+    def end2(self) -> IUmlAssociationEnd:
+        return self._end2
+    
+    @classmethod
+    def association_direction(cls) -> UmlAssociationDirectionEnum:
+        return cls.ASSOCIATION_DIRECTION
+
+
+class UmlAssociation(UmlAssociationBase, IUmlAssociation):
+    ASSOCIATION_DIRECTION = UmlAssociationDirectionEnum.BIDIRECTIONAL
+
+
+class UmlDirectedAssociation(UmlAssociationBase, IUmlDirectedAssociation):
+    ASSOCIATION_DIRECTION = UmlAssociationDirectionEnum.DIRECTED
+
+    @property
+    def source(self) -> IUmlAssociationEnd:
+        return self._source
+    
+    @property
+    def target(self) -> IUmlAssociationEnd:
+        return self._target
+    
+
+class UmlAggregation(UmlAssociation, IUmlAggregation):
+    ...
+
+
+class UmlComposition(UmlAssociation, IUmlComposition):
+    ...
+
+
+# Interaction
+class UmlOccurrenceSpecification(UmlElement, IUmlOccurrenceSpecification):
+    def __init__(self, covered: IUmlLifeline, id: Optional[str] = None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        self.covered = covered
+
+    @property
+    def covered(self) -> IUmlLifeline:
+        return self._covered
+    
+    @covered.setter
+    def covered(self, new_covered: IUmlLifeline):
+        self._covered = new_covered
+        if self.builder:
+            self.builder.register_if_not_present(new_covered)
+
+    
+class UmlCombinedFragment(UmlElement, IUmlCombinedFragment):
+    def __init__(self, operator: UmlInteractionOperatorEnum, operands: List[IUmlOperand], covered: List["UmlLifeline"], id: Optional[str] = None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        self.operator = operator
+        self.operands = operands or []
+        self.covered = covered
+
+    @property
+    def operator(self) -> UmlInteractionOperatorEnum:
+        return self._operator
+    
+    @operator.setter
+    def operator(self, new_operator: UmlInteractionOperatorEnum):
+        self._operator = new_operator
+
+    @property
+    def operands(self) -> List[IUmlOperand]:
+        return self._operands
+    
+    @operands.setter
+    def operands(self, new_operands: List[IUmlOperand]):
+        self._operands = new_operands
+        if self.builder:
+            for operand in new_operands:
+                self.builder.register_if_not_present(operand)
+
+    @property
+    def covered(self) -> List["UmlLifeline"]:
+        return self._covered
+    
+    @covered.setter
+    def covered(self, new_covered: List["UmlLifeline"]):
+        self._covered = new_covered
+        if self.builder:
+            for lifeline in new_covered:
+                self.builder.register_if_not_present(lifeline)
+
+    
+class UmlInteractionUse(UmlElement, IUmlInteractionUse):
+    def __init__(self, covered: List["UmlLifeline"], interaction: "UmlInteraction", id: Optional[str] = None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        self.covered = covered
+        self.interaction = interaction
+
+    @property
+    def covered(self) -> List["UmlLifeline"]:
+        return self._covered
+    
+    @covered.setter
+    def covered(self, new_covered: List["UmlLifeline"]):
+        self._covered = new_covered
+        if self.builder:
+            for lifeline in new_covered:
+                self.builder.register_if_not_present(lifeline)
+
+    @property
+    def interaction(self) -> "UmlInteraction":
+        return self._interaction
+    
+    @interaction.setter
+    def interaction(self, new_interaction: "UmlInteraction"):
+        self._interaction = new_interaction
+        if self.builder:
+            self.builder.register_if_not_present(new_interaction)
+
+
+class UmlOperand(UmlElement, IUmlOperand):
+    def __init__(self, guard: Optional[str], fragments: List[Union[IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment]], id: Optional[str] = None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        self.guard = guard
+        self.fragments = fragments
+
+    @property
+    def guard(self) -> Optional[str]:
+        return self._guard
+    
+    @guard.setter
+    def guard(self, new_guard: Optional[str]):
+        self._guard = new_guard
+
+    @property
+    def fragments(self) -> List[Union[IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment]]:
         return self._fragments
     
+    # TODO: such setters do not cope with case, when someone just uses 'append' method on the list
+    # In such scenario the new object may not be added to the builder
     @fragments.setter
-    def fragments(self, new_fragments: List['UmlFragment']):
+    def fragments(self, new_fragments: List[Union[IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment]]):
         self._fragments = new_fragments
         if self.builder:
             for fragment in new_fragments:
                 self.builder.register_if_not_present(fragment)
 
 
-@dataclass(kw_only=True)
-class UmlMessage(IUmlMessage, UmlElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlMessage'
-    sender: UmlLifeline
-    receiver: UmlLifeline
-    message_type: Optional[str] = None
-    content: Optional[str] = None
+class UmlMessage(UmlElement, IUmlMessage):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, sort: UmlMessageSortEnum = UmlMessageSortEnum.SYNCH_CALL, kind: UmlMessageKindEnum = UmlMessageKindEnum.UNKNOWN, send_event: Optional[IUmlOccurrenceSpecification] = None, receive_event: Optional[IUmlOccurrenceSpecification] = None, signature: Optional[IUmlOperation] = None, arguments: Optional[List[str]] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self.sort = sort
+        self.kind = kind
+        self.send_event = send_event
+        self.receive_event = receive_event
+        self.signature = signature
+        self.arguments = arguments or []
 
     @property
-    def sender(self) -> UmlLifeline:
-        return self._sender
+    def send_event(self) -> IUmlOccurrenceSpecification:
+        return self._send_event
     
-    @sender.setter
-    def sender(self, new_sender: UmlLifeline):
-        self._sender = new_sender
+    @send_event.setter
+    def send_event(self, new_send_event: IUmlOccurrenceSpecification):
+        self._send_event = new_send_event
         if self.builder:
-            self.builder.register_if_not_present(new_sender)
+            self.builder.register_if_not_present(new_send_event)
 
     @property
-    def receiver(self) -> UmlLifeline:
-        return self._receiver
-
-    @receiver.setter
-    def receiver(self, new_receiver: UmlLifeline):
-        self._receiver = new_receiver
+    def receive_event(self) -> IUmlOccurrenceSpecification:
+        return self._receive_event
+    
+    @receive_event.setter
+    def receive_event(self, new_receive_event: IUmlOccurrenceSpecification):
+        self._receive_event = new_receive_event
         if self.builder:
-            self.builder.register_if_not_present(new_receiver)
-
-
-
-@dataclass(kw_only=True)
-class UmlFragment(IUmlFragment, UmlElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlFragment'
-    covered_lifelines: List[UmlLifeline] = field(default_factory=list)
-    covered_messages: List[UmlMessage] = field(default_factory=list)
-
-
-@dataclass(kw_only=True)
-class UmlInteractionOperand(IUmlInteractionOperand, UmlFragment, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlInteractionOperand'
-    guard: Optional[str] = None
-
-
-@dataclass(kw_only=True)
-class UmlInteraction(IUmlInteraction, UmlElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlInteraction'
-    lifelines: List[UmlLifeline] = field(default_factory=list)
-    messages: List[UmlMessage] = field(default_factory=list)
-    fragments: List[UmlFragment] = field(default_factory=list)
+            self.builder.register_if_not_present(new_receive_event)
 
     @property
-    def lifelines(self) -> List[UmlLifeline]:
+    def signature(self) -> Optional[IUmlOperation]:
+        return self._signature
+    
+    @signature.setter
+    def signature(self, new_signature: Optional[IUmlOperation]):
+        self._signature = new_signature
+        if self.builder:
+            self.builder.register_if_not_present(new_signature)
+
+    @property
+    def arguments(self) -> List[str]:
+        return self._arguments
+    
+    @arguments.setter
+    def arguments(self, new_arguments: List[str]):
+        self._arguments = new_arguments
+
+
+class UmlLifeline(UmlNamedElement, IUmlLifeline):
+    def __init__(self, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, represents: Optional[UmlClassifier] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self.represents = represents
+
+    @property
+    def represents(self) -> UmlClassifier:
+        return self._represents
+    
+    @represents.setter
+    def represents(self, new_represents: UmlClassifier):
+        self._represents = new_represents
+        if self.builder:
+            self.builder.register_if_not_present(new_represents)
+
+
+class UmlInteraction(UmlElement, IUmlInteraction):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, lifelines: Optional[List[IUmlLifeline]] = None, messages: Optional[List[IUmlMessage]] = None, fragments: Optional[List[Union[IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment]]] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self.lifelines = lifelines or []
+        self.messages = messages or []
+        self.fragments = fragments or []
+
+    @property
+    def fragments(self) -> List[Union[IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment]]:
+        return self._fragments
+    
+    @fragments.setter
+    def fragments(self, new_fragments: List[Union[IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment]]):
+        self._fragments = new_fragments
+        if self.builder:
+            for fragment in new_fragments:
+                self.builder.register_if_not_present(fragment)
+
+    @property
+    def lifelines(self) -> List[IUmlLifeline]:
         return self._lifelines
-
+    
     @lifelines.setter
-    def lifelines(self, new_lifelines: List[UmlLifeline]):
+    def lifelines(self, new_lifelines: List[IUmlLifeline]):
         self._lifelines = new_lifelines
         if self.builder:
             for lifeline in new_lifelines:
                 self.builder.register_if_not_present(lifeline)
 
     @property
-    def messages(self) -> List[UmlMessage]:
+    def messages(self) -> List[IUmlMessage]:
         return self._messages
-
+    
     @messages.setter
-    def messages(self, new_messages: List[UmlMessage]):
+    def messages(self, new_messages: List[IUmlMessage]):
         self._messages = new_messages
         if self.builder:
             for message in new_messages:
                 self.builder.register_if_not_present(message)
 
+
+class UmlModelElements(UmlElement, IUmlModelElements):
+    def __init__(self, classes: Optional[List[IUmlClass]] = None, interfaces: Optional[List[IUmlInterface]] = None, data_types: Optional[List[IUmlDataType]] = None, enumerations: Optional[List[IUmlEnumeration]] = None, primitive_types: Optional[List[IUmlPrimitiveType]] = None, associations: Optional[List[Union[IUmlAssociation, IUmlDirectedAssociation]]] = None, generalizations: Optional[List[IUmlGeneralization]] = None, dependencies: Optional[List[IUmlDependency]] = None, realizations: Optional[List[IUmlRealization]] = None, interactions: Optional[List[IUmlInteraction]] = None, packages: Optional[List[IUmlPackage]] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        self.classes = classes or []
+        self.interfaces = interfaces or []
+        self.data_types = data_types or []
+        self.enumerations = enumerations or []
+        self.primitive_types = primitive_types or []
+        self.associations = associations or []
+        self.generalizations = generalizations or []
+        self.dependencies = dependencies or []
+        self.realizations = realizations or []
+        self.interactions = interactions or []
+        self.packages = packages or []
+
     @property
-    def fragments(self) -> List[UmlFragment]:
-        return self._fragments
+    def classes(self) -> List[IUmlClass]:
+        return self._classes
     
-    @fragments.setter
-    def fragments(self, new_fragments: List[UmlFragment]):
-        self._fragments = new_fragments
+    @classes.setter
+    def classes(self, new_classes: Optional[List[IUmlClass]]):
+        self._classes = new_classes or []
         if self.builder:
-            for fragment in new_fragments:
-                self.builder.register_if_not_present(fragment)
-
-
-@dataclass(kw_only=True)
-class UmlPackage(IUmlPackage, UmlNamedElement, metaclass=property_wizard):
-    __ELEMENT_NAME: ClassVar[Optional[str]] = 'UmlPackage'
-    packaged_elements: List[UmlElement] = field(default_factory=list, repr=False)
-    visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
-
+            for uml_class in self._classes:
+                self.builder.register_if_not_present(uml_class)
 
     @property
-    def packaged_elements(self) -> List[UmlElement]:
-        return self._packaged_elements
+    def interfaces(self) -> List[IUmlInterface]:
+        return self._interfaces
+    
+    @interfaces.setter
+    def interfaces(self, new_interfaces: Optional[List[IUmlInterface]]):
+        self._interfaces = new_interfaces or []
+        if self.builder:
+            for interface in self._interfaces:
+                self.builder.register_if_not_present(interface)
 
+    @property
+    def data_types(self) -> List[IUmlDataType]:
+        return self._data_types
+    
+    @data_types.setter
+    def data_types(self, new_data_types: Optional[List[IUmlDataType]]):
+        self._data_types = new_data_types or []
+        if self.builder:
+            for data_type in self._data_types:
+                self.builder.register_if_not_present(data_type)
+
+    @property
+    def enumerations(self) -> List[IUmlEnumeration]:
+        return self._enumerations
+    
+    @enumerations.setter
+    def enumerations(self, new_enumerations: Optional[List[IUmlEnumeration]]):
+        self._enumerations = new_enumerations or []
+        if self.builder:
+            for enumeration in self._enumerations:
+                self.builder.register_if_not_present(enumeration)
+
+    @property
+    def primitive_types(self) -> List[IUmlPrimitiveType]:
+        return self._primitive_types
+    
+    @primitive_types.setter
+    def primitive_types(self, new_primitive_types: Optional[List[IUmlPrimitiveType]]):
+        self._primitive_types = new_primitive_types or []
+        if self.builder:
+            for primitive_type in self._primitive_types:
+                self.builder.register_if_not_present(primitive_type)
+
+    @property
+    def associations(self) -> List[Union[IUmlAssociation, IUmlDirectedAssociation]]:
+        return self._associations
+    
+    @associations.setter
+    def associations(self, new_associations: Optional[List[Union[IUmlAssociation, IUmlDirectedAssociation]]]):
+        self._associations = new_associations or []
+        if self.builder:
+            for association in self._associations:
+                self.builder.register_if_not_present(association)
+
+    @property
+    def generalizations(self) -> List[IUmlGeneralization]:
+        return self._generalizations
+    
+    @generalizations.setter
+    def generalizations(self, new_generalizations: Optional[List[IUmlGeneralization]]):
+        self._generalizations = new_generalizations or []
+        if self.builder:
+            for generalization in self._generalizations:
+                self.builder.register_if_not_present(generalization)
+
+    @property
+    def dependencies(self) -> List[IUmlDependency]:
+        return self._dependencies
+    
+    @dependencies.setter
+    def dependencies(self, new_dependencies: Optional[List[IUmlDependency]]):
+        self._dependencies = new_dependencies or []
+        if self.builder:
+            for dependency in self._dependencies:
+                self.builder.register_if_not_present(dependency)
+
+    @property
+    def realizations(self) -> List[IUmlRealization]:
+        return self._realizations
+    
+    @realizations.setter
+    def realizations(self, new_realizations: Optional[List[IUmlRealization]]):
+        self._realizations = new_realizations or []
+        if self.builder:
+            for realization in self._realizations:
+                self.builder.register_if_not_present(realization)
+
+    @property
+    def interactions(self) -> List[IUmlInteraction]:
+        return self._interactions
+    
+    @interactions.setter
+    def interactions(self, new_interactions: Optional[List[IUmlInteraction]]):
+        self._interactions = new_interactions or []
+        if self.builder:
+            for interaction in self._interactions:
+                self.builder.register_if_not_present(interaction)
+
+    @property
+    def packages(self) -> List[IUmlPackage]:
+        return self._packages
+    
+    @packages.setter
+    def packages(self, new_packages: Optional[List[IUmlPackage]]):
+        self._packages = new_packages or []
+        if self.builder:
+            for package in self._packages:
+                self.builder.register_if_not_present(package)
+
+
+class UmlPackage(UmlNamedElement, IUmlPackage):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, packaged_elements: Optional[IUmlModelElements] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self.packaged_elements = packaged_elements
+
+    @property
+    def packaged_elements(self) -> IUmlModelElements:
+        return self._packaged_elements
+    
     @packaged_elements.setter
-    def packaged_elements(self, new_packaged_elements: List[UmlElement]):
+    def packaged_elements(self, new_packaged_elements: IUmlModelElements):
         self._packaged_elements = new_packaged_elements
         if self.builder:
-            for element in new_packaged_elements:
-                self.builder.register_if_not_present(element)
+            self.builder.register_if_not_present(new_packaged_elements)

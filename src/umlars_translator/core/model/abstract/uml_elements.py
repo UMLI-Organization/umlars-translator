@@ -279,9 +279,11 @@ class IUmlAssociation(IUmlAssociationBase):
 class IUmlDirectedAssociation(IUmlAssociationBase):
     ASSOCIATION_DIRECTION = UmlAssociationDirectionEnum.DIRECTED
 
+    @property
     def end1(self) -> IUmlAssociationEnd:
         self.source
 
+    @property
     def end2(self) -> IUmlAssociationEnd:
         self.target
 
@@ -461,6 +463,11 @@ class IUmlModelElements(IVisitable, ABC):
     @property
     @abstractmethod
     def interactions() -> List[IUmlInteraction]:
+        ...
+
+    @property
+    @abstractmethod
+    def packages() -> List["IUmlPackage"]:
         ...
 
 
