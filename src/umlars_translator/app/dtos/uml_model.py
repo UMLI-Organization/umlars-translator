@@ -434,10 +434,11 @@ class UmlModelElements(BaseModel):
                         collect_ids(field_value)
 
         # Iterate through each type of element in UmlModelElements
-        for element_list in values.values():
-            if isinstance(element_list, list):
-                for element in element_list:
-                    collect_ids(element)
+        if isinstance(values, dict):
+            for element_list in values.values():
+                if isinstance(element_list, list):
+                    for element in element_list:
+                        collect_ids(element)
 
         return values
 
@@ -510,14 +511,14 @@ class UmlClassDiagram(UmlDiagram):
     elements: UmlClassDiagramElements
 
 
-class UmlModelDiagrams(BaseModel):
+class UmlDiagrams(BaseModel):
     class_diagrams: List[Union[UmlClassDiagram, UmlIdReference]] = Field(default_factory=list)
     sequence_diagrams: List[Union[UmlSequenceDiagram, UmlIdReference]] = Field(default_factory=list)
 
 
 class UmlModel(UmlNamedElement):
     elements: UmlModelElements
-    diagrams: UmlModelDiagrams
+    diagrams: UmlDiagrams
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -37,4 +37,4 @@ def test_when_given_ea_format_deserialization_successful(ea_data, translator) ->
     result = translator.translate(ea_data)
 
     # Then
-    assert isinstance(result, IUmlModel)
+    assert isinstance(result, str)
