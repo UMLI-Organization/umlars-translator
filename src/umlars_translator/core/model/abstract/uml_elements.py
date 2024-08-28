@@ -3,7 +3,7 @@ from typing import List, Optional, Union, ClassVar
 
 from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
-from src.umlars_translator.core.model.constants import UmlPrimitiveTypeTypes, UmlVisibilityEnum, UmlMultiplicityEnum, UmlAssoctioationDirectionEnum
+from src.umlars_translator.core.model.constants import UmlPrimitiveTypeTypes, UmlVisibilityEnum, UmlMultiplicityEnum, UmlAssociationDirectionEnum
 
 
 # Base and Common Elements
@@ -262,7 +262,7 @@ class IUmlMemberEnd(IUmlAssociationEnd):
 
 
 class IUmlAssociationBase(IUmlElement):
-    ASSOCIATION_DIRECTION: ClassVar[UmlAssoctioationDirectionEnum]
+    ASSOCIATION_DIRECTION: ClassVar[UmlAssociationDirectionEnum]
 
     @property
     @abstractmethod
@@ -276,7 +276,7 @@ class IUmlAssociationBase(IUmlElement):
 
 
     @classmethod
-    def association_direction(cls) -> UmlAssoctioationDirectionEnum:
+    def association_direction(cls) -> UmlAssociationDirectionEnum:
         return cls.ASSOCIATION_DIRECTION
 
 
@@ -284,11 +284,11 @@ class IUmlAssociation(IUmlAssociationBase):
     """
     Standard Association - Bidirectional
     """
-    ASSOCIATION_DIRECTION = UmlAssoctioationDirectionEnum.BIDIRECTIONAL
+    ASSOCIATION_DIRECTION = UmlAssociationDirectionEnum.BIDIRECTIONAL
 
 
 class IUmlDirectedAssociation(IUmlAssociationBase):
-    ASSOCIATION_DIRECTION = UmlAssoctioationDirectionEnum.DIRECTED
+    ASSOCIATION_DIRECTION = UmlAssociationDirectionEnum.DIRECTED
 
     def end1(self) -> Union[IUmlOwnedEnd, IUmlMemberEnd]:
         self.source

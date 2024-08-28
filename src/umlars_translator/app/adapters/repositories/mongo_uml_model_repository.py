@@ -14,7 +14,7 @@ class MongoDBUmlModelRepository(UmlModelRepository):
 
     def get(self, model_id: str) -> Optional[UmlModel]:
         db_model = self._collection.find_one({"_id": ObjectId(model_id)})
-        return UmlModel(id=str(db_model["_id"]), name=db_model["name"]) if db_model else None
+        return UmlModel.from_mongo(db_model) if db_model else None
 
     def save(self, uml_model: UmlModel) -> UmlModel:
         self._collection.update_one(

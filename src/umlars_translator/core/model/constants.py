@@ -1,6 +1,50 @@
 from enum import Enum
 
 
+class UmlAssociationTypeEnum(str, Enum):
+    ASSOCIATION = "association"
+    AGGREGATION = "aggregation"
+    COMPOSITION = "composition"
+
+
+class UmlInteractionOperatorEnum(str, Enum):
+    ALT = "alt"
+    BREAK = "break"
+    CRITICAL = "critical"
+    ELSE = "else"
+    IGNORE = "ignore"
+    LOOP = "loop"
+    PAR = "par"
+    STRICT = "strict"
+    NEG = "neg"
+    ASSERT = "assert"
+    REF = "ref"
+    SEQ = "seq"
+    SD = "sd"
+    OPT = "opt"
+
+class UmlParameterDirectionEnum(str, Enum):
+    IN = "in"
+    OUT = "out"
+    INOUT = "inout"
+    RETURN = "return"
+
+class UmlMessageSortEnum(str, Enum):
+    SYNCH_CALL = "synchCall"
+    ASYNCH_CALL = "asynchCall"
+    REPLY = "reply"
+    CREATE = "create"
+    DELETE = "delete"
+
+
+class UmlMessageKindEnum(str, Enum):
+    COMPLETE = "complete"
+    LOST = "lost"
+    FOUND = "found"
+    UNKNOWN = "unknown"
+
+
+
 class UmlVisibilityEnum(str, Enum):
     PUBLIC = "public"
     PRIVATE = "private"
@@ -29,7 +73,7 @@ class UmlPrimitiveTypeTypes(Enum):
     ANY = "Any"
 
 
-class UmlAssoctioationDirectionEnum(str, Enum):
+class UmlAssociationDirectionEnum(str, Enum):
     DIRECTED = "directed"
     BIDIRECTIONAL = "bidirectional"
 
