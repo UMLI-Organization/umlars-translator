@@ -111,7 +111,7 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
     
     def add_package(self, package: UmlPackage) -> "IUmlModelBuilder":
         self.add_element(package)
-        self.model.packages.append(package)
+        self.model.elements.packages.append(package)
 
 
 
