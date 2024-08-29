@@ -519,6 +519,7 @@ class UmlDiagrams(BaseModel):
 class UmlModel(UmlNamedElement):
     elements: UmlModelElements
     diagrams: UmlDiagrams
+    metadata: dict = Field(default_factory=dict)
 
     model_config = ConfigDict(from_attributes=True)
 

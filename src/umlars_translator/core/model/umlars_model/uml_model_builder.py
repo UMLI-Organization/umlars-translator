@@ -57,17 +57,11 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
 
         return self
 
-    # @log_calls_and_return_self()
-    # def construct_diagram(self, *args, **kwargs) -> "IUmlModelBuilder":
-    #     ...
-
-    # @log_calls_and_return_self()
     def construct_metadata(self, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_metadata({args}, {kwargs})")
         self.model.metadata = kwargs
         return self
 
-    # @log_calls_and_return_self()
     def construct_uml_class(self, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum | str] = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_class({args}, {kwargs})")
         uml_class = UmlClass(id=id, name=name, visibility=visibility, model=self._model, builder=self)
@@ -113,7 +107,23 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         self.add_element(package)
         self.model.elements.packages.append(package)
 
+    def add_class_to_package(self, class_id: str, package_id: str) -> "IUmlModelBuilder":
+        uml_class = self.get_instance_by_id(class_id)
+        package = self.get_instance_by_id(package_id)
+        package.add_class(uml_class)
+        return self
 
+    def add_interface_to_package(self, interface_id: str, package_id: str) -> "IUmlModelBuilder":
+        uml_class = self.get_instance_by_id(interface_id)
+        package = self.get_instance_by_id(package_id)
+        package.add_interface(uml_class)
+        return self
+
+    def add_association_to_package(self, association_id: str, package_id: str) -> "IUmlModelBuilder":
+        uml_class = self.get_instance_by_id(association_id)
+        package = self.get_instance_by_id(package_id)
+        package.add_association(uml_class)
+        return self
 
 
 

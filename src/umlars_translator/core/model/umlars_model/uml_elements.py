@@ -838,16 +838,31 @@ class UmlModelElements(UmlElement, IUmlModelElements):
 
 
 class UmlPackage(UmlNamedElement, IUmlPackage):
-    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, packaged_elements: Optional[IUmlModelElements] = None, id: Optional[str] = None, **kwargs):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, elements: Optional[IUmlModelElements] = None, id: Optional[str] = None, **kwargs):
         super().__init__(name, visibility, id=id, **kwargs)
-        self.packaged_elements = packaged_elements
+        self.elements = elements or UmlModelElements()
 
     @property
-    def packaged_elements(self) -> IUmlModelElements:
-        return self._packaged_elements
+    def elements(self) -> IUmlModelElements:
+        return self._elements
     
-    @packaged_elements.setter
-    def packaged_elements(self, new_packaged_elements: IUmlModelElements):
-        self._packaged_elements = new_packaged_elements
+    @elements.setter
+    def elements(self, new_elements: IUmlModelElements):
+        self._elements = new_elements
         if self.builder:
-            self.builder.register_if_not_present(new_packaged_elements)
+            self.builder.register_if_not_present(new_elements)
+
+    def add_class(self, uml_class: IUmlClass):
+        self.elements.classes.append(uml_class)
+        if self.builder:
+            self.builder.register_if_not_present(uml_class)
+
+    def add_interface(self, uml_interface: IUmlInterface):
+        self.elements.interfaces.append(uml_interface)
+        if self.builder:
+            self.builder.register_if_not_present(uml_interface)
+
+    def add_association(self, association: Union[IUmlAssociation, IUmlDirectedAssociation]):
+        self.elements.associations.append(association)
+        if self.builder:
+            self.builder.register_if_not_present(association)

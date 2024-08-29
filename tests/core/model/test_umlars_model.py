@@ -303,13 +303,13 @@ def test_uml_interaction_lifelines(uml_interaction, uml_lifeline_factory):
     assert assigned_lifelines == lifelines
 
 
-def test_uml_package_packaged_elements(uml_package):
+def test_uml_package_elements(uml_package):
     # Given
-    packaged_elements = [UmlElement()]
-    uml_package.packaged_elements = packaged_elements
+    elements = [UmlElement()]
+    uml_package.elements = elements
 
     # When
-    assigned_packaged_elements = uml_package.packaged_elements
+    assigned_elements = uml_package.elements
 
     # Then
-    assert assigned_packaged_elements == packaged_elements
+    assert assigned_elements == elements

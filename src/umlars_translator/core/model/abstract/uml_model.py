@@ -12,6 +12,11 @@ class IUmlModel(IVisitable, ABC):
 
     @property
     @abstractmethod
+    def metadata(self) -> dict:
+        ...
+
+    @property
+    @abstractmethod
     def elements(self) -> IUmlModelElements:
         ...
 

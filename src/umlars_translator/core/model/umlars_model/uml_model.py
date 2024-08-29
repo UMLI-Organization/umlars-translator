@@ -8,11 +8,20 @@ from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagra
 
 
 class UmlModel(RegisteredInBuilderMixin, IUmlModel):
-    def __init__(self, id: Optional[str] = None, builder: Optional['UmlModelBuilder'] = None, name: Optional[str] = None,  elements: Optional[UmlModelElements] = None, diagrams: Optional[UmlDiagrams] = None, **kwargs):
+    def __init__(self, builder: Optional['UmlModelBuilder'] = None, name: Optional[str] = None,  elements: Optional[UmlModelElements] = None, diagrams: Optional[UmlDiagrams] = None, metadata: Optional[dict] = None, id: Optional[str] = None, **kwargs):
         super().__init__(id=id, builder=builder, **kwargs)
         self.name = name
+        self.metadata = metadata or {}
         self.elements = elements or UmlModelElements()
         self.diagrams = diagrams or UmlDiagrams()
+
+    @property
+    def metadata(self) -> dict:
+        return self._metadata
+
+    @metadata.setter
+    def metadata(self, new_metadata: dict):
+        self._metadata = new_metadata
 
     @property
     def elements(self) -> UmlModelElements:

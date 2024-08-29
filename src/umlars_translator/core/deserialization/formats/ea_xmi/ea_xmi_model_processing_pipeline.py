@@ -224,7 +224,7 @@ class UmlPackagePipe(EaXmiModelProcessingPipe):
         )
         self.model_builder.construct_uml_package(**aliases_to_values)
 
-        yield from self._create_data_batches(data)
+        yield from self._create_data_batches(data, parent_context={"package_id": aliases_to_values["id"]})
 
 
 class UmlClassPipe(EaXmiModelProcessingPipe):
@@ -255,6 +255,8 @@ class UmlClassPipe(EaXmiModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
         self.model_builder.construct_uml_class(**aliases_to_values)
+        if "package_id" in data_batch.parent_context:
+            self.model_builder.add_class_to_package(class_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
 
         yield from self._create_data_batches(data)
 
@@ -272,6 +274,7 @@ class UmlInterfacePipe(EaXmiModelProcessingPipe):
 
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
+                id=self.config.ATTRIBUTES["id"],
                 name=self.config.ATTRIBUTES["name"]
             )
             optional_attributes = AliasToXmlKey.from_kwargs(
@@ -286,6 +289,9 @@ class UmlInterfacePipe(EaXmiModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
         self.model_builder.construct_uml_interface(**aliases_to_values)
+        if "package_id" in data_batch.parent_context:
+            self.model_builder.add_interface_to_package(interface_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
+
 
         yield from self._create_data_batches(data)
 
@@ -450,6 +456,9 @@ class UmlAssociationPipe(EaXmiModelProcessingPipe):
         )
 
         self.model_builder.construct_uml_association(**aliases_to_values)
+        if "package_id" in data_batch.parent_context:
+            self.model_builder.add_association_to_package(association_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
+
         yield from self._create_data_batches(
             data, parent_context={"parent_id": aliases_to_values["id"]}
         )
@@ -597,3 +606,4 @@ class DiagramPipe(EaXmiModelProcessingPipe):
             self.model_builder.bind_element_to_diagram(
                 element_id=aliases_to_values["element_id"], diagram_id=diagram_id
             )
+

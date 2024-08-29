@@ -474,5 +474,5 @@ class IUmlModelElements(IVisitable, ABC):
 class IUmlPackage(IUmlNamedElement):
     @property
     @abstractmethod
-    def packaged_elements(self) -> IUmlModelElements:
+    def elements(self) -> IUmlModelElements:
         ...
