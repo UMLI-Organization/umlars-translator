@@ -11,15 +11,14 @@ from src.umlars_translator.core.model.umlars_model.uml_elements import (
     UmlGeneralization,
     UmlDependency,
     UmlAssociationEnd,
-    UmlOwnedEnd,
-    UmlMemberEnd,
     UmlAggregation,
     UmlComposition,
     UmlLifeline,
     UmlMessage,
     UmlInteraction,
     UmlPackage,
-    UmlParameter
+    UmlParameter,
+    UmlOccurrenceSpecification
 )
 from src.umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum
 
@@ -75,23 +74,13 @@ def uml_association_end() -> UmlAssociationEnd:
 
 
 @fixture
-def uml_owned_end() -> UmlOwnedEnd:
-    return UmlOwnedEnd(element=uml_class)
+def uml_aggregation(uml_association_end) -> UmlAggregation:
+    return UmlAggregation(end1=uml_association_end, end2=uml_association_end)
 
 
 @fixture
-def uml_member_end() -> UmlMemberEnd:
-    return UmlMemberEnd(element=uml_class)
-
-
-@fixture
-def uml_aggregation() -> UmlAggregation:
-    return UmlAggregation(end1=uml_owned_end, end2=uml_member_end)
-
-
-@fixture
-def uml_composition() -> UmlComposition:
-    return UmlComposition(end1=uml_owned_end, end2=uml_member_end)
+def uml_composition(uml_association_end) -> UmlComposition:
+    return UmlComposition(end1=uml_association_end, end2=uml_association_end)
 
 
 @fixture
@@ -101,8 +90,7 @@ def uml_lifeline_factory() -> UmlLifeline:
 
 @fixture
 def uml_message_factory() -> UmlMessage:
-    return lambda sender, receiver: UmlMessage(sender=sender, receiver=receiver)
-
+    return lambda sender, receiver: UmlMessage(send_event=sender, receive_event=receiver)
 
 @fixture
 def uml_interaction() -> UmlInteraction:
@@ -211,34 +199,11 @@ def test_uml_association_end_end(uml_association_end):
     assert assigned_end == end
 
 
-def test_uml_owned_end_end(uml_owned_end):
-    # Given
-    end = UmlClass(name="client")
-    uml_owned_end.end = end
-
-    # When
-    assigned_end = uml_owned_end.end
-
-    # Then
-    assert assigned_end == end
-
-
-def test_uml_member_end_end(uml_member_end):
-    # Given
-    end = UmlClass(name="client")
-    uml_member_end.end = end
-
-    # When
-    assigned_end = uml_member_end.end
-
-    # Then
-    assert assigned_end == end
-
 
 def test_uml_aggregation_end1(uml_aggregation):
     # Given
-    end1 = UmlOwnedEnd(element=UmlClass())
-    uml_aggregation.end1 = end1
+    end1 = UmlAssociationEnd(element=UmlClass())
+    uml_aggregation.source = end1
 
     # When
     assigned_end1 = uml_aggregation.end1
@@ -249,8 +214,8 @@ def test_uml_aggregation_end1(uml_aggregation):
 
 def test_uml_composition_end2(uml_composition):
     # Given
-    end2 = UmlMemberEnd(element=UmlClass())
-    uml_composition.end2 = end2
+    end2 = UmlAssociationEnd(element=UmlClass())
+    uml_composition.target = end2
 
     # When
     assigned_end2 = uml_composition.end2
@@ -277,12 +242,14 @@ def test_uml_message_sender(uml_message_factory, uml_lifeline_factory):
     receiver_class = UmlClass('receiver')
     sender = uml_lifeline_factory(sender_class)
     receiver = uml_lifeline_factory(receiver_class)
+    send_event = UmlOccurrenceSpecification(covered=sender)
+    receive_event = UmlOccurrenceSpecification(covered=receiver)
 
-    uml_message = uml_message_factory(sender, receiver)
+    uml_message = uml_message_factory(send_event, receive_event)
 
     # When
-    assigned_sender = uml_message.sender
-    assigned_receiver = uml_message.receiver
+    assigned_sender = uml_message.send_event.covered
+    assigned_receiver = uml_message.receive_event.covered
 
     # Then
     assert assigned_sender == sender

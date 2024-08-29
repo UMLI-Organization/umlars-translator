@@ -342,7 +342,7 @@ class UmlOperation(UmlNamedElement, IUmlOperation):
     
 # Relationships
 class UmlGeneralization(UmlElement, IUmlGeneralization):
-    def __init__(self, specific: IUmlClass, general: IUmlClass, id: Optional[str] = None, **kwargs):
+    def __init__(self, specific: Optional[IUmlClass] = None, general: Optional[IUmlClass] = None, id: Optional[str] = None, **kwargs):
         super().__init__(id=id, **kwargs)
         self.specific = specific
         self.general = general
@@ -369,7 +369,7 @@ class UmlGeneralization(UmlElement, IUmlGeneralization):
     
 
 class UmlDependency(UmlElement, IUmlDependency):
-    def __init__(self, client: IUmlElement, supplier: IUmlElement, id: Optional[str] = None, **kwargs):
+    def __init__(self, client: Optional[IUmlClassifier] = None, supplier: Optional[IUmlClassifier] = None, id: Optional[str] = None, **kwargs):
         super().__init__(id=id, **kwargs)
         self.client = client
         self.supplier = supplier
@@ -401,10 +401,10 @@ class UmlRealization(UmlDependency, IUmlRealization):
 
 # Associations
 class UmlAssociationEnd(UmlElement, IUmlAssociationEnd):
-    def __init__(self, multiplicity: UmlMultiplicityEnum = UmlMultiplicityEnum.ONE, navigibility: Optional[bool] = None, role: Optional[str] = None, element: Optional[IUmlClassifier] = None, id: Optional[str] = None, **kwargs):
+    def __init__(self, multiplicity: UmlMultiplicityEnum = UmlMultiplicityEnum.ONE, navigability: Optional[bool] = None, role: Optional[str] = None, element: Optional[IUmlClassifier] = None, id: Optional[str] = None, **kwargs):
         super().__init__(id=id, **kwargs)
         self.multiplicity = multiplicity
-        self.navigibility = navigibility
+        self.navigability = navigability
         self.role = role
         self.element = element
 
@@ -443,8 +443,13 @@ class UmlAssociationEnd(UmlElement, IUmlAssociationEnd):
         self._navigability = new_navigability
 
 
-class UmlAssociationBase(UmlElement, IUmlAssociationBase):
+class UmlAssociationBase(UmlNamedElement, IUmlAssociationBase):
     ASSOCIATION_DIRECTION: ClassVar[UmlAssociationDirectionEnum]
+
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, end1: Optional[IUmlAssociationEnd] = None, end2: Optional[IUmlAssociationEnd] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self._end1 = end1
+        self._end2 = end2
 
     @property
     def end1(self) -> IUmlAssociationEnd:
@@ -462,9 +467,35 @@ class UmlAssociationBase(UmlElement, IUmlAssociationBase):
 class UmlAssociation(UmlAssociationBase, IUmlAssociation):
     ASSOCIATION_DIRECTION = UmlAssociationDirectionEnum.BIDIRECTIONAL
 
+    def add_end(self, end: IUmlAssociationEnd):
+        if not self.end1:
+            self._end1 = end
+        elif not self.end2:
+            self._end2 = end
+        else:
+            raise ValueError("Both ends are already set")
+        if self.builder:
+            self.builder.register_if_not_present(end)
+
+    def add_end1(self, end: IUmlAssociationEnd):
+        self._end1 = end
+        if self.builder:
+            self.builder.register_if_not_present(end)
+
+    def add_end2(self, end: IUmlAssociationEnd):
+        self._end2 = end
+        if self.builder:
+            self.builder.register_if_not_present(end)
+
+
 
 class UmlDirectedAssociation(UmlAssociationBase, IUmlDirectedAssociation):
     ASSOCIATION_DIRECTION = UmlAssociationDirectionEnum.DIRECTED
+
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, source: Optional[IUmlAssociationEnd]=None, target: Optional[IUmlAssociationEnd]=None, id: Optional[str] = None, **kwargs):
+        super().__init__(name, visibility, id=id, **kwargs)
+        self._source = source
+        self._target = target
 
     @property
     def source(self) -> IUmlAssociationEnd:
@@ -473,13 +504,33 @@ class UmlDirectedAssociation(UmlAssociationBase, IUmlDirectedAssociation):
     @property
     def target(self) -> IUmlAssociationEnd:
         return self._target
-    
 
-class UmlAggregation(UmlAssociation, IUmlAggregation):
+    @source.setter
+    def source(self, new_source: IUmlAssociationEnd):
+        self._source = new_source
+        if self.builder:
+            self.builder.register_if_not_present(new_source)
+
+    @target.setter
+    def target(self, new_target: IUmlAssociationEnd):
+        self._target = new_target
+        if self.builder:
+            self.builder.register_if_not_present(new_target)
+
+    @property
+    def end1(self) -> IUmlAssociationEnd:
+        return self.source
+    
+    @property
+    def end2(self) -> IUmlAssociationEnd:
+        return self.target
+
+
+class UmlAggregation(UmlDirectedAssociation, IUmlAggregation):
     ...
 
 
-class UmlComposition(UmlAssociation, IUmlComposition):
+class UmlComposition(UmlDirectedAssociation, IUmlComposition):
     ...
 
 
@@ -594,7 +645,7 @@ class UmlOperand(UmlElement, IUmlOperand):
                 self.builder.register_if_not_present(fragment)
 
 
-class UmlMessage(UmlElement, IUmlMessage):
+class UmlMessage(UmlNamedElement, IUmlMessage):
     def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, sort: UmlMessageSortEnum = UmlMessageSortEnum.SYNCH_CALL, kind: UmlMessageKindEnum = UmlMessageKindEnum.UNKNOWN, send_event: Optional[IUmlOccurrenceSpecification] = None, receive_event: Optional[IUmlOccurrenceSpecification] = None, signature: Optional[IUmlOperation] = None, arguments: Optional[List[str]] = None, id: Optional[str] = None, **kwargs):
         super().__init__(name, visibility, id=id, **kwargs)
         self.sort = sort
@@ -642,6 +693,22 @@ class UmlMessage(UmlElement, IUmlMessage):
     def arguments(self, new_arguments: List[str]):
         self._arguments = new_arguments
 
+    @property
+    def sort(self) -> UmlMessageSortEnum:
+        return self._sort
+    
+    @sort.setter
+    def sort(self, new_sort: UmlMessageSortEnum):
+        self._sort = new_sort
+
+    @property
+    def kind(self) -> UmlMessageKindEnum:
+        return self._kind
+    
+    @kind.setter
+    def kind(self, new_kind: UmlMessageKindEnum):
+        self._kind = new_kind
+
 
 class UmlLifeline(UmlNamedElement, IUmlLifeline):
     def __init__(self, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, represents: Optional[UmlClassifier] = None, id: Optional[str] = None, **kwargs):
@@ -659,7 +726,7 @@ class UmlLifeline(UmlNamedElement, IUmlLifeline):
             self.builder.register_if_not_present(new_represents)
 
 
-class UmlInteraction(UmlElement, IUmlInteraction):
+class UmlInteraction(UmlNamedElement, IUmlInteraction):
     def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, lifelines: Optional[List[IUmlLifeline]] = None, messages: Optional[List[IUmlMessage]] = None, fragments: Optional[List[Union[IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment]]] = None, id: Optional[str] = None, **kwargs):
         super().__init__(name, visibility, id=id, **kwargs)
         self.lifelines = lifelines or []

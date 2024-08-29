@@ -281,11 +281,11 @@ class IUmlDirectedAssociation(IUmlAssociationBase):
 
     @property
     def end1(self) -> IUmlAssociationEnd:
-        self.source
+        return self.source
 
     @property
     def end2(self) -> IUmlAssociationEnd:
-        self.target
+        return self.target
 
     @property
     @abstractmethod
@@ -362,7 +362,7 @@ class IUmlLifeline(IUmlNamedElement):
         ...
 
 
-class IUmlMessage(IUmlElement):
+class IUmlMessage(IUmlNamedElement):
     @property
     @abstractmethod
     def send_event(self) -> IUmlOccurrenceSpecification:

@@ -58,6 +58,13 @@ class IdToInstanceMapper:
             self._id_to_instance_mapping.pop(old_id, None)
             self._type_to_id_to_instance_mapping[type_of_element].pop(old_id, None)
 
+    def clear(self) -> None:
+        """
+        Clears the ID to instance mapping.
+        """
+        self._id_to_instance_mapping.clear()
+        self._type_to_id_to_instance_mapping.clear()
+
 
 class DalayedIdToInstanceMapper(IdToInstanceMapper, ABC):
     def __init__(self, core_logger: Optional[Logger] = None) -> None:
@@ -109,3 +116,10 @@ class DalayedIdToInstanceMapper(IdToInstanceMapper, ABC):
         Returns an instance of an object with given ID.
         """
         return self._id_to_instance_mapping.get(element_id, None)
+    
+    def clear(self) -> None:
+        """
+        Clears the ID to instance mapping.
+        """
+        self._id_to_evaluation_queue.clear()
+        super().clear()
