@@ -5,12 +5,11 @@ from kink import inject
 
 from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 from src.umlars_translator.core.model.umlars_model.uml_model import UmlModel
-from src.umlars_translator.core.model.umlars_model.uml_elements import UmlElement
+from src.umlars_translator.core.model.umlars_model.uml_elements import UmlElement, UmlClass, UmlLifeline, UmlAssociationEnd, UmlAssociationBase, UmlVisibilityEnum, UmlInterface, UmlPackage, UmlPrimitiveType, UmlAttribute, UmlOperation, UmlLifeline, UmlAssociationEnd, UmlAssociationBase
 from src.umlars_translator.core.utils.delayed_caller import (
     DalayedIdToInstanceMapper,
     evaluate_elements_afterwards,
 )
-from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlLifeline, UmlAssociationEnd, UmlAssociationBase, UmlVisibilityEnum, UmlInterface, UmlPackage, UmlPrimitiveType, UmlAttribute, UmlOperation, UmlLifeline, UmlAssociationEnd, UmlAssociationBase
 from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagram
 
 
@@ -35,13 +34,9 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         self.register_if_not_present(element)
         return self
 
-    def construct_uml_model(self, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum | str] = None, *args, **kwargs) -> "IUmlModelBuilder":
+    def construct_uml_model(self, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_model({args}, {kwargs})")
         self._model.name = name
-        if visibility is not None:
-            if isinstance(visibility, str):
-                visibility = UmlVisibilityEnum(visibility)
-
         self._model.visibility = visibility
         return self
 
@@ -62,7 +57,7 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         self.model.metadata = kwargs
         return self
 
-    def construct_uml_class(self, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum | str] = None, *args, **kwargs) -> "IUmlModelBuilder":
+    def construct_uml_class(self, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_class({args}, {kwargs})")
         uml_class = UmlClass(id=id, name=name, visibility=visibility, model=self._model, builder=self)
         self.add_class(uml_class)
@@ -71,8 +66,20 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
     def add_class(self, uml_class: UmlClass) -> "IUmlModelBuilder":
         self.add_element(uml_class)
         self.model.elements.classes.append(uml_class)
+        return self
 
-    def construct_uml_attribute(self, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum | str] = None, type_id: Optional[str] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_read_only: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None, *args, **kwargs) -> "IUmlModelBuilder":
+    def construct_uml_interface(self, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, *args, **kwargs) -> "IUmlModelBuilder":
+        self._logger.debug(f"Method called: construct_uml_interface({args}, {kwargs})")
+        uml_interface = UmlInterface(id=id, name=name, visibility=visibility, model=self._model, builder=self)
+        self.add_interface(uml_interface)
+        return self
+
+    def add_interface(self, uml_interface: UmlInterface) -> "IUmlModelBuilder":
+        self.add_element(uml_interface)
+        self.model.elements.interfaces.append(uml_interface)
+        return self
+
+    def construct_uml_attribute(self, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, type_id: Optional[str] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_read_only: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_attribute({args}, {kwargs})")
         type = self.get_instance_by_id(type_id)
         attribute = UmlAttribute(id=id, name=name, type=type, visibility=visibility, is_static=is_static, is_ordered=is_ordered, is_unique=is_unique, is_read_only=is_read_only, is_query=is_query, is_derived=is_derived, is_derived_union=is_derived_union, model=self._model, builder=self)
@@ -85,19 +92,30 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
             self.register_dalayed_call_for_id(type_id, _queued_assign_type)
 
         return self
-    
+
     def add_attribute(self, attribute: UmlAttribute) -> "IUmlModelBuilder":
         self.add_element(attribute)
-        # TODO: add owners registration 
-        # self.register_if_not_present(attribute.owner)
+        return self
 
-    # @log_calls_and_return_self()
-    # def construct_uml_interface(self, *args, **kwargs) -> "IUmlModelBuilder":
-    #     ...
+    def construct_uml_operation(self, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, return_type_id: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
+        self._logger.debug(f"Method called: construct_uml_operation({args}, {kwargs})")
+        return_type = self.get_instance_by_id(return_type_id)
+        operation = UmlOperation(id=id, name=name, return_type=return_type, visibility=visibility, model=self._model, builder=self)
+        self.add_operation(operation)
 
+        if return_type is None:
+            def _queued_assign_return_type(type: UmlElement) -> None:
+                operation.return_type = type
+            
+            self.register_dalayed_call_for_id(return_type_id, _queued_assign_return_type)
 
-    def construct_uml_package(self, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum | str] = None,  
-                              *args, **kwargs) -> "IUmlModelBuilder":
+        return self
+
+    def add_operation(self, operation: UmlOperation) -> "IUmlModelBuilder":
+        self.add_element(operation)
+        return self
+
+    def construct_uml_package(self, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_package({args}, {kwargs})")
         package = UmlPackage(id=id, name=name, visibility=visibility, model=self._model, builder=self)
         self.add_package(package)
@@ -106,6 +124,7 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
     def add_package(self, package: UmlPackage) -> "IUmlModelBuilder":
         self.add_element(package)
         self.model.elements.packages.append(package)
+        return self
 
     def add_class_to_package(self, class_id: str, package_id: str) -> "IUmlModelBuilder":
         uml_class = self.get_instance_by_id(class_id)
@@ -114,18 +133,35 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         return self
 
     def add_interface_to_package(self, interface_id: str, package_id: str) -> "IUmlModelBuilder":
-        uml_class = self.get_instance_by_id(interface_id)
+        uml_interface = self.get_instance_by_id(interface_id)
         package = self.get_instance_by_id(package_id)
-        package.add_interface(uml_class)
+        package.add_interface(uml_interface)
         return self
 
     def add_association_to_package(self, association_id: str, package_id: str) -> "IUmlModelBuilder":
-        uml_class = self.get_instance_by_id(association_id)
+        uml_association = self.get_instance_by_id(association_id)
         package = self.get_instance_by_id(package_id)
-        package.add_association(uml_class)
+        package.add_association(uml_association)
         return self
 
+    def construct_uml_lifeline(self, id: Optional[str] = None, name: Optional[str] = None, represents_id: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
+        self._logger.debug(f"Method called: construct_uml_lifeline({args}, {kwargs})")
+        represents = self.get_instance_by_id(represents_id)
+        lifeline = UmlLifeline(id=id, name=name, represents=represents, model=self._model, builder=self)
+        self.add_lifeline(lifeline)
 
+        if represents is None:
+            def _queued_assign_represents(element: UmlElement) -> None:
+                lifeline.represents = element
+            
+            self.register_dalayed_call_for_id(represents_id, _queued_assign_represents)
+
+        return self
+
+    def add_lifeline(self, lifeline: UmlLifeline) -> "IUmlModelBuilder":
+        self.add_element(lifeline)
+        self.model.elements.lifelines.append(lifeline)
+        return self
 
     def _bind_not_initialized_element_to_diagram(self, element_id: str, diagram: Optional[UmlDiagram], diagram_id: Optional[str]) -> None:
         if diagram is not None:
@@ -152,14 +188,9 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         else:
             raise ValueError("Either diagram or diagram_id should be provided.")
 
-
-    # TODO: remove after final definition of the builder interface
     def __getattr__(self, name: str) -> "IUmlModelBuilder":
         def method(*args, **kwargs):
             self._logger.debug(f"Method called: {name}({args}, {kwargs})")
             return self
 
         return method
-
-
-# #TODO: evaluate_elements_shouldnt_suppose_self - just be method of delayed caller and evaluate after pipe's process
