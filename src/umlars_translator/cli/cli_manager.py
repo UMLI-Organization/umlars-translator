@@ -71,7 +71,7 @@ class CLIManager:
             output_file_name = f"{file_base_name}_translated.umj"
             output_location = os.path.join(output_directory, output_file_name)
             with open(output_location, "w") as output_file:
-                translated_data = translator.translate(file_name=file_name, from_format=from_format)
+                translated_data = translator.translate(file_name=file_name, from_format=from_format, clear_model_afterwards=True)
                 output_file.write(translated_data)
 
             self._logger.info(f"File {file_name} translated to {output_location}")
