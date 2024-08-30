@@ -287,16 +287,16 @@ def test_when_deserialize_library_file_then_correct_model_created(
     assert association_b.visibility == UmlVisibilityEnum.PUBLIC
     
     # Assertions to check if ends of Association A are correctly deserialized
-    assert association_a.end1.role == "role a"
-    assert association_a.end2.role == "role b"
+    assert association_a.end1.name == "role b"
+    assert association_a.end2.name == "role a"
     
     # Assertions to check if ends of Association B are correctly deserialized
-    assert association_b.end1.role == "role a"
-    assert association_b.end2.role == "role c"
+    assert association_b.end1.name == "role c"
+    assert association_b.end2.name == "role a"
 
     # Verify that the associations are correctly linked to the classes
-    assert association_a.end1.element == class_a
-    assert association_a.end2.element == class_b
+    assert association_a.end1.element == class_b
+    assert association_a.end2.element == class_a
     
-    assert association_b.end1.element == class_a
-    assert association_b.end2.element == class_c
+    assert association_b.end1.element == class_c
+    assert association_b.end2.element == class_a

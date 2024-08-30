@@ -400,7 +400,7 @@ class UmlRealization(UmlDependency, IUmlRealization):
 
 
 # Associations
-class UmlAssociationEnd(UmlElement, IUmlAssociationEnd):
+class UmlAssociationEnd(UmlNamedElement, IUmlAssociationEnd):
     def __init__(self, multiplicity: UmlMultiplicityEnum = UmlMultiplicityEnum.ONE, navigability: Optional[bool] = None, role: Optional[str] = None, element: Optional[IUmlClassifier] = None, id: Optional[str] = None, **kwargs):
         super().__init__(id=id, **kwargs)
         self.multiplicity = multiplicity

@@ -190,7 +190,7 @@ class UmlPrimitiveType(UmlNamedElement):
     kind: UmlPrimitiveTypeKindEnum | str
 
 
-class UmlAssociationEnd(UmlElement):
+class UmlAssociationEnd(UmlNamedElement):
     multiplicity: UmlMultiplicityEnum = UmlMultiplicityEnum.ONE
     element: Optional[Union[
         "UmlPrimitiveType",

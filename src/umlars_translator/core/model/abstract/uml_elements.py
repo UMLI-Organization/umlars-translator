@@ -229,7 +229,7 @@ class IUmlRealization(IUmlDependency):
     ...
 
 
-class IUmlAssociationEnd(IUmlElement):
+class IUmlAssociationEnd(IUmlNamedElement):
     @property
     @abstractmethod
     def element(self) -> IUmlClassifier:
@@ -318,7 +318,7 @@ class IUmlAggregation(IUmlDirectedAssociation):
 
 class IUmlComposition(IUmlDirectedAssociation):
     ASSOCIATION_TYPE = UmlAssociationTypeEnum.COMPOSITION
-    
+
 
 # Interaction Elements
 class IUmlOccurrenceSpecification(IUmlElement):

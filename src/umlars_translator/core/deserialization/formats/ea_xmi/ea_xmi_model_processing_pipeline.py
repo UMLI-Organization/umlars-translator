@@ -258,7 +258,7 @@ class UmlClassPipe(EaXmiModelProcessingPipe):
         if "package_id" in data_batch.parent_context:
             self.model_builder.add_class_to_package(class_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
 
-        yield from self._create_data_batches(data)
+        yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
 
 
 class UmlInterfacePipe(EaXmiModelProcessingPipe):
@@ -292,8 +292,7 @@ class UmlInterfacePipe(EaXmiModelProcessingPipe):
         if "package_id" in data_batch.parent_context:
             self.model_builder.add_interface_to_package(interface_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
 
-
-        yield from self._create_data_batches(data)
+        yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
 
 
 class UmlAttributePipe(EaXmiModelProcessingPipe):
@@ -334,7 +333,8 @@ class UmlAttributePipe(EaXmiModelProcessingPipe):
         aliases_to_values.update(self._process_type_child(data_batch))
         aliases_to_values.update(self._process_attribute_multiplicity(data_batch))
 
-        self.model_builder.construct_uml_attribute(**aliases_to_values)
+        self.model_builder.construct_uml_attribute(**aliases_to_values, classifier_id=data_batch.parent_context["parent_id"])
+
         yield from self._create_data_batches(
             data, parent_context={"parent_id": aliases_to_values["id"]}
         )
@@ -371,7 +371,7 @@ class UmlOperationPipe(EaXmiModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
 
-        self.model_builder.construct_uml_operation(**aliases_to_values)
+        self.model_builder.construct_uml_operation(**aliases_to_values, classifier_id=data_batch.parent_context["parent_id"])
         yield from self._create_data_batches(
             data, parent_context={"parent_id": aliases_to_values["id"]}
         )
@@ -504,6 +504,7 @@ class UmlAssociationOwnedEndPipe(EaXmiModelProcessingPipe):
 
             optional_attributes = AliasToXmlKey.from_kwargs(
                 name=self.config.ATTRIBUTES["name"],
+                role=self.config.ATTRIBUTES["name"],
                 visibility=self.config.ATTRIBUTES["visibility"],
                 is_static=self.config.ATTRIBUTES["is_static"],
                 is_ordered=self.config.ATTRIBUTES["is_ordered"],
@@ -606,4 +607,3 @@ class DiagramPipe(EaXmiModelProcessingPipe):
             self.model_builder.bind_element_to_diagram(
                 element_id=aliases_to_values["element_id"], diagram_id=diagram_id
             )
-

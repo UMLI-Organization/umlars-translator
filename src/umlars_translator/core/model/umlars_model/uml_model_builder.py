@@ -10,7 +10,7 @@ from src.umlars_translator.core.model.umlars_model.uml_elements import (
     UmlPackage, UmlPrimitiveType, UmlAttribute, UmlOperation, UmlLifeline, UmlAssociationEnd, UmlAssociationBase,
     UmlAggregation, UmlComposition, UmlRealization, UmlGeneralization, UmlDependency, UmlDirectedAssociation,
     UmlAssociation, UmlDataType, UmlEnumeration, UmlParameter, UmlMessage, UmlInteraction, UmlOccurrenceSpecification,
-    UmlInteractionUse, UmlCombinedFragment, UmlOperand
+    UmlInteractionUse, UmlCombinedFragment, UmlOperand, UmlClassifier
 )
 from src.umlars_translator.core.utils.delayed_caller import (
     DalayedIdToInstanceMapper,
@@ -109,29 +109,55 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         self.model.elements.primitive_types.append(primitive_type)
         return self
 
-    def construct_uml_attribute(self, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, type_id: Optional[str] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_read_only: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None, *args, **kwargs) -> "IUmlModelBuilder":
+    def construct_uml_attribute(self, classifier_id: str, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, type_id: Optional[str] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_read_only: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_attribute({args}, {kwargs})")
-        type = self.get_instance_by_id(type_id)
-        attribute = UmlAttribute(id=id, name=name, type=type, visibility=visibility, is_static=is_static, is_ordered=is_ordered, is_unique=is_unique, is_read_only=is_read_only, is_query=is_query, is_derived=is_derived, is_derived_union=is_derived_union, model=self._model, builder=self)
-        self.add_attribute(attribute)
+        uml_type = self.get_instance_by_id(type_id)
+        uml_class = self.get_instance_by_id(classifier_id)
+        attribute = UmlAttribute(
+            id=id, name=name, visibility=visibility, type=uml_type, is_static=is_static, is_ordered=is_ordered,
+            is_unique=is_unique, is_read_only=is_read_only, is_query=is_query, is_derived=is_derived,
+            is_derived_union=is_derived_union, model=self._model, builder=self
+        )
 
-        if type is None:
+        self.add_element(attribute)
+
+        if uml_class is not None:
+            uml_class.attributes.append(attribute)
+        else:
+            def _queued_assign_attribute(classifier: UmlClassifier) -> None:
+                classifier.attributes.append(attribute)
+            
+            self.register_dalayed_call_for_id(classifier_id, _queued_assign_attribute)
+
+        if uml_type is None:
             def _queued_assign_type(type: UmlElement) -> None:
                 attribute.type = type
             
             self.register_dalayed_call_for_id(type_id, _queued_assign_type)
 
         return self
-
+        
     def add_attribute(self, attribute: UmlAttribute) -> "IUmlModelBuilder":
         self.add_element(attribute)
         return self
 
-    def construct_uml_operation(self, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, return_type_id: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
+    def construct_uml_operation(self, classifier_id: str, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, return_type_id: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_operation({args}, {kwargs})")
+        uml_class = self.get_instance_by_id(classifier_id)
         return_type = self.get_instance_by_id(return_type_id)
-        operation = UmlOperation(id=id, name=name, return_type=return_type, visibility=visibility, model=self._model, builder=self)
-        self.add_operation(operation)
+        operation = UmlOperation(
+            id=id, name=name, visibility=visibility, return_type=return_type, model=self._model, builder=self
+        )
+
+        self.add_element(operation)
+
+        if uml_class is not None:
+            uml_class.operations.append(operation)
+        else:
+            def _queued_assign_operation(classifier: UmlClassifier) -> None:
+                classifier.operations.append(operation)
+            
+            self.register_dalayed_call_for_id(classifier_id, _queued_assign_operation)
 
         if return_type is None:
             def _queued_assign_return_type(type: UmlElement) -> None:
@@ -141,6 +167,7 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
 
         return self
 
+        
     def add_operation(self, operation: UmlOperation) -> "IUmlModelBuilder":
         self.add_element(operation)
         return self
@@ -214,16 +241,20 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
     def construct_uml_association_end(
         self, 
         id: Optional[str] = None, 
-        element_id: Optional[str] = None, 
+        type_metadata: Optional[dict[str, Any]] = None, 
         role: Optional[str] = None, 
         multiplicity: Optional[UmlMultiplicityEnum] = UmlMultiplicityEnum.ONE, 
         navigability: bool = True, 
         association_id: Optional[str] = None,
+        name: Optional[str] = None,
+        visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC,
         *args, 
         **kwargs
     ) -> "IUmlModelBuilder":
+        
+        referenced_type_id = type_metadata.get('referenced_type_id') if type_metadata is not None else None
         self._logger.debug(f"Method called: construct_uml_association_end({args}, {kwargs})")
-        element = self.get_instance_by_id(element_id)
+        element = self.get_instance_by_id(referenced_type_id)
         association = self.get_instance_by_id(association_id)
 
         association_end = UmlAssociationEnd(
@@ -232,6 +263,8 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
             role=role, 
             multiplicity=multiplicity, 
             navigability=navigability, 
+            name=name,
+            visibility=visibility,
             model=self._model, 
             builder=self
         )
@@ -247,7 +280,7 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         if element is None:
             def _queued_assign_element(element: UmlElement) -> None:
                 association_end.element = element
-            self.register_dalayed_call_for_id(element_id, lambda instance: _queued_assign_element(instance))
+            self.register_dalayed_call_for_id(referenced_type_id, lambda instance: _queued_assign_element(instance))
 
         return self
 
