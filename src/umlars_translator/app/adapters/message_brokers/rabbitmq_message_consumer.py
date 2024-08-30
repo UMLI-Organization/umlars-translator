@@ -20,6 +20,7 @@ from src.umlars_translator.core.translator import ModelTranslator
 from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
 from src.umlars_translator.app.adapters.message_brokers.rabbitmq_message_producer import RabbitMQProducer, create_failed_translation_message, create_partial_success_translation_message,create_successfull_translation_message,create_running_translation_message, send_translated_model_message
 
+
 @inject
 class RabbitMQConsumer(MessageConsumer):
     def __init__(self, queue_name: str, rabbitmq_host: str, repository_api_connector: RestApiConnector, uml_model_repository: UmlModelRepository, messaging_logger: Optional[logging.Logger] = None, model_translator: Optional[ModelTranslator] = None, message_producer: Optional[RabbitMQProducer] = None) -> None:
@@ -72,7 +73,7 @@ class RabbitMQConsumer(MessageConsumer):
                 return
 
             send_running_message_coroutine = send_translated_model_message(create_running_translation_message(model_to_translate_message.id), self._message_producer)
-            
+
             try:
                 await self.process_message(model_to_translate_message)
                 await message.ack()
@@ -99,10 +100,7 @@ class RabbitMQConsumer(MessageConsumer):
         self._logger.debug(f"Response from repo service: {response_body}")
         try:
             uml_model = UmlModelDTO(**response_body)
-            self._logger.info(f"Deserialized model: {uml_model}")
-            for file in uml_model.source_files:
-                self._logger.info(f"File: {file}")
-
+            self._logger.info(f"Deserialized model with id: {uml_model.id}")
         except ValidationError as ex:
             error_message = f"Failed to deserialize response from the repository service: {ex}. Invalid structure."
             self._logger.error(error_message)

@@ -58,7 +58,7 @@ class ModelDeserializer:
         """
         TODO: Support for accepting dictionary assigning from_format to file_name or data_batch.
         """
-        self._logger.info(
+        self._logger.debug(
             f"Deserializing model for data batches: {data_batches} and file paths: {file_paths}"
         )
         if not data_sources:
@@ -81,6 +81,7 @@ class ModelDeserializer:
         for source in data_sources:
             self._logger.info(
                 f"Choosing deserialization strategy for data source: {source}"
+                f"Registered strategies: {self._factory._registered_strategies}"
             )
             try:
                 import_parsing_strategy = self.get_strategy_for_source(source)
@@ -94,7 +95,6 @@ class ModelDeserializer:
             self._model_builder.clear()
 
         return model
-
 
     def get_strategy_for_source(
         self, source: DataSource

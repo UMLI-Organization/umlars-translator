@@ -40,8 +40,6 @@ class ModelTranslator:
         )
         # TODO: serializer should accept many implementations of IUmlModel
         serialized_model = self.serialize(deserialized_model)
-
-
         return serialized_model
 
     def deserialize(
