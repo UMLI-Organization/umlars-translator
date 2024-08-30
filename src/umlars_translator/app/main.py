@@ -108,9 +108,9 @@ async def translate_uml_model(uml_model: UmlModel, model_repo: UmlModelRepositor
 
 @inject
 def run_app(port: int = 8080, host: str = "0.0.0.0", context: str = 'DEV', app_logger: Optional[logging.Logger] = None):
-    app_logger.error("\n\n\nStarted\n\n\n")
-
     port = int(os.getenv("EXPOSE_ON_PORT", port))
+    app_logger.error(f"\nStarting the application on port {port}\n")
+
     if context == 'DEV':
         return uvicorn.run("src.umlars_translator.app.main:app", host=host, port=port, reload=True)
     else:

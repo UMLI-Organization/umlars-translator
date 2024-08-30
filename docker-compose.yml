@@ -20,6 +20,9 @@ services:
       - net-backend
     ports:
       - 8080:8080
+      # For docs uncomment the below line
+      # (Note: It should be commented out in production, to avoid exposing the api)
+      - 8020:8020
     env_file:
       - ./.env.dev
 
