@@ -57,7 +57,7 @@ class UmlElement(BaseModel):
 
 class UmlNamedElement(UmlElement):
     name: Optional[str] = None
-    visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC
+    visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC
 
 
 class UmlAttribute(UmlNamedElement):

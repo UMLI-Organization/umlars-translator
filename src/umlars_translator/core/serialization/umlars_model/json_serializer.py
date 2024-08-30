@@ -174,6 +174,9 @@ class UmlToPydanticSerializer(UmlSerializer):
             raise ValueError("Unsupported association type")
 
     def visit_uml_association_end(self, association_end: UmlAssociationEnd) -> pydantic_uml.UmlAssociationEnd:
+        if association_end is None:
+            return None
+        
         return pydantic_uml.UmlAssociationEnd(
             id=association_end.id,
             multiplicity=association_end.multiplicity,

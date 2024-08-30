@@ -44,11 +44,11 @@ class UmlMessageKindEnum(str, Enum):
     UNKNOWN = "unknown"
 
 
-
 class UmlVisibilityEnum(str, Enum):
     PUBLIC = "public"
     PRIVATE = "private"
     PROTECTED = "protected"
+    PACKAGE = "package"
 
 
 class UmlMultiplicityEnum(str, Enum):
