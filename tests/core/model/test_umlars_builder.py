@@ -111,20 +111,42 @@ def test_construct_uml_association_end_with_delayed_assignment(builder):
     assert association is not None, "UmlAssociation was not created."
     assert any(end.id == "end1" for end in (association.end1, association.end2)), "Delayed binding of UmlAssociationEnd to UmlAssociation was not handled."
 
-# TODO def test_delayed_assignment(builder):
-#     # Construct an UmlAttribute with delayed type assignment
-#     builder.construct_uml_attribute(id="attr1", name="Attribute1", type_id="type1")
 
-#     # Construct UmlPrimitiveType later
-#     builder.construct_uml_primitive_type(id="type1", name="int")
+def test_construct_uml_association(builder):
+    # Step 1: Construct the UML class that will be connected by the association end
+    builder.construct_uml_class(id="class1", name="Class1")
+    builder.construct_uml_class(id="class2", name="Class2")
 
-#     model = builder.build()
-#     attribute = model.elements.attributes[0]
+    # Step 2: Construct the association that the end will belong to
+    builder.construct_uml_association(id="assoc1", name="Association1")
 
-#     assert attribute.id == "attr1"
-#     assert attribute.name == "Attribute1"
-#     assert attribute.type.id == "type1"
-#     assert attribute.type.name == "int"
+    # Step 3: Construct the association end and bind it to the association
+    builder.construct_uml_association_end(
+        id="end1", 
+        role="endRole1", 
+        multiplicity=UmlMultiplicityEnum.ONE, 
+        navigability=True, 
+        association_id="assoc1",
+        type_metadata={"referenced_type_id": "class1"}
+    )
+    builder.construct_uml_association_end(
+        id="end2", 
+        role="endRole2", 
+        multiplicity=UmlMultiplicityEnum.ONE, 
+        navigability=True, 
+        association_id="assoc1",
+        type_metadata={"referenced_type_id": "class2"}
+    )
+
+    # Step 4: Build the model
+    model = builder.build()
+
+    # Verify the association was created and the ends were added correctly
+    association = next((assoc for assoc in model.elements.associations if assoc.id == "assoc1"), None)
+    assert association is not None, "UmlAssociation was not created."
+    assert any(end.id == "end1" for end in (association.end1, association.end2)), "UmlAssociationEnd1 was not bound to UmlAssociation."
+    assert any(end.id == "end2" for end in (association.end1, association.end2)), "UmlAssociationEnd2 was not bound to UmlAssociation."
+
 
 def test_construct_uml_dependency_with_delayed_assignment(builder):
     # Construct UmlDependency with delayed assignments
@@ -156,12 +178,34 @@ def test_method_chaining(builder):
     assert model.elements.classes[0].name == "Class1"
     assert model.elements.interfaces[0].name == "Interface1"
 
-# def test_bind_element_to_diagram(builder):
-#     builder.construct_uml_class(id="class1", name="Class1")
-#     builder.construct_uml_package(id="package1", name="Package1")
-#     builder.bind_element_to_diagram(element_id="class1", diagram_id="package1")
 
-#     model = builder.build()
-#     package = model.elements.packages[0]
+def test_delayed_assignment(builder):
+    # Construct an UmlAttribute with delayed type assignment
+    builder.construct_uml_attribute(id="attr1", name="Attribute1", classifier_id="class1", type_id="type1")
 
-#     assert any(e.id == "class1" for e in package.elements)
+    # Construct UmlPrimitiveType later
+    builder.construct_uml_primitive_type(id="type1", name="int")
+
+    model = builder.build()
+    # attributes are only accessible through the class
+    attribute = builder.get_instance_by_id("attr1")
+
+    assert attribute.id == "attr1"
+    assert attribute.name == "Attribute1"
+    assert attribute.type.id == "type1"
+    assert attribute.type.name == "int"
+
+
+def test_bind_element_to_diagram(builder):
+    # Construct a class and a diagram
+    builder.construct_uml_class(id="class1", name="Class1")
+    builder.construct_class_diagram(id="diagram1", name="Diagram1")
+
+    # Bind the class to the diagram
+    builder.bind_element_to_diagram(element_id="class1", diagram_id="diagram1")
+
+    model = builder.build()
+    diagram = model.diagrams.class_diagrams[0]
+
+    assert len(diagram.elements.classes) == 1
+    assert diagram.elements.classes[0].id == "class1"

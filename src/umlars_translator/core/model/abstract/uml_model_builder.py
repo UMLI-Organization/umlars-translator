@@ -100,11 +100,11 @@ class IUmlModelBuilder(ABC):
 
     # Attributes and Operations
     @log_calls_and_return_self()
-    def construct_uml_attribute(self, classifier_id: str, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, type: Union['IUmlPrimitiveType', 'IUmlClass', 'IUmlInterface', 'IUmlDataType', 'IUmlEnumeration'] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_read_only: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None) -> "IUmlModelBuilder":
+    def construct_uml_attribute(self, classifier_id: str, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, type: Union['IUmlPrimitiveType', 'IUmlClass', 'IUmlInterface', 'IUmlDataType', 'IUmlEnumeration'] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_read_only: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None, type_metadata: Optional[dict[str, Any]] = None) -> "IUmlModelBuilder":
         ...
 
     @log_calls_and_return_self()
-    def construct_uml_operation(self, classifier_id: str, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, return_type: Optional[Union['IUmlPrimitiveType', 'IUmlClass', 'IUmlInterface', 'IUmlDataType', 'IUmlEnumeration']] = None, parameters: Optional[List['IUmlParameter']] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None, is_abstract: bool = False, exceptions: Optional[List[str]] = None) -> "IUmlModelBuilder":
+    def construct_uml_operation(self, classifier_id: str, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, return_type: Optional[Union['IUmlPrimitiveType', 'IUmlClass', 'IUmlInterface', 'IUmlDataType', 'IUmlEnumeration']] = None, parameters: Optional[List['IUmlParameter']] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None, is_abstract: bool = False, exceptions: Optional[List[str]] = None, type_metadata: Optional[dict[str, Any]] = None) -> "IUmlModelBuilder":
         ...
 
     @log_calls_and_return_self()

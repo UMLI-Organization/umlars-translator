@@ -16,7 +16,7 @@ from src.umlars_translator.core.utils.delayed_caller import (
     DalayedIdToInstanceMapper,
     evaluate_elements_afterwards,
 )
-from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagram
+from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagram, UmlClassDiagram, UmlSequenceDiagram
 from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum, UmlPrimitiveTypeKindEnum, UmlParameterDirectionEnum, UmlInteractionOperatorEnum, UmlMessageSortEnum, UmlMessageKindEnum
 
 
@@ -109,8 +109,10 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         self.model.elements.primitive_types.append(primitive_type)
         return self
 
-    def construct_uml_attribute(self, classifier_id: str, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, type_id: Optional[str] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_read_only: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None, *args, **kwargs) -> "IUmlModelBuilder":
-        self._logger.debug(f"Method called: construct_uml_attribute({args}, {kwargs})")
+    def construct_uml_attribute(self, classifier_id: str, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, type_id: Optional[str] = None, is_static: Optional[bool] = None, is_ordered: Optional[bool] = None, is_unique: Optional[bool] = None, is_read_only: Optional[bool] = None, is_query: Optional[bool] = None, is_derived: Optional[bool] = None, is_derived_union: Optional[bool] = None, type_metadata: Optional[dict[str, Any]]=None, **kwargs) -> "IUmlModelBuilder":
+        if type_id is None:
+            type_id = type_metadata.get('referenced_type_id') if type_metadata is not None else None
+        self._logger.debug(f"Method called: construct_uml_attribute( {kwargs})")
         uml_type = self.get_instance_by_id(type_id)
         uml_class = self.get_instance_by_id(classifier_id)
         attribute = UmlAttribute(
@@ -141,8 +143,10 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         self.add_element(attribute)
         return self
 
-    def construct_uml_operation(self, classifier_id: str, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, return_type_id: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
-        self._logger.debug(f"Method called: construct_uml_operation({args}, {kwargs})")
+    def construct_uml_operation(self, classifier_id: str, id: Optional[str] = None, name: Optional[str] = None, visibility: Optional[UmlVisibilityEnum] = UmlVisibilityEnum.PUBLIC, return_type_id: Optional[str] = None, type_metadata: Optional[dict[str, Any]] = None, **kwargs) -> "IUmlModelBuilder":
+        if return_type_id is None:
+            return_type_id = type_metadata.get('referenced_type_id') if type_metadata is not None else None
+        self._logger.debug(f"Method called: construct_uml_operation({kwargs})")
         uml_class = self.get_instance_by_id(classifier_id)
         return_type = self.get_instance_by_id(return_type_id)
         operation = UmlOperation(
@@ -536,9 +540,36 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         else:
             raise ValueError("Either diagram or diagram_id should be provided.")
 
+    def add_class_diagram(self, class_diagram: UmlClassDiagram) -> "IUmlModelBuilder":
+        self.add_element(class_diagram)
+        self.model.diagrams.class_diagrams.append(class_diagram)
+        return self
+
+    def add_sequence_diagram(self, sequence_diagram: UmlSequenceDiagram) -> "IUmlModelBuilder":
+        self.add_element(sequence_diagram)
+        self.model.diagrams.sequence_diagrams.append(sequence_diagram)
+        return self
+
+    def construct_sequence_diagram(self, id: Optional[str] = None, name: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
+        self._logger.debug(f"Method called: construct_sequence_diagram({args}, {kwargs})")
+        diagram = UmlSequenceDiagram(id=id, name=name, model=self._model, builder=self)
+        self.add_sequence_diagram(diagram)
+        return self
+
+    def construct_class_diagram(self, id: Optional[str] = None, name: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
+        self._logger.debug(f"Method called: construct_class_diagram({args}, {kwargs})")
+        diagram = UmlClassDiagram(id=id, name=name, model=self._model, builder=self)
+        self.add_class_diagram(diagram)
+        return self
+
+    def add_interaction(self, interaction: UmlInteraction) -> "IUmlModelBuilder":
+        self.add_element(interaction)
+        self.model.elements.interactions.append(interaction)
+        return self
+
+    # TODO: remove
     def __getattr__(self, name: str) -> "IUmlModelBuilder":
         def method(*args, **kwargs):
             self._logger.debug(f"Method called: {name}({args}, {kwargs})")
             return self
-
         return method
