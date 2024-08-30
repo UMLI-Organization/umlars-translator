@@ -214,6 +214,7 @@ def test_when_reuse_strategy_deserialization_successfull(
     with pytest.raises(InvalidFormatException):
         strategy.retrieve_model(other_xmi_data_source)
 
+
 def test_when_deserialize_library_file_then_correct_model_created(
     umlars_model_builder, ea_xmi_library_data_source, ea_xmi_deserialization_strategy_factory
 ):
@@ -233,42 +234,55 @@ def test_when_deserialize_library_file_then_correct_model_created(
     assert root_package.name == "Basic Class Diagram with Attributes and Operations"
     
     # Assertions to check if classes are correctly deserialized
-    class_a = next(c for c in root_package.elements.classes if c.name == "Class A")
+
+    # Extract the model elements
+    model_elements = model.elements
+    assert model_elements is not None
+    
+    # Check that the correct number of classes and associations were created
+    assert len(model_elements.classes) == 3  # There are 3 classes in the XMI input
+    assert len(model_elements.associations) == 2  # There are 2 associations in the XMI input
+    
+    # Verify class names and properties
+    class_a = next((cls for cls in model_elements.classes if cls.name == "Class A"), None)
+    class_b = next((cls for cls in model_elements.classes if cls.name == "Class B"), None)
+    class_c = next((cls for cls in model_elements.classes if cls.name == "Class C"), None)
+
     assert class_a is not None
     assert class_a.visibility == UmlVisibilityEnum.PUBLIC
     
-    class_b = next(c for c in root_package.elements.classes if c.name == "Class B")
     assert class_b is not None
     assert class_b.visibility == UmlVisibilityEnum.PUBLIC
-    
-    class_c = next(c for c in root_package.elements.classes if c.name == "Class C")
     assert class_c is not None
     assert class_c.visibility == UmlVisibilityEnum.PUBLIC
+
+    # Verify attributes in Class A
+    assert len(class_a.attributes) == 2
+    attribute_a = next((attr for attr in class_a.attributes if attr.name == "Attribute A"), None)
+    attribute_b = next((attr for attr in class_a.attributes if attr.name == "Attribute B"), None)
     
-    # Assertions to check if attributes of Class A are correctly deserialized
-    attribute_a = next(attr for attr in class_a.attributes if attr.name == "Attribute A")
     assert attribute_a is not None
     assert attribute_a.visibility == UmlVisibilityEnum.PRIVATE
-    
-    attribute_b = next(attr for attr in class_a.attributes if attr.name == "Attribute B")
     assert attribute_b is not None
     assert attribute_b.visibility == UmlVisibilityEnum.PRIVATE
-    
-    # Assertions to check if operations of Class A are correctly deserialized
-    operation_a = next(op for op in class_a.operations if op.name == "Operation A")
+
+    # Verify operations in Class A
+    assert len(class_a.operations) == 2
+    operation_a = next((op for op in class_a.operations if op.name == "Operation A"), None)
+    operation_b = next((op for op in class_a.operations if op.name == "Operation B"), None)
+
     assert operation_a is not None
     assert operation_a.visibility == UmlVisibilityEnum.PUBLIC
-    
-    operation_b = next(op for op in class_a.operations if op.name == "Operation B")
     assert operation_b is not None
     assert operation_b.visibility == UmlVisibilityEnum.PUBLIC
     
     # Assertions to check if associations are correctly deserialized
-    association_a = next(assoc for assoc in root_package.elements.associations if assoc.name == "Association A")
+    association_a = next((assoc for assoc in model_elements.associations if assoc.name == "Association A"), None)
+    association_b = next((assoc for assoc in model_elements.associations if assoc.name == "Association B"), None)
+    
     assert association_a is not None
     assert association_a.visibility == UmlVisibilityEnum.PUBLIC
-    
-    association_b = next(assoc for assoc in root_package.elements.associations if assoc.name == "Association B")
+
     assert association_b is not None
     assert association_b.visibility == UmlVisibilityEnum.PUBLIC
     
@@ -279,10 +293,10 @@ def test_when_deserialize_library_file_then_correct_model_created(
     # Assertions to check if ends of Association B are correctly deserialized
     assert association_b.end1.role == "role a"
     assert association_b.end2.role == "role c"
+
+    # Verify that the associations are correctly linked to the classes
+    assert association_a.end1.element == class_a
+    assert association_a.end2.element == class_b
     
-    # # Assertions to check if Class B and Class C have correct links
-    # class_b_link = next(link for link in class_b.links if link.association.name == "Association A")
-    # assert class_b_link is not None
-    
-    # class_c_link = next(link for link in class_c.links if link.association.name == "Association B")
-    # assert class_c_link is not None
+    assert association_b.end1.element == class_a
+    assert association_b.end2.element == class_c
