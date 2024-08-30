@@ -18,7 +18,7 @@ LOG_FILE = os.getenv("APP_LOG_FILE", "logs/umlars-server.log")
 
 # RABBITMQ
 MESSAGE_BROKER_HOST = os.getenv("RABBITMQ_HOST", "rabbitmq")
-MESSAGE_BROKER_QUEUE_NAME = os.getenv("RABBITMQ_QUEUE_NAME", "uploaded_files")
+MESSAGE_BROKER_QUEUE_UPLOADED_FILES_NAME = os.getenv("RABBITMQ_QUEUE_NAME", "uploaded_files")
 
 
 # MAIN REPOSITORY SERVICE

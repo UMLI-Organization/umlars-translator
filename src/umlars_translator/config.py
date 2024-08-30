@@ -7,9 +7,9 @@ class SupportedFormat(Enum):
     Each supported format is mapped to its string representation.
     """
 
-    XMI_EA = "xmi-ea"
-    UML_PAPYRUS = "uml-papyrus"
-    NOTATION_PAPYRUS = "notation-papyrus"
+    XMI_EA = "xmi_ea"
+    UML_PAPYRUS = "uml_papyrus"
+    NOTATION_PAPYRUS = "notation_papyrus"
     MDJ_STARTUML = "mdj_staruml"
     UNKNOWN = "unknown"
 

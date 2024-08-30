@@ -48,7 +48,7 @@ async def get_uml_model_repository(db_client: AsyncIOMotorClient) -> UmlModelRep
 
 async def start_consuming_messages() -> None:
     try:
-        consumer = RabbitMQConsumer(config.MESSAGE_BROKER_QUEUE_NAME, config.MESSAGE_BROKER_HOST)
+        consumer = RabbitMQConsumer(config.MESSAGE_BROKER_QUEUE_UPLOADED_FILES_NAME, config.MESSAGE_BROKER_HOST)
         di[RabbitMQConsumer] = consumer
     except QueueUnavailableError as e:
         raise ServiceConnectionError("Failed to create a consumer for the message queue") from e

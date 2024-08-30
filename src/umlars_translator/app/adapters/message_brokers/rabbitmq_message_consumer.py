@@ -7,6 +7,7 @@ from pydantic import ValidationError
 import aio_pika
 from kink import inject
 
+from src.umlars_translator.core.deserialization.exceptions import UnsupportedSourceDataTypeError
 from src.umlars_translator.app.exceptions import QueueUnavailableError, NotYetAvailableError, InputDataError
 from src.umlars_translator.app.adapters.message_brokers.message_consumer import MessageConsumer
 from src.umlars_translator.app.adapters.message_brokers import config as messaging_config
@@ -17,14 +18,16 @@ from src.umlars_translator.app.adapters.apis.rest_api_connector import RestApiCo
 from src.umlars_translator.app.utils.functions import retry_async
 from src.umlars_translator.core.translator import ModelTranslator
 from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
+from src.umlars_translator.app.adapters.message_brokers.rabbitmq_message_producer import RabbitMQProducer, create_failed_translation_message, create_partial_success_translation_message,create_successfull_translation_message,create_running_translation_message, send_translated_model_message
 
 @inject
 class RabbitMQConsumer(MessageConsumer):
-    def __init__(self, queue_name: str, rabbitmq_host: str, repository_api_connector: RestApiConnector, uml_model_repository: UmlModelRepository, messaging_logger: Optional[logging.Logger] = None, model_translator: Optional[ModelTranslator] = None) -> None:
+    def __init__(self, queue_name: str, rabbitmq_host: str, repository_api_connector: RestApiConnector, uml_model_repository: UmlModelRepository, messaging_logger: Optional[logging.Logger] = None, model_translator: Optional[ModelTranslator] = None, message_producer: Optional[RabbitMQProducer] = None) -> None:
         self._logger = messaging_logger.getChild(self.__class__.__name__)
         self._repository_api_connector = repository_api_connector
         self._model_translator = model_translator or ModelTranslator()
         self._uml_model_repository = uml_model_repository
+        self._message_producer = message_producer or RabbitMQProducer(queue_name=messaging_config.MESSAGE_BROKER_TRANSLATED_MODELS_QUEUE_NAME, rabbitmq_host=messaging_config.MESSAGE_BROKER_HOST)
         self._queue_name = queue_name
         self._rabbitmq_host = rabbitmq_host
         self._connection = None
@@ -62,34 +65,62 @@ class RabbitMQConsumer(MessageConsumer):
         async with message.process(ignore_processed=True):
             self._logger.info("Called callback from logger")
             try:
-                # Replace with actual processing logic
-                await self.process_message(message)
+                model_to_translate_message = self._deserialize_message(message)
+            except Exception as ex:
+                self._logger.error(f"Failed to deserialize message: {ex}")
+                await message.reject(requeue=False)
+                return
+
+            send_running_message_coroutine = send_translated_model_message(create_running_translation_message(model_to_translate_message.id), self._message_producer)
+            
+            try:
+                await self.process_message(model_to_translate_message)
                 await message.ack()
+                await send_running_message_coroutine
+                await send_translated_model_message(create_successfull_translation_message(model_to_translate_message.id), self._message_producer)
                 self._logger.info("Message acknowledged")
             except Exception as ex:
                 self._logger.error(f"Failed to process message: {ex}")
+                await send_running_message_coroutine
+                await send_translated_model_message(create_failed_translation_message(model_to_translate_message.id, error_message=f"Failed to process message: {ex}"), self._message_producer)
                 await message.reject(requeue=False)
 
-    async def process_message(self, message: aio_pika.IncomingMessage) -> None:
+    def _deserialize_message(self, message: aio_pika.IncomingMessage) -> ModelToTranslateMessage:
         message_data = json.loads(message.body)
         model_to_translate_message = ModelToTranslateMessage(**message_data)
+        self._logger.info(f"Processing message: {model_to_translate_message}")
+        return model_to_translate_message
+
+    async def process_message(self, model_to_translate_message: ModelToTranslateMessage) -> None:
         # TODO: add filter - only changed or added files
         models_repository_api_url = f"{app_config.REPOSITORY_API_URL}/{app_config.REPOSITORY_SERVICE_MODELS_ENDPOINT}/{model_to_translate_message.id}"
 
         response_body = await self._repository_api_connector.get_data(models_repository_api_url)
-        self._logger.info(f"Response from translation service: {response_body}")
+        self._logger.debug(f"Response from repo service: {response_body}")
         try:
             uml_model = UmlModelDTO(**response_body)
+            self._logger.info(f"Deserialized model: {uml_model}")
+            for file in uml_model.source_files:
+                self._logger.info(f"File: {file}")
+
         except ValidationError as ex:
             error_message = f"Failed to deserialize response from the repository service: {ex}. Invalid structure."
             self._logger.error(error_message)
             raise InputDataError(error_message) from ex
 
-        self._logger.info(f"Response from translation service: {uml_model}")
-
         data_sources_gen = map(lambda uml_file: uml_file.to_data_source(), uml_model.source_files)
-        self._logger.info(f"Processed message: {message.body}")
-        translated_model = self._model_translator.translate(data_sources=data_sources_gen)
+        try:
+            translated_model = self._model_translator.deserialize(data_sources=data_sources_gen)
+            self._uml_model_repository.save(translated_model)
+
+        except UnsupportedSourceDataTypeError as ex:
+            error_message = f"Failed to deserialize model: {ex}"
+            self._logger.error(error_message)
+            raise InputDataError(error_message) from ex
+        except Exception as ex:
+            error_message = f"Failed to translate model: {ex}"
+            self._logger.error(error_message)
+            raise InputDataError(error_message) from ex
 
         self._logger.info(f"Translated model: {translated_model}")
 

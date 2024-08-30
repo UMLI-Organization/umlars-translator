@@ -4,6 +4,7 @@ from kink import inject
 
 from src.umlars_translator.config import SupportedFormat
 from src.umlars_translator.core.deserialization.data_source import DataSource
+from src.umlars_translator.core.deserialization.exceptions import UnsupportedSourceDataTypeError
 from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 
 from src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
@@ -70,7 +71,7 @@ class DeserializationStrategyFactory:
                 f"Strategies: {strategies_instances_for_data}"
             )
         elif len(strategies_instances_for_data) == 0:
-            raise ValueError("No strategy can deserialize the format data.")
+            raise UnsupportedSourceDataTypeError("No strategy can deserialize the format data.")
         else:
             strategy_instance = strategies_instances_for_data[0]
 

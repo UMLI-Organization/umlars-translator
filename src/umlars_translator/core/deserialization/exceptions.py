@@ -20,3 +20,9 @@ class UnableToMapError(Exception):
     """
     Raised when value mapping fails.
     """
+
+
+class UnsupportedSourceDataTypeError(Exception):
+    """
+    Raised when the data source type is not supported by any deserialization strategy.
+    """

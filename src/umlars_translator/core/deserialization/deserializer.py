@@ -4,6 +4,7 @@ from logging import Logger
 from kink import inject
 
 from src.umlars_translator.core.deserialization.input_processor import InputProcessor
+from src.umlars_translator.core.deserialization.exceptions import UnsupportedSourceDataTypeError
 from src.umlars_translator.core.deserialization.data_source import DataSource
 from src.umlars_translator.config import SupportedFormat
 from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
@@ -81,7 +82,11 @@ class ModelDeserializer:
             self._logger.info(
                 f"Choosing deserialization strategy for data source: {source}"
             )
-            import_parsing_strategy = self.get_strategy_for_source(source)
+            try:
+                import_parsing_strategy = self.get_strategy_for_source(source)
+            except UnsupportedSourceDataTypeError as ex:
+                self._logger.error(f"Error while choosing deserialization strategy: {ex}")
+                raise ex
             self._logger.info(f"Retrieving model from data source: {source}")
             model = import_parsing_strategy.retrieve_model(source, model, self._model_builder, clear_afterwards=False)
 
