@@ -607,3 +607,7 @@ class DiagramPipe(EaXmiModelProcessingPipe):
                 element_id=aliases_to_values["element_id"], diagram_id=diagram_id
             )
 
+
+# TODO: now fix type_id - type_metadata - it sohuld be constructed there or just id passed
+# also define approach to the primitive types enum - imo config in the type pipeline should just contain mapping of strings in xml to my types from core
+# also add the missing functions - create operation and params and interface and diagram

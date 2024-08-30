@@ -23,9 +23,12 @@ from src.umlars_translator.core.model.umlars_model.uml_model_builder import (
 )
 
 
+LIBRARY_MODEL_FILE_PATH = "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_library.xml"
+
+
 FILES_WITH_EA_XMI_FORMAT = [
     "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_basic.xml",
-    "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_library.xml",
+    LIBRARY_MODEL_FILE_PATH,
     "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_car-model-xmi-21.xml",
 ]
 
@@ -57,6 +60,11 @@ def ea_xmi_class_data_sources():
             file_paths_list=FILES_WITH_EA_XMI_FORMAT
         )
     )
+
+
+@pytest.fixture
+def ea_xmi_library_data_source():
+    return InputProcessor().accept_input(file_path=LIBRARY_MODEL_FILE_PATH)
 
 
 @pytest.fixture
@@ -203,3 +211,46 @@ def test_when_reuse_strategy_deserialization_successfull(
 
     with pytest.raises(InvalidFormatException):
         strategy.retrieve_model(other_xmi_data_source)
+
+
+def test_when_deserialize_library_file_then_correct_model_created(
+    umlars_model_builder, ea_xmi_library_data_source, ea_xmi_deserialization_strategy_factory
+):
+    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+        model_builder=umlars_model_builder
+    )
+    model = strategy.retrieve_model(ea_xmi_library_data_source)
+    assert isinstance(model, IUmlModel)
+    assert len(model.classes) == 1
+    assert len(model.packages) == 1
+    assert len(model.associations) == 1
+    assert len(model.generalizations) == 1
+    assert len(model.attributes) == 1
+    assert len(model.operations) == 1
+    assert len(model.lifelines) == 1
+    assert len(model.messages) == 1
+    assert len(model.interactions) == 1
+    assert len(model.collaborations) == 1
+    assert len(model.use_cases) == 1
+    assert len(model.actors) == 1
+    assert len(model.association_classes) == 1
+    assert len(model.enumerations) == 1
+    assert len(model.enumeration_literals) == 1
+    assert len(model.association_ends) == 1
+    assert len(model.association_end_properties) == 1
+    assert len(model.association_end_qualifiers) == 1
+    assert len(model.association_end_multiplicities) == 1
+    assert len(model.association_end_navigabilities) == 1
+    assert len(model.association_end_aggregations) == 1
+    assert len(model.association_end_compositions) == 1
+    assert len(model.association_end_associations) == 1
+    assert len(model.association_end_association_ends) == 1
+    assert len(model.association_end_association_end_properties) == 1
+    assert len(model.association_end_association_end_qualifiers) == 1
+    assert len(model.association_end_association_end_multiplicities) == 1
+    assert len(model.association_end_association_end_navigabilities) == 1
+    assert len(model.association_end_association_end_aggregations) == 1
+    assert len(model.association_end_association_end_compositions) == 1
+    assert len(model.association_end_association_end_associations) == 1
+    assert len(model.association_end_association_end_association_ends) == 1
+    assert len(model.association_end_association_end_association_end_properties) == 1
