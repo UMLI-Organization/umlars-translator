@@ -40,8 +40,12 @@ import src.umlars_translator.app.dtos.uml_model as pydantic_uml
 
 @inject(alias=UmlSerializer)
 class UmlToPydanticSerializer(UmlSerializer):
-    def serialize(self, model: UmlModel) -> str:
+    def serialize(self, model: UmlModel, to_string: bool = True) -> str:
         pydantic_model = self.visit_uml_model(model)
+        
+        if not to_string:
+            return pydantic_model
+        
         return pydantic_model.model_dump_json()
 
     def visit_uml_model(self, model: UmlModel) -> pydantic_uml.UmlModel:

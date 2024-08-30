@@ -9,7 +9,6 @@ from kink import inject
 class ExtensionsManager:
     """
     Class used to manage extensions of the application. It allows to load plugins from directories and filter them by categories.
-    Fasade for yapsy.PluginManager.
     """
 
     def __init__(

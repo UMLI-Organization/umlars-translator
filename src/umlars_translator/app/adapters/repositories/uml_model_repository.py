@@ -5,9 +5,9 @@ from src.umlars_translator.app.dtos.uml_model import UmlModel
 
 class UmlModelRepository(ABC):
     @abstractmethod
-    def get(self, model_id: str) -> UmlModel:
+    async def get(self, model_id: str) -> UmlModel:
         ...
 
     @abstractmethod
-    def save(self, uml_model: UmlModel) -> UmlModel:
+    async def save(self, uml_model: UmlModel) -> UmlModel:
         ...

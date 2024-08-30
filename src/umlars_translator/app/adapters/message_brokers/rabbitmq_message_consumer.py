@@ -20,6 +20,10 @@ from src.umlars_translator.core.translator import ModelTranslator
 from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
 from src.umlars_translator.app.adapters.message_brokers.rabbitmq_message_producer import RabbitMQProducer, create_failed_translation_message, create_partial_success_translation_message,create_successfull_translation_message,create_running_translation_message, send_translated_model_message
 
+# TODO: temporary fix
+# from src.umlars_translator.core.extensions_manager import ExtensionsManager
+from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy import EaXmiImportParsingStrategy
+
 
 @inject
 class RabbitMQConsumer(MessageConsumer):
@@ -63,6 +67,8 @@ class RabbitMQConsumer(MessageConsumer):
             raise QueueUnavailableError("Unexpected error while connecting to the channel") from ex
 
     async def _callback(self, message: aio_pika.IncomingMessage) -> None:
+        # TODO: temporary fix
+        # ExtensionsManager().activate_extensions()
         async with message.process(ignore_processed=True):
             self._logger.info("Called callback from logger")
             try:
@@ -108,8 +114,8 @@ class RabbitMQConsumer(MessageConsumer):
 
         data_sources_gen = map(lambda uml_file: uml_file.to_data_source(), uml_model.source_files)
         try:
-            translated_model = self._model_translator.deserialize(data_sources=data_sources_gen)
-            self._uml_model_repository.save(translated_model)
+            translated_model = self._model_translator.translate(data_sources=data_sources_gen, to_string=False, clear_model_afterwards=True)
+            await self._uml_model_repository.save(translated_model)
 
         except UnsupportedSourceDataTypeError as ex:
             error_message = f"Failed to deserialize model: {ex}"

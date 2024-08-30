@@ -31,8 +31,8 @@ def create_app_logger():
     return app_logger
 
 
-@inject(alias=AsyncIOMotorClient)
-async def get_db_client(app_logger: logging.Logger) -> AsyncIOMotorClient:
+@inject
+def get_db_client(app_logger: logging.Logger) -> AsyncIOMotorClient:
     try:
         connection_str = config.DB_CONN_STR
         return AsyncIOMotorClient(connection_str)
@@ -41,9 +41,15 @@ async def get_db_client(app_logger: logging.Logger) -> AsyncIOMotorClient:
         raise HTTPException(status_code=500, detail="Failed to connect to the database")        
 
 
-@inject(alias=UmlModelRepository)
-async def get_uml_model_repository(db_client: AsyncIOMotorClient) -> UmlModelRepository:
+di[AsyncIOMotorClient] = lambda _: get_db_client()
+
+
+@inject
+def get_uml_model_repository(db_client: AsyncIOMotorClient) -> UmlModelRepository:
     return MongoDBUmlModelRepository(db_client, config.DB_NAME, config.DB_COLLECTION_NAME)
+
+
+di[UmlModelRepository] = lambda _: get_uml_model_repository()
 
 
 async def start_consuming_messages() -> None:

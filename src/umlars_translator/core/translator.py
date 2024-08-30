@@ -34,12 +34,13 @@ class ModelTranslator:
         from_format: Optional[SupportedFormat] = None,
         model_to_extend: Optional[IUmlModel] = None,
         clear_model_afterwards: bool = False,
+        to_string: bool = True,
     ) -> str | Iterable[str]:
         deserialized_model: IUmlModel = self.deserialize(
             data, file_name, file_paths, data_batches, data_sources, from_format, model_to_extend, clear_builder_afterwards=clear_model_afterwards
         )
         # TODO: serializer should accept many implementations of IUmlModel
-        serialized_model = self.serialize(deserialized_model)
+        serialized_model = self.serialize(deserialized_model, to_string=to_string)
         return serialized_model
 
     def deserialize(
@@ -76,10 +77,10 @@ class ModelTranslator:
         return deserialized_model
 
     @inject
-    def serialize(self, model: Optional[IUmlModel] = None, serializer: Optional[UmlSerializer] = None) -> str:
+    def serialize(self, model: Optional[IUmlModel] = None, serializer: Optional[UmlSerializer] = None, to_string: bool = True) -> str:
         model = model or self._model
         self._logger.info("Serializing model")
-        serialized_model = serializer.serialize(model)
+        serialized_model = serializer.serialize(model, to_string=to_string)
         self._logger.info("Model serialized")
         return serialized_model
     

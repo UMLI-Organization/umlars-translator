@@ -6,5 +6,5 @@ from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
 
 class UmlSerializer(IModelVisitor):
     @abstractmethod
-    def serialize(self, model: IUmlModel) -> str:
+    def serialize(self, model: IUmlModel, to_string: bool) -> str:
         pass
