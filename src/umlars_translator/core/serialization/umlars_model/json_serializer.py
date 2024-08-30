@@ -1,10 +1,15 @@
+from typing import Union, Optional
+
 from kink import inject
 
+from src.umlars_translator.core.model.abstract.uml_elements import IUmlClassifier
 from src.umlars_translator.core.serialization.abstract.serializer import UmlSerializer
+from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagrams, UmlClassDiagram, UmlSequenceDiagram, UmlClassDiagramElements, UmlSequenceDiagramElements
 from src.umlars_translator.core.model.umlars_model.uml_elements import (
     UmlElement,
     UmlClass,
     UmlAttribute,
+    UmlDirectedAssociation,
     UmlAssociation,
     UmlAssociationEnd,
     UmlModelElements,
@@ -18,6 +23,8 @@ from src.umlars_translator.core.model.umlars_model.uml_elements import (
     UmlRealization,
     UmlGeneralization,
     UmlMessage,
+    UmlAggregation,
+    UmlComposition,
     UmlInteraction,
     UmlLifeline,
     UmlCombinedFragment,
@@ -27,6 +34,7 @@ from src.umlars_translator.core.model.umlars_model.uml_elements import (
     UmlPackage,
 )
 from src.umlars_translator.core.model.umlars_model.uml_model import UmlModel
+
 import src.umlars_translator.app.dtos.uml_model as pydantic_uml
 
 
@@ -69,7 +77,7 @@ class UmlToPydanticSerializer(UmlSerializer):
             attributes=[self.visit_uml_attribute(attr) for attr in uml_class.attributes],
             operations=[self.visit_uml_operation(op) for op in uml_class.operations],
             generalizations=[self.visit_uml_generalization(gen) for gen in uml_class.generalizations],
-            interfaces=[self.visit_uml_realization(interface) for interface in uml_class.interfaces],
+            interfaces=[self.visit_uml_realization(real) for real in uml_class.interfaces],
         )
 
     def visit_uml_interface(self, uml_interface: UmlInterface) -> pydantic_uml.UmlInterface:
@@ -122,16 +130,49 @@ class UmlToPydanticSerializer(UmlSerializer):
             direction=parameter.direction,
         )
 
-    def visit_uml_association(self, association: UmlAssociation) -> pydantic_uml.UmlAssociation:
-        return pydantic_uml.UmlAssociation(
-            id=association.id,
-            name=association.name,
-            visibility=association.visibility,
-            end1=self.visit_uml_association_end(association.end1),
-            end2=self.visit_uml_association_end(association.end2),
-            type=association.type,
-            direction=association.direction,
+    def visit_uml_aggregation(
+        self, element: UmlAggregation
+    ) -> pydantic_uml.UmlAggregation:
+        return pydantic_uml.UmlAggregation(
+            id=element.id,
+            name=element.name,
+            visibility=element.visibility,
+            source=self.visit_uml_association_end(element.source),
+            target=self.visit_uml_association_end(element.target),
+            type=element.type,
+            direction=element.direction,
         )
+
+    def visit_uml_composition(
+        self, element: UmlComposition
+    ) -> pydantic_uml.UmlComposition:
+        return pydantic_uml.UmlComposition(
+            id=element.id,
+            name=element.name,
+            visibility=element.visibility,
+            source=self.visit_uml_association_end(element.source),
+            target=self.visit_uml_association_end(element.target),
+            type=element.type,
+            direction=element.direction,
+        )
+
+    def visit_uml_association(self, association: UmlAssociation) -> pydantic_uml.UmlAssociation:
+        if isinstance(association, UmlAggregation):
+            return self.visit_uml_aggregation(association)
+        elif isinstance(association, UmlComposition):
+            return self.visit_uml_composition(association)
+        elif isinstance(association, UmlAssociation):
+            return pydantic_uml.UmlAssociation(
+                id=association.id,
+                name=association.name,
+                visibility=association.visibility,
+                end1=self.visit_uml_association_end(association.end1),
+                end2=self.visit_uml_association_end(association.end2),
+                type=association.type,
+                direction=association.direction,
+            )
+        else:
+            raise ValueError("Unsupported association type")
 
     def visit_uml_association_end(self, association_end: UmlAssociationEnd) -> pydantic_uml.UmlAssociationEnd:
         return pydantic_uml.UmlAssociationEnd(
@@ -269,16 +310,18 @@ class UmlToPydanticSerializer(UmlSerializer):
             elements=self.visit_element_or_reference(uml_package.elements),
         )
 
-    def visit_element_or_reference(self, element: UmlElement) -> Union[pydantic_uml.UmlElement, pydantic_uml.UmlIdReference]:
+    def visit_element_or_reference(self, element: Optional[UmlElement] = None) -> Union[pydantic_uml.UmlElement, pydantic_uml.UmlIdReference]:
         if isinstance(element, UmlElement):
             return pydantic_uml.UmlIdReference(idref=element.id)
+        elif element is None:
+            return None
         else:
             raise ValueError("Unsupported element type")
 
-    def visit_uml_diagrams(self, diagrams: UmlModel) -> pydantic_uml.UmlDiagrams:
+    def visit_uml_diagrams(self, diagrams: UmlDiagrams) -> pydantic_uml.UmlDiagrams:
         return pydantic_uml.UmlDiagrams(
-            class_diagrams=[self.visit_uml_class_diagram(diag) for diag in diagrams.diagrams.class_diagrams],
-            sequence_diagrams=[self.visit_uml_sequence_diagram(diag) for diag in diagrams.diagrams.sequence_diagrams],
+            class_diagrams=[self.visit_uml_class_diagram(diag) for diag in diagrams.class_diagrams],
+            sequence_diagrams=[self.visit_uml_sequence_diagram(diag) for diag in diagrams.sequence_diagrams],
         )
 
     def visit_uml_class_diagram(self, class_diagram: UmlClassDiagram) -> pydantic_uml.UmlClassDiagram:
@@ -332,3 +375,20 @@ class UmlToPydanticSerializer(UmlSerializer):
             return self.visit_uml_interaction_use(fragment)
         else:
             raise ValueError("Unsupported fragment type")
+
+    # Empty implementations for basic elements and directed association
+    def visit_uml_element(self, element: UmlElement) -> None:
+        pass
+
+    def visit_uml_named_element(
+        self, element: UmlElement
+    ) -> None:
+        pass
+
+    def visit_uml_directed_association(
+        self, element: UmlDirectedAssociation
+    ) -> None:
+        pass
+
+    def visit_uml_classifier(self, classifier: IUmlClassifier) -> None:
+        pass
