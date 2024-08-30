@@ -1,6 +1,7 @@
 import argparse
 from typing import Optional
 from logging import Logger
+import os
 
 from kink import inject
 
@@ -57,4 +58,20 @@ class CLIManager:
     def _translate_files(self, file_names, from_format) -> None:
         self._logger.info(f"Translating files {file_names} from format {from_format}...")
         translator = ModelTranslator()
-        translator.translate(file_paths=file_names, from_format=from_format)
+        current_working_directory = os.getcwd()
+        output_directory = os.path.join(current_working_directory, "output")
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
+        self._logger.info(f"Output directory: {output_directory}")
+
+        for file_name in file_names:
+            file_base_name = os.path.basename(file_name)
+            self._logger.info(f"Translating file {file_base_name}...")
+            
+            output_file_name = f"{file_base_name}_translated.umj"
+            output_location = os.path.join(output_directory, output_file_name)
+            with open(output_location, "w") as output_file:
+                translated_data = translator.translate(file_name=file_name, from_format=from_format)
+                output_file.write(translated_data)
+
+            self._logger.info(f"File {file_name} translated to {output_location}")
