@@ -72,7 +72,7 @@ def uml_model(uml_class, uml_attribute, uml_operation):
     uml_class.attributes.append(uml_attribute)
     uml_class.operations.append(uml_operation)
     elements = UmlModelElements(classes=[uml_class])
-    return UmlModel(id="model1", name="TestModel", visibility="public", elements=elements, diagrams=None)
+    return UmlModel(id="model1", name="TestModel", elements=elements, diagrams=None)
 
 
 # Test Serializer for UmlClass

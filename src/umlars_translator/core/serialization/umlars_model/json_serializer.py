@@ -48,7 +48,6 @@ class UmlToPydanticSerializer(UmlSerializer):
         return pydantic_uml.UmlModel(
             id=model.id,
             name=model.name,
-            visibility=model.visibility,
             elements=self.visit_uml_model_elements(model.elements),
             diagrams=self.visit_uml_diagrams(model.diagrams),
             metadata=model.metadata,
