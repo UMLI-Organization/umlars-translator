@@ -46,6 +46,7 @@ def test_construct_uml_interface(builder):
     assert uml_interface.id == "interface1"
     assert uml_interface.name == "Interface1"
 
+
 # Test for construct_uml_association_end
 def test_construct_uml_association_end(builder):
     # Step 1: Construct the UML class that will be connected by the association end
@@ -57,11 +58,11 @@ def test_construct_uml_association_end(builder):
     # Step 3: Construct the association end and bind it to the association
     builder.construct_uml_association_end(
         id="end1", 
-        element_id="class1", 
         role="endRole", 
         multiplicity=UmlMultiplicityEnum.ONE, 
         navigability=True, 
-        association_id="assoc1"
+        association_id="assoc1",
+        type_metadata={"referenced_type_id": "class1"}
     )
 
     # Step 4: Build the model
@@ -80,11 +81,12 @@ def test_construct_uml_association_end(builder):
     assert association is not None, "UmlAssociation was not created."
     assert any(end.id == "end1" for end in (association.end1, association.end2)), "UmlAssociationEnd was not bound to UmlAssociation."
 
+
 def test_construct_uml_association_end_with_delayed_assignment(builder):
     # Step 1: Construct the association end with a delayed assignment
     builder.construct_uml_association_end(
         id="end1", 
-        element_id="class1",  # Element not yet available
+        type_metadata={"referenced_type_id": "class1"},
         role="endRole", 
         multiplicity=UmlMultiplicityEnum.ONE, 
         navigability=True, 
@@ -109,7 +111,7 @@ def test_construct_uml_association_end_with_delayed_assignment(builder):
     assert association is not None, "UmlAssociation was not created."
     assert any(end.id == "end1" for end in (association.end1, association.end2)), "Delayed binding of UmlAssociationEnd to UmlAssociation was not handled."
 
-#TODO def test_delayed_assignment(builder):
+# TODO def test_delayed_assignment(builder):
 #     # Construct an UmlAttribute with delayed type assignment
 #     builder.construct_uml_attribute(id="attr1", name="Attribute1", type_id="type1")
 
