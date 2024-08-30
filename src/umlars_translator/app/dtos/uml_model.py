@@ -202,7 +202,7 @@ class UmlAssociationEnd(UmlElement):
         "UmlIdReference",
     ]] = None
     role: Optional[str] = None
-    navigability: bool = True
+    navigability: Optional[bool] = True
 
     @field_serializer("element")
     def element_to_json(

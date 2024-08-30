@@ -459,6 +459,10 @@ class UmlAssociationBase(UmlNamedElement, IUmlAssociationBase):
     def end2(self) -> IUmlAssociationEnd:
         return self._end2
     
+    @property
+    def direction(self) -> UmlAssociationDirectionEnum:
+        return self.association_direction()
+    
     @classmethod
     def association_direction(cls) -> UmlAssociationDirectionEnum:
         return cls.ASSOCIATION_DIRECTION

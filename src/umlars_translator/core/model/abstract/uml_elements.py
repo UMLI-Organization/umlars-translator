@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
     from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
 
-from src.umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum, UmlVisibilityEnum, UmlMultiplicityEnum, UmlAssociationDirectionEnum, UmlParameterDirectionEnum, UmlInteractionOperatorEnum, UmlMessageSortEnum, UmlMessageKindEnum
+from src.umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum, UmlAssociationTypeEnum, UmlVisibilityEnum, UmlMultiplicityEnum, UmlAssociationDirectionEnum, UmlParameterDirectionEnum, UmlInteractionOperatorEnum, UmlMessageSortEnum, UmlMessageKindEnum
 from src.umlars_translator.core.utils.visitor import IVisitable, IVisitor
 
 
@@ -253,6 +253,15 @@ class IUmlAssociationEnd(IUmlElement):
 
 class IUmlAssociationBase(IUmlElement):
     ASSOCIATION_DIRECTION: ClassVar[UmlAssociationDirectionEnum]
+    ASSOCIATION_TYPE: ClassVar[UmlAssociationTypeEnum]
+
+    @property
+    def type(self) -> UmlAssociationTypeEnum:
+        return self.association_type()
+
+    @property
+    def direction(self) -> UmlAssociationDirectionEnum:
+        return self.association_direction()
 
     @property
     @abstractmethod
@@ -267,6 +276,10 @@ class IUmlAssociationBase(IUmlElement):
     @classmethod
     def association_direction(cls) -> UmlAssociationDirectionEnum:
         return cls.ASSOCIATION_DIRECTION
+    
+    @classmethod
+    def association_type(cls) -> UmlAssociationTypeEnum:
+        return cls.ASSOCIATION_TYPE
 
 
 class IUmlAssociation(IUmlAssociationBase):
@@ -274,6 +287,7 @@ class IUmlAssociation(IUmlAssociationBase):
     Standard Association - Bidirectional
     """
     ASSOCIATION_DIRECTION = UmlAssociationDirectionEnum.BIDIRECTIONAL
+    ASSOCIATION_TYPE = UmlAssociationTypeEnum.ASSOCIATION
 
 
 class IUmlDirectedAssociation(IUmlAssociationBase):
@@ -299,12 +313,12 @@ class IUmlDirectedAssociation(IUmlAssociationBase):
 
 
 class IUmlAggregation(IUmlDirectedAssociation):
-    ...
+    ASSOCIATION_TYPE = UmlAssociationTypeEnum.AGGREGATION
 
 
 class IUmlComposition(IUmlDirectedAssociation):
-    ...
-
+    ASSOCIATION_TYPE = UmlAssociationTypeEnum.COMPOSITION
+    
 
 # Interaction Elements
 class IUmlOccurrenceSpecification(IUmlElement):
