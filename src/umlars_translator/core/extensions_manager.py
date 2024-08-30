@@ -30,10 +30,15 @@ class ExtensionsManager:
             extensions_modules_groups_names = self._extensions_modules_groups_names
 
         entry_points = importlib.metadata.entry_points()
+        self._logger.info(f"Entry points: {len(entry_points)}")
 
         for extension_module_group_name in extensions_modules_groups_names:
+            self._logger.info(f"Loading plugins for group: {extension_module_group_name}")
+
             if extension_module_group_name in entry_points:
+                self._logger.info(f"Found plugins for group: {extension_module_group_name}")
                 for entry_point in entry_points[extension_module_group_name]:
+                    self._logger.info(f"Loading plugin: {entry_point.name}")
                     try:
                         plugin_class = entry_point.load()
                         self._logger.info(f"Loaded plugin: {plugin_class.__name__}")

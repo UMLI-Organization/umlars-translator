@@ -53,7 +53,6 @@ class CLIManager:
     def _run_server(self) -> None:
         self._logger.info("Running REST API server...")
         run_app()
-        # TODO: Add logic to start the REST API server here
 
     def _translate_files(self, file_names, from_format) -> None:
         self._logger.info(f"Translating files {file_names} from format {from_format}...")

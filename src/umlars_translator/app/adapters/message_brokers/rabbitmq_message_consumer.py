@@ -16,13 +16,9 @@ from src.umlars_translator.app.dtos.input import UmlModelDTO
 from src.umlars_translator.app import config as app_config
 from src.umlars_translator.app.adapters.apis.rest_api_connector import RestApiConnector
 from src.umlars_translator.app.utils.functions import retry_async
-from src.umlars_translator.core.translator import ModelTranslator
 from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
 from src.umlars_translator.app.adapters.message_brokers.rabbitmq_message_producer import RabbitMQProducer, create_failed_translation_message, create_partial_success_translation_message,create_successfull_translation_message,create_running_translation_message, send_translated_model_message
-
-# TODO: temporary fix
-# from src.umlars_translator.core.extensions_manager import ExtensionsManager
-from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy import EaXmiImportParsingStrategy
+from src.umlars_translator.core.translator import ModelTranslator
 
 
 @inject
@@ -67,10 +63,9 @@ class RabbitMQConsumer(MessageConsumer):
             raise QueueUnavailableError("Unexpected error while connecting to the channel") from ex
 
     async def _callback(self, message: aio_pika.IncomingMessage) -> None:
-        # TODO: temporary fix
-        # ExtensionsManager().activate_extensions()
+        self._logger.info("Callback execution started")
+
         async with message.process(ignore_processed=True):
-            self._logger.info("Called callback from logger")
             try:
                 model_to_translate_message = self._deserialize_message(message)
             except Exception as ex:

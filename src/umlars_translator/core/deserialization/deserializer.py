@@ -42,6 +42,10 @@ class ModelDeserializer:
     ) -> None:
         if extensions_group_name is None:
             extensions_group_name = config.DESERIALIZATION_EXTENSIONS_GROUP_NAME
+        
+        self._logger.info(
+            f"Activating deserialization extensions for group: {extensions_group_name}"
+        )
         self._deserialization_extensions_manager.activate_extensions(
             extensions_group_name
         )
@@ -59,7 +63,8 @@ class ModelDeserializer:
         TODO: Support for accepting dictionary assigning from_format to file_name or data_batch.
         """
         self._logger.debug(
-            f"Deserializing model for data batches: {data_batches} and file paths: {file_paths}"
+            f"Deserializing model for number of data batches: {data_batches} and file paths: {file_paths}"
+            f"\nData sources: {data_sources}"
         )
         if not data_sources:
             data_sources = self._input_processor.accept_multiple_inputs(

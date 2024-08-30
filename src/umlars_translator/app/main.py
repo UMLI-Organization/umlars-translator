@@ -1,3 +1,4 @@
+from typing import Optional
 import os
 import logging
 from contextlib import asynccontextmanager
@@ -17,7 +18,6 @@ from src.umlars_translator.app.exceptions import ServiceConnectionError, QueueUn
 from src.umlars_translator.logger import add_file_handler
 
 
-@inject(alias="app_logger")
 def create_app_logger():
     """
     This function provides consistent logger creation for the application.
@@ -29,6 +29,9 @@ def create_app_logger():
     app_logger.setLevel(config.LOG_LEVEL)
     add_file_handler(app_logger, logs_file, config.LOG_LEVEL)
     return app_logger
+
+
+di["app_logger"] = lambda _: create_app_logger()
 
 
 @inject
@@ -103,14 +106,15 @@ async def translate_uml_model(uml_model: UmlModel, model_repo: UmlModelRepositor
     return {"status": "success"}
 
 
-def run_app(port: int = 8080, host: str = "0.0.0.0", context: str = 'DEV', app_logger: logging.Logger = Depends(lambda: di["app_logger"])):
+@inject
+def run_app(port: int = 8080, host: str = "0.0.0.0", context: str = 'DEV', app_logger: Optional[logging.Logger] = None):
     app_logger.error("\n\n\nStarted\n\n\n")
 
     port = int(os.getenv("EXPOSE_ON_PORT", port))
     if context == 'DEV':
-        return uvicorn.run(app, host=host, port=port, reload=True)
+        return uvicorn.run("src.umlars_translator.app.main:app", host=host, port=port, reload=True)
     else:
-        return uvicorn.run(app, host=host, port=port)
+        return uvicorn.run("src.umlars_translator.app.main:app", host=host, port=port)
 
 
 if __name__ == "__main__":
