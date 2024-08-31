@@ -689,6 +689,7 @@ class DiagramPipe(EaXmiModelProcessingPipe):
     def _construct_diagram_elements(
         self, diagram_elements: ET.Element, diagram_id: str
     ) -> None:
+        self._logger.debug(f"Constructing diagram elements for diagram: {diagram_id}")
         for element in diagram_elements:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
                 element_id=self.config.EA_EXTENDED_ATTRIBUTES["subject"],
