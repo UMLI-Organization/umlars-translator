@@ -24,6 +24,8 @@ from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_proc
     UmlAssociationPipe,
     UmlAssociationMemberEndPipe,
     UmlAssociationOwnedEndPipe,
+    UmlDataTypePipe,
+    UmlEnumerationPipe,
 )
 
 from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
@@ -56,6 +58,8 @@ class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
         self._build_uml_class_processing_pipe(package_pipe)
         self._build_uml_interface_processing_pipe(package_pipe)
         self._build_association_processing_pipe(package_pipe)
+        self._build_uml_data_type_processing_pipe(package_pipe)
+        self._build_uml_enumeration_processing_pipe(package_pipe)
 
         return uml_model_pipe
 
@@ -93,8 +97,20 @@ class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
     ) -> UmlClassPipe | UmlInterfacePipe:
         self._build_uml_attribute_processing_pipe(parent_pipe)
         self._build_uml_operation_processing_pipe(parent_pipe)
-
         return parent_pipe
+    
+    def _build_uml_data_type_processing_pipe(
+        self, parent_pipe: UmlPackagePipe
+    ) -> UmlDataTypePipe:
+        data_type_pipe = parent_pipe.add_next(UmlDataTypePipe())
+        return data_type_pipe
+    
+    def _build_uml_enumeration_processing_pipe(
+        self, parent_pipe: UmlPackagePipe
+    ) -> UmlEnumerationPipe:
+        enumeration_pipe = parent_pipe.add_next(UmlEnumerationPipe())
+        return enumeration_pipe
+    
 
     def _build_association_processing_pipe(
         self, parent_pipe: UmlPackagePipe

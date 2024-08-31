@@ -189,6 +189,1175 @@
 		<thecustomprofile:destroy base_Message="EAID_BBCFD066_936A_4df8_876F_17C3CC07DAE3"/>
 	</uml:Model>
 	<xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+		<elements>
+			<element xmi:idref="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" xmi:type="uml:Package" name="CarModelPackage" scope="public">
+				<model package2="EAID_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" package="EAPK_4CAF1EF9_068C_4ced_BD21_97685EBD7C48" tpos="1" ea_localid="3" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="PC" version="1.0" phase="1.0" created="2024-05-10 09:50:59" modified="2024-07-10 03:07:09" complexity="1" status="Proposed"/>
+				<code gentype="&lt;none&gt;"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModel"/>
+				<packageproperties version="1.0" tpos="1"/>
+				<paths/>
+				<times created="2024-05-10 09:50:59" modified="2024-07-10 03:07:09" lastloaddate="2019-01-23 13:38:10" lastsavedate="2019-01-23 13:38:10"/>
+				<flags iscontrolled="0" isprotected="0" batchsave="0" batchload="0" usedtd="0" logxml="0"/>
+			</element>
+			<element xmi:idref="EAID_C5784B99_1479_4b91_BC67_BDD9B646236A" xmi:type="uml:Actor" name="userDriver" scope="public">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="14" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Actor" nType="0" scope="public" isRoot="false" isLeaf="false" isAbstract="false"/>
+				<project author="User" version="1.0" phase="1.0" created="2024-07-10 03:00:39" modified="2024-07-12 01:14:06" complexity="1" status="Proposed"/>
+				<code gentype="&lt;none&gt;"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage"/>
+				<links>
+					<Sequence xmi:id="EAID_4861275F_3DD7_4919_8454_266CC7A98DC7" start="EAID_C5784B99_1479_4b91_BC67_BDD9B646236A" end="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830"/>
+					<Sequence xmi:id="EAID_3A77ABE6_06BA_4ba3_8E6C_1C05590F23AA" start="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830" end="EAID_C5784B99_1479_4b91_BC67_BDD9B646236A"/>
+				</links>
+			</element>
+			<element xmi:idref="EAID_0D1E8743_F4D2_4882_B2B5_A7CB520C3685" xmi:type="uml:Class" name="Car" scope="public">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="6" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<project author="PC" version="1.0" phase="1.0" created="2024-05-24 20:38:21" modified="2024-05-24 20:38:49" complexity="1" status="Proposed"/>
+				<code gentype="Java"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage" ea_oprparamsclassified="{F402BC6B-F8CD-4e94-9491-E07636042C06}" ea_classified="{23A55D25-5229-4530-BD7F-DD2A02DD6D5A}"/>
+				<attributes>
+					<attribute xmi:idref="EAID_D9BD9124_70DB_4828_89E3_A3FB5E2DCFDE" name="yearOfProduction" scope="Private">
+						<initial/>
+						<documentation/>
+						<model ea_localid="2" ea_guid="{D9BD9124-70DB-4828-89E3-A3FB5E2DCFDE}"/>
+						<properties type="Datetime" collection="false" static="0" duplicates="0" changeability="changeable"/>
+						<coords ordered="0"/>
+						<containment containment="Not Specified" position="0"/>
+						<stereotype/>
+						<bounds lower="1" upper="1"/>
+						<options/>
+						<style/>
+						<styleex value="volatile=0;"/>
+						<tags/>
+						<xrefs/>
+					</attribute>
+				</attributes>
+				<operations>
+					<operation xmi:idref="EAID_EFB39CE1_920E_4854_9DC8_D33DAB3A6EE2" name="canDrive" scope="Public">
+						<properties position="2"/>
+						<stereotype/>
+						<model ea_guid="{EFB39CE1-920E-4854-9DC8-D33DAB3A6EE2}" ea_localid="8"/>
+						<type type="boolean" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" pure="0" isQuery="false"/>
+						<behaviour/>
+						<code/>
+						<style/>
+						<styleex/>
+						<documentation/>
+						<tags>
+							<tag xmi:id="EAID_924F8CE9_5BF4_4947_BE42_5A2660FEAA82" name="ea_guid" value="{EFB39CE1-920E-4854-9DC8-D33DAB3A6EE2}"/>
+						</tags>
+						<parameters>
+							<parameter xmi:idref="EAID_RETURNID_920E_4854_9DC8_D33DAB3A6EE2" visibility="public">
+								<properties pos="0" type="boolean" const="false" ea_guid="{RETURNID-920E-4854-9DC8-D33DAB3A6EE2}"/>
+								<style/>
+								<styleex/>
+								<documentation/>
+								<tags/>
+								<xrefs/>
+							</parameter>
+						</parameters>
+						<xrefs/>
+					</operation>
+					<operation xmi:idref="EAID_CDA44529_E228_48a3_9017_06235B5D5943" name="changeWheels" scope="Public">
+						<properties position="1"/>
+						<stereotype/>
+						<model ea_guid="{CDA44529-E228-48a3-9017-06235B5D5943}" ea_localid="6"/>
+						<type type="void" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" pure="0" isQuery="false"/>
+						<behaviour/>
+						<code/>
+						<style/>
+						<styleex/>
+						<documentation/>
+						<tags>
+							<tag xmi:id="EAID_03F76087_45E3_4d87_9175_6B7EFD2CDE75" name="ea_guid" value="{CDA44529-E228-48a3-9017-06235B5D5943}"/>
+						</tags>
+						<parameters>
+							<parameter xmi:idref="EAID_RETURNID_E228_48a3_9017_06235B5D5943" visibility="public">
+								<properties pos="0" type="void" const="false" ea_guid="{RETURNID-E228-48a3-9017-06235B5D5943}"/>
+								<style/>
+								<styleex/>
+								<documentation/>
+								<tags/>
+								<xrefs/>
+							</parameter>
+						</parameters>
+						<xrefs/>
+					</operation>
+					<operation xmi:idref="EAID_FE8F17A8_72CA_4dd6_88B7_D1AF94406719" name="drive" scope="Public">
+						<properties position="0"/>
+						<stereotype/>
+						<model ea_guid="{FE8F17A8-72CA-4dd6-88B7-D1AF94406719}" ea_localid="1"/>
+						<type type="void" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" pure="0" isQuery="false"/>
+						<behaviour/>
+						<code/>
+						<style/>
+						<styleex/>
+						<documentation/>
+						<tags>
+							<tag xmi:id="EAID_B311B743_8DA5_4553_89AC_5071A2888D68" name="ea_guid" value="{FE8F17A8-72CA-4dd6-88B7-D1AF94406719}"/>
+						</tags>
+						<parameters>
+							<parameter xmi:idref="EAID_RETURNID_72CA_4dd6_88B7_D1AF94406719" visibility="public">
+								<properties pos="0" type="void" const="false" ea_guid="{RETURNID-72CA-4dd6-88B7-D1AF94406719}"/>
+								<style/>
+								<styleex/>
+								<documentation/>
+								<tags/>
+								<xrefs/>
+							</parameter>
+							<parameter xmi:idref="EAID_42D3A7F3_E175_4758_BCF7_648E61394365" visibility="public">
+								<properties pos="0" type="Person" const="false" classifier="EAID_14793615_C209_4954_8BD9_53C352A6DEEF" ea_guid="{42D3A7F3-E175-4758-BCF7-648E61394365}"/>
+								<style/>
+								<styleex/>
+								<documentation/>
+								<tags/>
+								<xrefs/>
+							</parameter>
+							<parameter xmi:idref="EAID_57F9CDDD_7E25_4724_8CD8_EC45AEEB8AD2" visibility="public">
+								<properties pos="1" type="double" const="false" ea_guid="{57F9CDDD-7E25-4724-8CD8-EC45AEEB8AD2}"/>
+								<style/>
+								<styleex/>
+								<documentation/>
+								<tags/>
+								<xrefs/>
+							</parameter>
+						</parameters>
+						<xrefs/>
+					</operation>
+				</operations>
+				<links>
+					<Association xmi:id="EAID_11AD4D8E_CF6B_4626_9559_C7FB6BE67F59" start="EAID_0D1E8743_F4D2_4882_B2B5_A7CB520C3685" end="EAID_14793615_C209_4954_8BD9_53C352A6DEEF"/>
+					<Realisation xmi:id="EAID_D3681B73_B481_44ba_9029_EB44A5C81126" start="EAID_0D1E8743_F4D2_4882_B2B5_A7CB520C3685" end="EAID_5C67B276_2632_4fed_900A_19C097FAFBD5"/>
+					<Aggregation xmi:id="EAID_A9C3499C_BA2E_48a6_9A53_199F9E8742AF" start="EAID_2029428D_92CA_4532_BB28_D489DED0C150" end="EAID_0D1E8743_F4D2_4882_B2B5_A7CB520C3685"/>
+				</links>
+			</element>
+			<element xmi:idref="EAID_9AE8155B_E7DE_45e3_BF27_71E4AD7AB85E" xmi:type="uml:Class" name="Driver" scope="public">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="10" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<project author="PC" version="1.0" phase="1.0" created="2024-05-24 20:44:04" modified="2024-05-24 20:44:08" complexity="1" status="Proposed"/>
+				<code gentype="Java"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage" ea_classified="{1387CE65-60E7-4d01-B5AD-9408A2439830}"/>
+				<operations>
+					<operation xmi:idref="EAID_689E5279_A218_4b2a_A514_95BB2B377942" name="drive" scope="Public">
+						<properties position="0"/>
+						<stereotype/>
+						<model ea_guid="{689E5279-A218-4b2a-A514-95BB2B377942}" ea_localid="7"/>
+						<type type="void" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" pure="0" isQuery="false"/>
+						<behaviour/>
+						<code/>
+						<style/>
+						<styleex/>
+						<documentation/>
+						<tags>
+							<tag xmi:id="EAID_2054F1F4_8A16_4b76_A8D8_CEC03CAEEA9E" name="ea_guid" value="{689E5279-A218-4b2a-A514-95BB2B377942}"/>
+						</tags>
+						<parameters>
+							<parameter xmi:idref="EAID_RETURNID_A218_4b2a_A514_95BB2B377942" visibility="public">
+								<properties pos="0" type="void" const="false" ea_guid="{RETURNID-A218-4b2a-A514-95BB2B377942}"/>
+								<style/>
+								<styleex/>
+								<documentation/>
+								<tags/>
+								<xrefs/>
+							</parameter>
+							<parameter xmi:idref="EAID_F402BC6B_F8CD_4e94_9491_E07636042C06" visibility="public">
+								<properties pos="0" type="Car" const="false" classifier="EAID_0D1E8743_F4D2_4882_B2B5_A7CB520C3685" ea_guid="{F402BC6B-F8CD-4e94-9491-E07636042C06}"/>
+								<style/>
+								<styleex/>
+								<documentation/>
+								<tags/>
+								<xrefs/>
+							</parameter>
+						</parameters>
+						<xrefs/>
+					</operation>
+				</operations>
+				<links>
+					<Generalization xmi:id="EAID_0CE160F8_6F64_4176_A734_6AEFD62D8C83" start="EAID_9AE8155B_E7DE_45e3_BF27_71E4AD7AB85E" end="EAID_14793615_C209_4954_8BD9_53C352A6DEEF"/>
+				</links>
+			</element>
+			<element xmi:idref="EAID_14793615_C209_4954_8BD9_53C352A6DEEF" xmi:type="uml:Class" name="Person" scope="package">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="7" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="package" isRoot="false" isLeaf="false" isAbstract="true" isActive="false"/>
+				<project author="PC" version="1.0" phase="1.0" created="2024-05-24 20:38:53" modified="2024-07-10 01:31:45" complexity="1" status="Proposed"/>
+				<code product_name="Java" gentype="Java"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage" ea_oprparamsclassified="{42D3A7F3-E175-4758-BCF7-648E61394365}"/>
+				<attributes>
+					<attribute xmi:idref="EAID_34BEE631_FF0E_43f0_802C_E749E364827A" name="gender" scope="Public">
+						<initial/>
+						<documentation/>
+						<model ea_localid="1" ea_guid="{34BEE631-FF0E-43f0-802C-E749E364827A}"/>
+						<properties type="Gender" collection="false" static="0" duplicates="0" changeability="changeable"/>
+						<coords ordered="0"/>
+						<containment containment="Not Specified" position="0"/>
+						<stereotype/>
+						<bounds lower="1" upper="1"/>
+						<options/>
+						<style/>
+						<styleex value="volatile=0;"/>
+						<tags/>
+						<xrefs/>
+					</attribute>
+				</attributes>
+				<links>
+					<Realisation xmi:id="EAID_7ED0F691_26C2_4a13_866D_652721768EBB" start="EAID_14793615_C209_4954_8BD9_53C352A6DEEF" end="EAID_5C67B276_2632_4fed_900A_19C097FAFBD5"/>
+					<Generalization xmi:id="EAID_0CE160F8_6F64_4176_A734_6AEFD62D8C83" start="EAID_9AE8155B_E7DE_45e3_BF27_71E4AD7AB85E" end="EAID_14793615_C209_4954_8BD9_53C352A6DEEF"/>
+					<Association xmi:id="EAID_11AD4D8E_CF6B_4626_9559_C7FB6BE67F59" start="EAID_0D1E8743_F4D2_4882_B2B5_A7CB520C3685" end="EAID_14793615_C209_4954_8BD9_53C352A6DEEF"/>
+				</links>
+			</element>
+			<element xmi:idref="EAID_2029428D_92CA_4532_BB28_D489DED0C150" xmi:type="uml:Class" name="Wheel" scope="public">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="9" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<project author="PC" version="1.0" phase="1.0" created="2024-05-24 20:43:50" modified="2024-05-24 20:43:59" complexity="1" status="Proposed"/>
+				<code gentype="Java"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage" ea_classified="{A4FB0382-9927-4145-9782-AC0E354239C8},{C16459EC-4E90-4800-99C0-A49A4CFDF51D}"/>
+				<attributes>
+					<attribute xmi:idref="EAID_D428A0F1_2016_4c68_8A48_07FF33718A23" name="circumference" scope="Protected">
+						<initial/>
+						<documentation/>
+						<model ea_localid="4" ea_guid="{D428A0F1-2016-4c68-8A48-07FF33718A23}"/>
+						<properties type="float" collection="false" static="0" duplicates="0" changeability="changeable"/>
+						<coords ordered="0"/>
+						<containment containment="Not Specified" position="1"/>
+						<stereotype/>
+						<bounds lower="1" upper="1"/>
+						<options/>
+						<style/>
+						<styleex value="volatile=0;"/>
+						<tags/>
+						<xrefs/>
+					</attribute>
+					<attribute xmi:idref="EAID_81C5B370_7066_4fc2_B14E_FEF24E207A20" name="colour" scope="Public">
+						<initial/>
+						<documentation/>
+						<model ea_localid="3" ea_guid="{81C5B370-7066-4fc2-B14E-FEF24E207A20}"/>
+						<properties type="char" collection="false" static="0" duplicates="0" changeability="changeable"/>
+						<coords ordered="0"/>
+						<containment containment="Not Specified" position="0"/>
+						<stereotype/>
+						<bounds lower="1" upper="1"/>
+						<options/>
+						<style/>
+						<styleex value="volatile=0;"/>
+						<tags/>
+						<xrefs/>
+					</attribute>
+				</attributes>
+				<operations>
+					<operation xmi:idref="EAID_1D561514_364E_44e4_880E_D4D072F0FFB6" name="isFlat" scope="Package">
+						<properties position="0"/>
+						<stereotype/>
+						<model ea_guid="{1D561514-364E-44e4-880E-D4D072F0FFB6}" ea_localid="3"/>
+						<type type="boolean" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Synchronous" pure="0" isQuery="false"/>
+						<behaviour/>
+						<code/>
+						<style/>
+						<styleex/>
+						<documentation/>
+						<tags>
+							<tag xmi:id="EAID_5EEC4D80_B4CF_4c15_B74A_398294DC4186" name="ea_guid" value="{1D561514-364E-44e4-880E-D4D072F0FFB6}"/>
+						</tags>
+						<parameters>
+							<parameter xmi:idref="EAID_RETURNID_364E_44e4_880E_D4D072F0FFB6" visibility="public">
+								<properties pos="0" type="boolean" const="false" ea_guid="{RETURNID-364E-44e4-880E-D4D072F0FFB6}"/>
+								<style/>
+								<styleex/>
+								<documentation/>
+								<tags/>
+								<xrefs/>
+							</parameter>
+						</parameters>
+						<xrefs/>
+					</operation>
+				</operations>
+				<links>
+					<Aggregation xmi:id="EAID_A9C3499C_BA2E_48a6_9A53_199F9E8742AF" start="EAID_2029428D_92CA_4532_BB28_D489DED0C150" end="EAID_0D1E8743_F4D2_4882_B2B5_A7CB520C3685"/>
+				</links>
+			</element>
+			<element xmi:idref="EAID_5C67B276_2632_4fed_900A_19C097FAFBD5" xmi:type="uml:Interface" name="Movable" scope="public">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="8" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Interface" nType="0" scope="public" isRoot="false" isLeaf="false" isAbstract="true"/>
+				<project author="PC" version="1.0" phase="1.0" created="2024-05-24 20:40:16" modified="2024-05-24 20:40:23" complexity="1" status="Proposed"/>
+				<code gentype="Java"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage"/>
+				<operations>
+					<operation xmi:idref="EAID_FEA38905_B5B8_4d11_9F83_1A267C38F189" name="move" scope="Public">
+						<properties position="0"/>
+						<stereotype/>
+						<model ea_guid="{FEA38905-B5B8-4d11-9F83-1A267C38F189}" ea_localid="4"/>
+						<type type="int" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" pure="0" isQuery="false"/>
+						<behaviour/>
+						<code/>
+						<style/>
+						<styleex/>
+						<documentation/>
+						<tags>
+							<tag xmi:id="EAID_9EB100B6_24FC_444d_8E7F_15C65E7BF294" name="ea_guid" value="{FEA38905-B5B8-4d11-9F83-1A267C38F189}"/>
+						</tags>
+						<parameters>
+							<parameter xmi:idref="EAID_RETURNID_B5B8_4d11_9F83_1A267C38F189" visibility="public">
+								<properties pos="0" type="int" const="false" ea_guid="{RETURNID-B5B8-4d11-9F83-1A267C38F189}"/>
+								<style/>
+								<styleex/>
+								<documentation/>
+								<tags/>
+								<xrefs/>
+							</parameter>
+						</parameters>
+						<xrefs/>
+					</operation>
+				</operations>
+				<links>
+					<Realisation xmi:id="EAID_7ED0F691_26C2_4a13_866D_652721768EBB" start="EAID_14793615_C209_4954_8BD9_53C352A6DEEF" end="EAID_5C67B276_2632_4fed_900A_19C097FAFBD5"/>
+					<Realisation xmi:id="EAID_D3681B73_B481_44ba_9029_EB44A5C81126" start="EAID_0D1E8743_F4D2_4882_B2B5_A7CB520C3685" end="EAID_5C67B276_2632_4fed_900A_19C097FAFBD5"/>
+				</links>
+			</element>
+			<element xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" xmi:type="uml:Object" name="car" scope="public" classifier="EAID_0D1E8743_F4D2_4882_B2B5_A7CB520C3685">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="25" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Object" nType="0" classname="Car" scope="public" isAbstract="false"/>
+				<project author="User" version="1.0" phase="1.0" created="2024-07-10 11:35:19" modified="2024-07-10 11:59:52" complexity="1" status="Proposed"/>
+				<code gentype="Java"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage"/>
+				<links>
+					<Sequence xmi:id="EAID_037B269E_4590_460f_B85F_5D373C5E1984" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830"/>
+					<Sequence xmi:id="EAID_23C7CB5C_9D56_48d0_A480_7EAD8A016ACD" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A"/>
+					<Sequence xmi:id="EAID_2587A1BC_B32F_49b0_9AD4_BFFC64728220" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830"/>
+					<Sequence xmi:id="EAID_330E195D_4A3D_4489_A2FC_2EA36F002C4D" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_A4FB0382_9927_4145_9782_AC0E354239C8"/>
+					<Sequence xmi:id="EAID_6DF953BB_67F7_4052_9546_ABDFBDA15FD7" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830"/>
+					<Sequence xmi:id="EAID_6F89549B_C021_4434_BD3F_2FFB79A356C9" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830"/>
+					<Sequence xmi:id="EAID_BBCFD066_936A_4df8_876F_17C3CC07DAE3" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_C16459EC_4E90_4800_99C0_A49A4CFDF51D"/>
+					<Sequence xmi:id="EAID_DC2BFA37_289B_482c_9E61_C93A1F7F5CC4" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_C16459EC_4E90_4800_99C0_A49A4CFDF51D"/>
+					<Sequence xmi:id="EAID_03CD99BB_498A_4104_93BA_EFC2EA314B02" start="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830" end="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A"/>
+					<Sequence xmi:id="EAID_23C7CB5C_9D56_48d0_A480_7EAD8A016ACD" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A"/>
+					<Sequence xmi:id="EAID_32830ACB_8D4A_4cf7_8C38_7F1B43088308" start="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830" end="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A"/>
+					<Sequence xmi:id="EAID_90AA525C_8506_45df_A77F_17B8333C0885" start="EAID_C16459EC_4E90_4800_99C0_A49A4CFDF51D" end="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A"/>
+					<Sequence xmi:id="EAID_AE2A8AD2_5C02_4c4b_B1FC_54E26C8AB0E2" start="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830" end="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A"/>
+				</links>
+			</element>
+			<element xmi:idref="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830" xmi:type="uml:Object" name="driver" scope="public" classifier="EAID_9AE8155B_E7DE_45e3_BF27_71E4AD7AB85E">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="39" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Object" nType="0" classname="Driver" scope="public" isAbstract="false"/>
+				<project author="User" version="1.0" phase="1.0" created="2024-07-11 00:36:06" modified="2024-07-11 00:36:23" complexity="1" status="Proposed"/>
+				<code gentype="Java"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage"/>
+				<links>
+					<Sequence xmi:id="EAID_03CD99BB_498A_4104_93BA_EFC2EA314B02" start="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830" end="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A"/>
+					<Sequence xmi:id="EAID_32830ACB_8D4A_4cf7_8C38_7F1B43088308" start="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830" end="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A"/>
+					<Sequence xmi:id="EAID_3A77ABE6_06BA_4ba3_8E6C_1C05590F23AA" start="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830" end="EAID_C5784B99_1479_4b91_BC67_BDD9B646236A"/>
+					<Sequence xmi:id="EAID_AE2A8AD2_5C02_4c4b_B1FC_54E26C8AB0E2" start="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830" end="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A"/>
+					<Sequence xmi:id="EAID_037B269E_4590_460f_B85F_5D373C5E1984" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830"/>
+					<Sequence xmi:id="EAID_2587A1BC_B32F_49b0_9AD4_BFFC64728220" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830"/>
+					<Sequence xmi:id="EAID_4861275F_3DD7_4919_8454_266CC7A98DC7" start="EAID_C5784B99_1479_4b91_BC67_BDD9B646236A" end="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830"/>
+					<Sequence xmi:id="EAID_6DF953BB_67F7_4052_9546_ABDFBDA15FD7" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830"/>
+					<Sequence xmi:id="EAID_6F89549B_C021_4434_BD3F_2FFB79A356C9" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830"/>
+				</links>
+			</element>
+			<element xmi:idref="EAID_A4FB0382_9927_4145_9782_AC0E354239C8" xmi:type="uml:Object" name="newWheel" scope="public" classifier="EAID_2029428D_92CA_4532_BB28_D489DED0C150">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="22" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Object" nType="0" classname="Wheel" scope="public" isAbstract="false"/>
+				<project author="User" version="1.0" phase="1.0" created="2024-07-10 09:45:53" modified="2024-07-10 12:49:07" complexity="1" status="Proposed"/>
+				<code gentype="Java"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage"/>
+				<links>
+					<Sequence xmi:id="EAID_330E195D_4A3D_4489_A2FC_2EA36F002C4D" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_A4FB0382_9927_4145_9782_AC0E354239C8"/>
+				</links>
+			</element>
+			<element xmi:idref="EAID_C16459EC_4E90_4800_99C0_A49A4CFDF51D" xmi:type="uml:Object" name="wheel" scope="public" classifier="EAID_2029428D_92CA_4532_BB28_D489DED0C150">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="28" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Object" nType="0" classname="Wheel" scope="public" isAbstract="false"/>
+				<project author="User" version="1.0" phase="1.0" created="2024-07-10 12:01:18" modified="2024-07-10 12:01:28" complexity="1" status="Proposed"/>
+				<code gentype="Java"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage"/>
+				<links>
+					<Sequence xmi:id="EAID_90AA525C_8506_45df_A77F_17B8333C0885" start="EAID_C16459EC_4E90_4800_99C0_A49A4CFDF51D" end="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A"/>
+					<Sequence xmi:id="EAID_BBCFD066_936A_4df8_876F_17C3CC07DAE3" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_C16459EC_4E90_4800_99C0_A49A4CFDF51D"/>
+					<Sequence xmi:id="EAID_DC2BFA37_289B_482c_9E61_C93A1F7F5CC4" start="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A" end="EAID_C16459EC_4E90_4800_99C0_A49A4CFDF51D"/>
+				</links>
+			</element>
+			<element xmi:idref="EAID_AA5D634B_657F_474d_A426_18EE32897E33" xmi:type="uml:InteractionFragment" name="cannotDriveFragment" scope="public">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="29" ea_eleType="element"/>
+				<properties isSpecification="false" sType="InteractionFragment" nType="1" scope="public" isRoot="false" isLeaf="false" isAbstract="false"/>
+				<project author="User" version="1.0" phase="1.0" created="2024-07-10 12:06:29" modified="2024-07-11 05:48:27" complexity="1" status="Proposed"/>
+				<code gentype="&lt;none&gt;"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=3;" styleex="ConstructID=0;"/>
+				<tags/>
+				<xrefs value="$XREFPROP=$XID={5AB0EC89-5F8D-40ef-8A4D-BB39603987C2}$XID;$NAM=Partitions$NAM;$TYP=element property$TYP;$VIS=Public$VIS;$PAR=0$PAR;$DES=@PAR;Name=not canDrive;Size=84;GUID={0D186892-07FD-4018-A9EF-90D7D3BD51DC};@ENDPAR;$DES;$CLT={AA5D634B-657F-474d-A426-18EE32897E33}$CLT;$SUP=&lt;none&gt;$SUP;$ENDXREF;"/>
+				<extendedProperties tagged="0" package_name="CarModelPackage" diagram="EAID_9DBD5F06_8F25_4c2f_9225_CE06EF004BA8"/>
+			</element>
+			<element xmi:idref="EAID_D7FC8FA0_1333_401d_A6D7_114056E36D21" xmi:type="uml:InteractionOccurrence" name="changeWheelsSequence" scope="public">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="41" ea_eleType="element"/>
+				<properties isSpecification="false" sType="InteractionOccurrence" nType="0" scope="public" isRoot="false" isLeaf="false" isAbstract="false"/>
+				<project author="User" version="1.0" phase="1.0" created="2024-07-13 07:27:09" modified="2024-07-13 07:27:10" complexity="1" status="Proposed"/>
+				<code gentype="&lt;none&gt;"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=3;" styleex="ConstructID=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage" diagram="EAID_ABF14154_95C0_45d0_891B_36904E7B889D"/>
+			</element>
+			<element xmi:idref="EAID_5FFEFB03_395F_4f90_BF60_4FEFDAEC56D8" xmi:type="uml:DataType" name="Datetime" scope="public">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="11" ea_eleType="element"/>
+				<properties isSpecification="false" sType="DataType" nType="0" scope="public" isRoot="false" isLeaf="false" isAbstract="false"/>
+				<project author="PC" version="1.0" phase="1.0" created="2024-05-24 20:53:40" modified="2024-05-24 20:53:48" complexity="1" status="Proposed"/>
+				<code gentype="Java"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage" ea_attsclassified="{D9BD9124-70DB-4828-89E3-A3FB5E2DCFDE}"/>
+			</element>
+			<element xmi:idref="EAID_519E41ED_EA53_4286_BB76_B965B6E52666" xmi:type="uml:Enumeration" name="Gender" scope="public">
+				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" tpos="0" ea_localid="12" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Enumeration" nType="0" scope="public" isRoot="false" isLeaf="false" isAbstract="false"/>
+				<project author="PC" version="1.0" phase="1.0" created="2024-05-24 20:53:52" modified="2024-05-24 20:54:00" complexity="1" status="Proposed"/>
+				<code gentype="Java"/>
+				<style appearance="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=1;HSwimLanes=1;BorderStyle=0;"/>
+				<tags/>
+				<xrefs/>
+				<extendedProperties tagged="0" package_name="CarModelPackage" ea_attsclassified="{34BEE631-FF0E-43f0-802C-E749E364827A}"/>
+			</element>
+		</elements>
+		<connectors>
+			<connector xmi:idref="EAID_4861275F_3DD7_4919_8454_266CC7A98DC7" name="drive(Car)">
+				<source xmi:idref="EAID_C5784B99_1479_4b91_BC67_BDD9B646236A">
+					<model ea_localid="14" type="Actor" name="userDriver"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830">
+					<model ea_localid="39" type="Object" name="driver"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="46"/>
+				<properties name="drive(Car)" ea_type="Sequence" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="-1" linewidth="0" seqno="1" headStyle="0" lineStyle="0"/>
+				<labels mt="drive(car)"/>
+				<extendedProperties stateflags="Activation=0;ExtendActivationUp=0;" virtualInheritance="0" diagram="EAID_9DBD5F06_8F25_4c2f_9225_CE06EF004BA8" privatedata1="Synchronous" privatedata2="retval=void;params=;paramsDlg=car;" privatedata3="Call" privatedata4="0" privatedata5="SX=0;SY=0;EX=0;EY=0;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=73;PtStartY=-135;PtEndX=203;PtEndY=-135;"/>
+				<style value="aliasparamsTO=Car;paramvalues=car;"/>
+				<xrefs/>
+				<tags>
+					<tag xmi:id="EAID_FDCEBC2E_3F3F_4e93_B845_A205553B0138" name="operation_guid" value="{689E5279-A218-4b2a-A514-95BB2B377942}"/>
+				</tags>
+			</connector>
+			<connector xmi:idref="EAID_3A77ABE6_06BA_4ba3_8E6C_1C05590F23AA">
+				<source xmi:idref="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830">
+					<model ea_localid="39" type="Object" name="driver"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_C5784B99_1479_4b91_BC67_BDD9B646236A">
+					<model ea_localid="14" type="Actor" name="userDriver"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="51"/>
+				<properties ea_type="Sequence" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="9204585" linewidth="0" seqno="10" headStyle="0" lineStyle="0"/>
+				<labels/>
+				<extendedProperties stateflags="StartCoregionHead=0;EndCoregionHead=0;StartCoregionTail=0;EndCoregionTail=0;Activation=0;" virtualInheritance="0" diagram="EAID_9DBD5F06_8F25_4c2f_9225_CE06EF004BA8" privatedata1="Synchronous" privatedata2="retval=void;" privatedata3="Call" privatedata4="1" privatedata5="SX=0;SY=11;EX=0;EY=0;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=203;PtStartY=-474;PtEndX=73;PtEndY=-474;"/>
+				<style/>
+				<xrefs/>
+				<tags/>
+			</connector>
+			<connector xmi:idref="EAID_11AD4D8E_CF6B_4626_9559_C7FB6BE67F59" name="car_ownership">
+				<source xmi:idref="EAID_0D1E8743_F4D2_4882_B2B5_A7CB520C3685">
+					<model ea_localid="6" type="Class" name="Car"/>
+					<role name="car" visibility="Public" targetScope="instance"/>
+					<type multiplicity="0..*" aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Unspecified;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_14793615_C209_4954_8BD9_53C352A6DEEF">
+					<model ea_localid="7" type="Class" name="Person"/>
+					<role name="owner" visibility="Public" targetScope="instance"/>
+					<type multiplicity="1..*" aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Unspecified;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="5"/>
+				<properties ea_type="Association" direction="Unspecified"/>
+				<modifiers isRoot="false" isLeaf="false"/>
+				<parameterSubstitutions/>
+				<documentation/>
+				<appearance linemode="3" linecolor="-1" linewidth="0" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="0..*" lt="+car" mt="car_ownership" rb="1..*" rt="+owner"/>
+				<extendedProperties virtualInheritance="0"/>
+				<style/>
+				<xrefs/>
+				<tags/>
+			</connector>
+			<connector xmi:idref="EAID_D3681B73_B481_44ba_9029_EB44A5C81126">
+				<source xmi:idref="EAID_0D1E8743_F4D2_4882_B2B5_A7CB520C3685">
+					<model ea_localid="6" type="Class" name="Car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_5C67B276_2632_4fed_900A_19C097FAFBD5">
+					<model ea_localid="8" type="Interface" name="Movable"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="6"/>
+				<properties ea_type="Realisation" direction="Source -&gt; Destination"/>
+				<parameterSubstitutions/>
+				<documentation/>
+				<appearance linemode="3" linecolor="-1" linewidth="0" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels/>
+				<extendedProperties virtualInheritance="0"/>
+				<style/>
+				<xrefs/>
+				<tags/>
+			</connector>
+			<connector xmi:idref="EAID_A9C3499C_BA2E_48a6_9A53_199F9E8742AF">
+				<source xmi:idref="EAID_2029428D_92CA_4532_BB28_D489DED0C150">
+					<model ea_localid="9" type="Class" name="Wheel"/>
+					<role name="wheel" visibility="Public" targetScope="instance"/>
+					<type multiplicity="*" aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_0D1E8743_F4D2_4882_B2B5_A7CB520C3685">
+					<model ea_localid="6" type="Class" name="Car"/>
+					<role name="car" visibility="Public" targetScope="instance"/>
+					<type multiplicity="0..1" aggregation="shared" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Unspecified;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="9"/>
+				<properties ea_type="Aggregation" subtype="Weak" direction="Source -&gt; Destination"/>
+				<modifiers isRoot="false" isLeaf="false"/>
+				<documentation/>
+				<appearance linemode="3" linecolor="-1" linewidth="0" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="*" lt="+wheel" rb="0..1" rt="+car"/>
+				<extendedProperties virtualInheritance="0"/>
+				<style/>
+				<xrefs/>
+				<tags/>
+			</connector>
+			<connector xmi:idref="EAID_0CE160F8_6F64_4176_A734_6AEFD62D8C83">
+				<source xmi:idref="EAID_9AE8155B_E7DE_45e3_BF27_71E4AD7AB85E">
+					<model ea_localid="10" type="Class" name="Driver"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_14793615_C209_4954_8BD9_53C352A6DEEF">
+					<model ea_localid="7" type="Class" name="Person"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="8"/>
+				<properties ea_type="Generalization" direction="Source -&gt; Destination"/>
+				<parameterSubstitutions/>
+				<documentation/>
+				<appearance linemode="3" linecolor="-1" linewidth="0" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels/>
+				<extendedProperties virtualInheritance="0"/>
+				<style/>
+				<xrefs/>
+				<tags/>
+			</connector>
+			<connector xmi:idref="EAID_7ED0F691_26C2_4a13_866D_652721768EBB">
+				<source xmi:idref="EAID_14793615_C209_4954_8BD9_53C352A6DEEF">
+					<model ea_localid="7" type="Class" name="Person"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_5C67B276_2632_4fed_900A_19C097FAFBD5">
+					<model ea_localid="8" type="Interface" name="Movable"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="7"/>
+				<properties ea_type="Realisation" direction="Source -&gt; Destination"/>
+				<parameterSubstitutions/>
+				<documentation/>
+				<appearance linemode="3" linecolor="-1" linewidth="0" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels/>
+				<extendedProperties virtualInheritance="0"/>
+				<style/>
+				<xrefs/>
+				<tags/>
+			</connector>
+			<connector xmi:idref="EAID_037B269E_4590_460f_B85F_5D373C5E1984" name="move()">
+				<source xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830">
+					<model ea_localid="39" type="Object" name="driver"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="33"/>
+				<properties name="move()" ea_type="Sequence" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="9204585" linewidth="0" seqno="8" headStyle="0" lineStyle="0"/>
+				<labels mt="move(): int"/>
+				<extendedProperties stateflags="Activation=0;StartCoregionHead=0;EndCoregionHead=0;StartCoregionTail=0;EndCoregionTail=0;" virtualInheritance="0" diagram="EAID_9DBD5F06_8F25_4c2f_9225_CE06EF004BA8" privatedata1="Asynchronous" privatedata2="retval=int;" privatedata3="Call" privatedata4="0" privatedata5="SX=0;SY=0;EX=0;EY=0;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=416;PtStartY=-422;PtEndX=218;PtEndY=-422;"/>
+				<style/>
+				<xrefs/>
+				<tags>
+					<tag xmi:id="EAID_F18B2239_8470_4040_9DE8_838EC1089D48" name="operation_guid" value="{FEA38905-B5B8-4d11-9F83-1A267C38F189}"/>
+				</tags>
+			</connector>
+			<connector xmi:idref="EAID_23C7CB5C_9D56_48d0_A480_7EAD8A016ACD" name="move()">
+				<source xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="64"/>
+				<properties name="move()" ea_type="Sequence" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="-1" linewidth="0" seqno="7" headStyle="0" lineStyle="0"/>
+				<labels mt="move(): int"/>
+				<extendedProperties stateflags="Activation=0;" virtualInheritance="0" diagram="EAID_9DBD5F06_8F25_4c2f_9225_CE06EF004BA8" privatedata1="Asynchronous" privatedata2="retval=int;" privatedata3="Call" privatedata4="0" privatedata5="SX=0;SY=18;EX=0;EY=0;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=426;PtStartY=-387;PtEndX=426;PtEndY=-402;"/>
+				<style/>
+				<xrefs/>
+				<tags>
+					<tag xmi:id="EAID_D8791751_4DE8_45c1_B0F5_B7996AEF4C1B" name="operation_guid" value="{FEA38905-B5B8-4d11-9F83-1A267C38F189}"/>
+				</tags>
+			</connector>
+			<connector xmi:idref="EAID_2587A1BC_B32F_49b0_9AD4_BFFC64728220">
+				<source xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830">
+					<model ea_localid="39" type="Object" name="driver"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="57"/>
+				<properties ea_type="Sequence" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="-1" linewidth="0" seqno="4" headStyle="0" lineStyle="0"/>
+				<labels/>
+				<extendedProperties virtualInheritance="0" diagram="EAID_ABF14154_95C0_45d0_891B_36904E7B889D" privatedata1="Synchronous" privatedata2="retval=void;" privatedata3="Call" privatedata4="1" privatedata5="SX=0;SY=0;EX=0;EY=0;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=239;PtStartY=-275;PtEndX=124;PtEndY=-275;"/>
+				<style/>
+				<xrefs/>
+				<tags/>
+			</connector>
+			<connector xmi:idref="EAID_330E195D_4A3D_4489_A2FC_2EA36F002C4D">
+				<source xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_A4FB0382_9927_4145_9782_AC0E354239C8">
+					<model ea_localid="22" type="Object" name="newWheel"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="56"/>
+				<properties ea_type="Sequence" subtype="New" stereotype="create" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="-1" linewidth="0" seqno="3" headStyle="0" lineStyle="0"/>
+				<labels mb="�create�"/>
+				<extendedProperties virtualInheritance="0" diagram="EAID_ABF14154_95C0_45d0_891B_36904E7B889D" privatedata1="Asynchronous" privatedata2="retval=void;" privatedata3="Call" privatedata4="0" privatedata5="SX=0;SY=-35;EX=0;EY=0;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=249;PtStartY=-240;PtEndX=542;PtEndY=-240;"/>
+				<style/>
+				<xrefs value="$XREFPROP=$XID={3D412F5C-14A2-42aa-A4CA-A2D136790680}$XID;$NAM=Stereotypes$NAM;$TYP=connector property$TYP;$VIS=Public$VIS;$PAR=0$PAR;$DES=@STEREO;Name=create;GUID={FCBFE0C7-B4A1-483f-94D5-98D751E12206};@ENDSTEREO;$DES;$CLT={330E195D-4A3D-4489-A2FC-2EA36F002C4D}$CLT;$SUP=&lt;none&gt;$SUP;$ENDXREF;"/>
+				<tags/>
+			</connector>
+			<connector xmi:idref="EAID_6DF953BB_67F7_4052_9546_ABDFBDA15FD7">
+				<source xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830">
+					<model ea_localid="39" type="Object" name="driver"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="59"/>
+				<properties ea_type="Sequence" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="9204585" linewidth="0" seqno="9" headStyle="0" lineStyle="0"/>
+				<labels/>
+				<extendedProperties stateflags="StartCoregionHead=0;EndCoregionHead=0;StartCoregionTail=0;EndCoregionTail=0;Activation=0;" virtualInheritance="0" diagram="EAID_9DBD5F06_8F25_4c2f_9225_CE06EF004BA8" privatedata1="Synchronous" privatedata2="retval=void;" privatedata3="Call" privatedata4="1" privatedata5="SX=0;SY=7;EX=0;EY=0;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=416;PtStartY=-450;PtEndX=213;PtEndY=-450;"/>
+				<style/>
+				<xrefs/>
+				<tags/>
+			</connector>
+			<connector xmi:idref="EAID_6F89549B_C021_4434_BD3F_2FFB79A356C9">
+				<source xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830">
+					<model ea_localid="39" type="Object" name="driver"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="48"/>
+				<properties ea_type="Sequence" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="-1" linewidth="0" seqno="5" headStyle="0" lineStyle="0"/>
+				<labels/>
+				<extendedProperties stateflags="Activation=0;" virtualInheritance="0" diagram="EAID_9DBD5F06_8F25_4c2f_9225_CE06EF004BA8" privatedata1="Synchronous" privatedata2="retval=void;" privatedata3="Call" privatedata4="1" privatedata5="SX=0;SY=10;EX=0;EY=-48;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=416;PtStartY=-237;PtEndX=213;PtEndY=-237;"/>
+				<style/>
+				<xrefs/>
+				<tags/>
+			</connector>
+			<connector xmi:idref="EAID_BBCFD066_936A_4df8_876F_17C3CC07DAE3">
+				<source xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_C16459EC_4E90_4800_99C0_A49A4CFDF51D">
+					<model ea_localid="28" type="Object" name="wheel"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="54"/>
+				<properties ea_type="Sequence" subtype="Delete" stereotype="destroy" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="-1" linewidth="0" seqno="2" headStyle="0" lineStyle="0"/>
+				<labels mb="�destroy�"/>
+				<extendedProperties stateflags="Activation=0;ExtendActivationUp=0;" virtualInheritance="0" diagram="EAID_ABF14154_95C0_45d0_891B_36904E7B889D" privatedata1="Asynchronous" privatedata2="retval=void;" privatedata3="Call" privatedata4="0" privatedata5="SX=0;SY=0;EX=0;EY=0;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=249;PtStartY=-170;PtEndX=419;PtEndY=-170;"/>
+				<style/>
+				<xrefs value="$XREFPROP=$XID={A2ED8BC2-E215-4e07-9E08-24368DB05FE4}$XID;$NAM=Stereotypes$NAM;$TYP=connector property$TYP;$VIS=Public$VIS;$PAR=0$PAR;$DES=@STEREO;Name=destroy;GUID={7BD986D4-78F6-4097-AD01-A73917794C98};@ENDSTEREO;$DES;$CLT={BBCFD066-936A-4df8-876F-17C3CC07DAE3}$CLT;$SUP=&lt;none&gt;$SUP;$ENDXREF;"/>
+				<tags/>
+			</connector>
+			<connector xmi:idref="EAID_DC2BFA37_289B_482c_9E61_C93A1F7F5CC4" name="isFlat()">
+				<source xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_C16459EC_4E90_4800_99C0_A49A4CFDF51D">
+					<model ea_localid="28" type="Object" name="wheel"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="22"/>
+				<properties name="isFlat()" ea_type="Sequence" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="9204585" linewidth="0" seqno="3" headStyle="0" lineStyle="0"/>
+				<labels mt="isFlat(): boolean"/>
+				<extendedProperties stateflags="Activation=0;ExtendActivationUp=0;StartCoregionHead=0;EndCoregionHead=0;StartCoregionTail=0;EndCoregionTail=0;" virtualInheritance="0" diagram="EAID_9DBD5F06_8F25_4c2f_9225_CE06EF004BA8" privatedata1="Synchronous" privatedata2="retval=boolean;" privatedata3="Call" privatedata4="0" privatedata5="SX=0;SY=0;EX=0;EY=0;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=426;PtStartY=-192;PtEndX=546;PtEndY=-192;"/>
+				<style/>
+				<xrefs/>
+				<tags>
+					<tag xmi:id="EAID_D23BC785_A7DC_44b9_8239_4A4B1BAF7D05" name="operation_guid" value="{1D561514-364E-44e4-880E-D4D072F0FFB6}"/>
+				</tags>
+			</connector>
+			<connector xmi:idref="EAID_03CD99BB_498A_4104_93BA_EFC2EA314B02" name="drive(Person, double)">
+				<source xmi:idref="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830">
+					<model ea_localid="39" type="Object" name="driver"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="49"/>
+				<properties name="drive(Person, double)" ea_type="Sequence" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="-1" linewidth="0" seqno="6" headStyle="0" lineStyle="0"/>
+				<labels mt="drive(driver, 100)"/>
+				<extendedProperties stateflags="Activation=0;" virtualInheritance="0" diagram="EAID_9DBD5F06_8F25_4c2f_9225_CE06EF004BA8" privatedata1="Synchronous" privatedata2="retval=void;params=;paramsDlg=driver, velocity;" privatedata3="Call" privatedata4="0" privatedata5="SX=0;SY=-98;EX=0;EY=-104;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=213;PtStartY=-370;PtEndX=416;PtEndY=-370;"/>
+				<style value="paramvalues=driver, 100;aliasparamsTO=Person, double;"/>
+				<xrefs/>
+				<tags>
+					<tag xmi:id="EAID_D2A60DF6_B5D2_42ca_A585_55C7A4D1893C" name="operation_guid" value="{FE8F17A8-72CA-4dd6-88B7-D1AF94406719}"/>
+				</tags>
+			</connector>
+			<connector xmi:idref="EAID_32830ACB_8D4A_4cf7_8C38_7F1B43088308" name="changeWheels()">
+				<source xmi:idref="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830">
+					<model ea_localid="39" type="Object" name="driver"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="55"/>
+				<properties name="changeWheels()" ea_type="Sequence" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="-1" linewidth="0" seqno="1" headStyle="0" lineStyle="0"/>
+				<labels mt="changeWheels()"/>
+				<extendedProperties stateflags="Activation=0;ExtendActivationUp=0;" virtualInheritance="0" diagram="EAID_ABF14154_95C0_45d0_891B_36904E7B889D" privatedata1="Synchronous" privatedata2="retval=void;" privatedata3="Call" privatedata4="0" privatedata5="SX=0;SY=0;EX=0;EY=0;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=124;PtStartY=-135;PtEndX=239;PtEndY=-135;"/>
+				<style/>
+				<xrefs/>
+				<tags>
+					<tag xmi:id="EAID_84E75178_8FC6_451a_B757_9EA964018EDF" name="operation_guid" value="{CDA44529-E228-48a3-9017-06235B5D5943}"/>
+				</tags>
+			</connector>
+			<connector xmi:idref="EAID_90AA525C_8506_45df_A77F_17B8333C0885">
+				<source xmi:idref="EAID_C16459EC_4E90_4800_99C0_A49A4CFDF51D">
+					<model ea_localid="28" type="Object" name="wheel"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="23"/>
+				<properties ea_type="Sequence" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="9204585" linewidth="0" seqno="4" headStyle="0" lineStyle="0"/>
+				<labels/>
+				<extendedProperties stateflags="Activation=0;StartCoregionHead=0;EndCoregionHead=0;StartCoregionTail=0;EndCoregionTail=0;" virtualInheritance="0" diagram="EAID_9DBD5F06_8F25_4c2f_9225_CE06EF004BA8" privatedata1="Synchronous" privatedata3="Call" privatedata4="1" privatedata5="SX=0;SY=15;EX=0;EY=0;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=546;PtStartY=-212;PtEndX=426;PtEndY=-212;"/>
+				<style/>
+				<xrefs/>
+				<tags/>
+			</connector>
+			<connector xmi:idref="EAID_AE2A8AD2_5C02_4c4b_B1FC_54E26C8AB0E2" name="canDrive()">
+				<source xmi:idref="EAID_1387CE65_60E7_4d01_B5AD_9408A2439830">
+					<model ea_localid="39" type="Object" name="driver"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="false"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Non-Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</source>
+				<target xmi:idref="EAID_23A55D25_5229_4530_BD7F_DD2A02DD6D5A">
+					<model ea_localid="25" type="Object" name="car"/>
+					<role visibility="Public" targetScope="instance"/>
+					<type aggregation="none" containment="Unspecified"/>
+					<constraints/>
+					<modifiers isOrdered="false" changeable="none" isNavigable="true"/>
+					<style value="Union=0;Derived=0;AllowDuplicates=0;Owned=0;Navigable=Navigable;"/>
+					<documentation/>
+					<xrefs/>
+					<tags/>
+				</target>
+				<model ea_localid="47"/>
+				<properties name="canDrive()" ea_type="Sequence" direction="Source -&gt; Destination"/>
+				<documentation/>
+				<appearance linemode="1" linecolor="-1" linewidth="0" seqno="2" headStyle="0" lineStyle="0"/>
+				<labels mt=" canDrive= canDrive(): boolean"/>
+				<extendedProperties stateflags="Activation=0;" virtualInheritance="0" diagram="EAID_9DBD5F06_8F25_4c2f_9225_CE06EF004BA8" privatedata1="Synchronous" privatedata2="retval=boolean;retatt=canDrive;" privatedata3="Call" privatedata4="0" privatedata5="SX=0;SY=13;EX=0;EY=0;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;" sequence_points="PtStartX=213;PtStartY=-157;PtEndX=416;PtEndY=-157;"/>
+				<style/>
+				<xrefs/>
+				<tags>
+					<tag xmi:id="EAID_7798EB7B_59D6_4673_95E2_F27233646CE6" name="operation_guid" value="{EFB39CE1-920E-4854-9DC8-D33DAB3A6EE2}"/>
+				</tags>
+			</connector>
+		</connectors>
+		<primitivetypes>
+			<packagedElement xmi:type="uml:Package" xmi:id="EAPrimitiveTypesPackage" name="EA_PrimitiveTypes_Package" visibility="public">
+				<packagedElement xmi:type="uml:Package" xmi:id="EAJavaTypesPackage" name="EA_Java_Types_Package" visibility="public">
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAJava_boolean" name="boolean" visibility="public">
+						<generalization xmi:type="uml:Generalization" xmi:id="EAJava_boolean_General">
+							<general href="http://schema.omg.org/spec/UML/2.1/uml.xml#Boolean"/>
+						</generalization>
+					</packagedElement>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAJava_void" name="void" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAJava_double" name="double" visibility="public">
+						<generalization xmi:type="uml:Generalization" xmi:id="EAJava_double_General">
+							<general href="http://schema.omg.org/spec/UML/2.1/uml.xml#UnlimitedNatural"/>
+						</generalization>
+					</packagedElement>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAJava_float" name="float" visibility="public">
+						<generalization xmi:type="uml:Generalization" xmi:id="EAJava_float_General">
+							<general href="http://schema.omg.org/spec/UML/2.1/uml.xml#UnlimitedNatural"/>
+						</generalization>
+					</packagedElement>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAJava_char" name="char" visibility="public">
+						<generalization xmi:type="uml:Generalization" xmi:id="EAJava_char_General">
+							<general href="http://schema.omg.org/spec/UML/2.1/uml.xml#String"/>
+						</generalization>
+					</packagedElement>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAJava_int" name="int" visibility="public">
+						<generalization xmi:type="uml:Generalization" xmi:id="EAJava_int_General">
+							<general href="http://schema.omg.org/spec/UML/2.1/uml.xml#Integer"/>
+						</generalization>
+					</packagedElement>
+				</packagedElement>
+			</packagedElement>
+		</primitivetypes>
+		<profiles>
+			<uml:Profile xmlns:uml="http://schema.omg.org/spec/UML/2.1/" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmi:version="2.1" xmi:id="thecustomprofile" nsPrefix="thecustomprofile" name="thecustomprofile" metamodelReference="mmref01">
+				<ownedComment xmi:type="uml:Comment" xmi:id="comment01" annotatedElement="thecustomprofile">
+					<body> Version:1.0</body>
+				</ownedComment>
+				<packageImport xmi:id="mmref01">
+					<importedPackage href="http://schema.omg.org/spec/UML/2.1/"/>
+				</packageImport>
+				<packagedElement xmi:type="uml:Stereotype" xmi:id="destroy" name="destroy">
+					<ownedAttribute xmi:type="uml:Property" xmi:id="destroy-base_Message" name="base_Message" association="Message_destroy">
+						<type href="http://schema.omg.org/spec/UML/2.1/Message"/>
+					</ownedAttribute>
+				</packagedElement>
+				<packagedElement xmi:type="uml:Extension" xmi:id="Message_destroy" name="A_Message_destroy" memberEnd="extension_destroy destroy-base_Message">
+					<ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="extension_destroy" name="extension_destroy" type="destroy" isComposite="true" lower="0" upper="1" memberEnd="extension_destroy destroy-base_Message"/>
+				</packagedElement>
+				<packagedElement xmi:type="uml:Stereotype" xmi:id="create" name="create">
+					<ownedAttribute xmi:type="uml:Property" xmi:id="create-base_Message" name="base_Message" association="Message_create">
+						<type href="http://schema.omg.org/spec/UML/2.1/Message"/>
+					</ownedAttribute>
+				</packagedElement>
+				<packagedElement xmi:type="uml:Extension" xmi:id="Message_create" name="A_Message_create" memberEnd="extension_create create-base_Message">
+					<ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="extension_create" name="extension_create" type="create" isComposite="true" lower="0" upper="1" memberEnd="extension_create create-base_Message"/>
+				</packagedElement>
+			</uml:Profile>
+		</profiles>
 		<diagrams>
 			<diagram xmi:id="EAID_29D12092_97B6_4cb8_B732_48299673D813">
 				<model package="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C" localID="1" owner="EAPK_E8A64A52_902A_43ab_AF9D_2CD7F720EA0C"/>

@@ -204,6 +204,18 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         package = self.get_instance_by_id(package_id)
         package.add_association(uml_association)
         return self
+    
+    def add_data_type_to_package(self, data_type_id: str, package_id: str) -> "IUmlModelBuilder":
+        data_type = self.get_instance_by_id(data_type_id)
+        package = self.get_instance_by_id(package_id)
+        package.add_data_type(data_type)
+        return self
+    
+    def add_enumeration_to_package(self, enumeration_id: str, package_id: str) -> "IUmlModelBuilder":
+        enumeration = self.get_instance_by_id(enumeration_id)
+        package = self.get_instance_by_id(package_id)
+        package.add_enumeration(enumeration)
+        return self    
 
     def construct_uml_lifeline(self, id: Optional[str] = None, name: Optional[str] = None, represents_id: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_lifeline({args}, {kwargs})")

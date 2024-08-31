@@ -938,3 +938,43 @@ class UmlPackage(UmlNamedElement, IUmlPackage):
         self.elements.associations.append(association)
         if self.builder:
             self.builder.register_if_not_present(association)
+
+    def add_generalization(self, generalization: IUmlGeneralization):
+        self.elements.generalizations.append(generalization)
+        if self.builder:
+            self.builder.register_if_not_present(generalization)
+
+    def add_dependency(self, dependency: IUmlDependency):
+        self.elements.dependencies.append(dependency)
+        if self.builder:
+            self.builder.register_if_not_present(dependency)
+
+    def add_realization(self, realization: IUmlRealization):
+        self.elements.realizations.append(realization)
+        if self.builder:
+            self.builder.register_if_not_present(realization)
+
+    def add_interaction(self, interaction: IUmlInteraction):
+        self.elements.interactions.append(interaction)
+        if self.builder:
+            self.builder.register_if_not_present(interaction)
+
+    def add_package(self, package: IUmlPackage):
+        self.elements.packages.append(package)
+        if self.builder:
+            self.builder.register_if_not_present(package)
+
+    def add_data_type(self, data_type: IUmlDataType):
+        self.elements.data_types.append(data_type)
+        if self.builder:
+            self.builder.register_if_not_present(data_type)
+
+    def add_enumeration(self, enumeration: IUmlEnumeration):
+        self.elements.enumerations.append(enumeration)
+        if self.builder:
+            self.builder.register_if_not_present(enumeration)
+
+    def add_primitive_type(self, primitive_type: IUmlPrimitiveType):
+        self.elements.primitive_types.append(primitive_type)
+        if self.builder:
+            self.builder.register_if_not_present(primitive_type)

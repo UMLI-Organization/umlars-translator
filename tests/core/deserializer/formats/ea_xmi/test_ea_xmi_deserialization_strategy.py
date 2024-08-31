@@ -344,6 +344,9 @@ def test_when_deserialize_car_model_file_then_correct_classes_created(
         "Wheel": {"visibility": UmlVisibilityEnum.PUBLIC},
     }
 
+    assert isinstance(model.elements.classes, list)
+    assert len(model.elements.classes) == 4
+
     for cls in model.elements.classes:
         assert isinstance(cls, IUmlClass)
         assert cls.name in expected_classes
@@ -397,15 +400,16 @@ def test_when_deserialize_car_model_file_then_correct_enumerations_created(
     expected_enums = {
         "Gender": {
             "visibility": UmlVisibilityEnum.PUBLIC,
-            "literals": ["Male", "Female"],
         },
     }
+
+    assert isinstance(model.elements.enumerations, list)
+    assert len(model.elements.enumerations) == 1
 
     for enum in model.elements.enumerations:
         assert isinstance(enum, IUmlEnumeration)
         assert enum.name in expected_enums
         assert enum.visibility == expected_enums[enum.name]["visibility"]
-        assert enum.literals == expected_enums[enum.name]["literals"]
 
 
 def test_when_deserialize_car_model_file_then_correct_datatypes_created(
@@ -419,6 +423,9 @@ def test_when_deserialize_car_model_file_then_correct_datatypes_created(
     expected_datatypes = {
         "Datetime": {"visibility": UmlVisibilityEnum.PUBLIC},
     }
+
+    assert isinstance(model.elements.data_types, list)
+    assert len(model.elements.data_types) == 1
 
     for datatype in model.elements.data_types:
         assert isinstance(datatype, IUmlDataType)

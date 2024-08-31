@@ -11,6 +11,7 @@ from src.umlars_translator.core.deserialization.exceptions import UnableToMapErr
 from src.umlars_translator.core.configuration.config_proxy import Config
 from src.umlars_translator.core.model.constants import UmlDiagramType
 
+
 class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
     def _process_type_child(self, data_batch: DataBatch) -> dict[str, Any]:
         data = data_batch.data
@@ -416,6 +417,82 @@ class UmlOperationParameterPipe(EaXmiModelProcessingPipe):
         self.model_builder.construct_uml_operation_parameter(
             **aliases_to_values, operation_id=data_batch.parent_context["parent_id"]
         )
+        yield from self._create_data_batches(
+            data, parent_context={"parent_id": aliases_to_values["id"]}
+        )
+
+
+class UmlDataTypePipe(EaXmiModelProcessingPipe):
+    ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
+    ATTRIBUTES_CONDITIONS = [
+        XmlAttributeCondition(
+            Config.ATTRIBUTES["type"], Config.EaPackagedElementTypes.DATA_TYPE
+        )
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToXmlKey.from_kwargs(
+                id=self.config.ATTRIBUTES["id"],
+                name=self.config.ATTRIBUTES["name"],
+            )
+
+            optional_attributes = AliasToXmlKey.from_kwargs(
+                visibility=self.config.ATTRIBUTES["visibility"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes, optional_attributes
+        )
+
+        self.model_builder.construct_uml_data_type(**aliases_to_values)
+        if "package_id" in data_batch.parent_context:
+            self.model_builder.add_data_type_to_package(data_type_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
+
+        yield from self._create_data_batches(
+            data, parent_context={"parent_id": aliases_to_values["id"]}
+        )
+
+
+class UmlEnumerationPipe(EaXmiModelProcessingPipe):
+    ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
+    ATTRIBUTES_CONDITIONS = [
+        XmlAttributeCondition(
+            Config.ATTRIBUTES["type"], Config.EaPackagedElementTypes.ENUMERATION
+        )
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToXmlKey.from_kwargs(
+                id=self.config.ATTRIBUTES["id"],
+                name=self.config.ATTRIBUTES["name"],
+            )
+
+            optional_attributes = AliasToXmlKey.from_kwargs(
+                visibility=self.config.ATTRIBUTES["visibility"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes, optional_attributes
+        )
+
+        self.model_builder.construct_uml_enumeration(**aliases_to_values)
+        if "package_id" in data_batch.parent_context:
+            self.model_builder.add_enumeration_to_package(enumeration_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
+
         yield from self._create_data_batches(
             data, parent_context={"parent_id": aliases_to_values["id"]}
         )

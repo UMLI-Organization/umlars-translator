@@ -129,6 +129,14 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
 
         return all(condition(data) for condition in self._attributes_conditions)
 
+    @staticmethod
+    def _are_tags_matching(tag_1: str, tag_2: str) -> bool:
+        # URI is not parsed in the same way by the ElementTree always
+        # When the same XMI file was parsed with deleted <elements>, <primitiveTypes> and <profiles> - ET suddenly started to add '/' at the end of the URI
+        tag_1 = tag_1.replace('/}', '}')
+        tag_2 = tag_2.replace('/}', '}')
+        return (tag_1 == tag_2)
+
     def _can_process(self, data_batch: Optional[DataBatch] = None) -> bool:
         data: ET.ElementTree | ET.Element = data_batch.data
 
@@ -137,7 +145,7 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
 
         try:
             return (
-                data.tag == self._associated_xml_tag or self._associated_xml_tag is None
+                self._associated_xml_tag is None or self._are_tags_matching(data.tag, self._associated_xml_tag)
             ) and self._has_required_attributes_values(data)
         except AttributeError as ex:
             if not isinstance(data, ET.Element):

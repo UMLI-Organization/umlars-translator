@@ -159,3 +159,6 @@ class EaXmiConfig(ParsedConfigNamespace):
         DEPENDENCY = "uml:Dependency"
         GENERALIZATION = "uml:Generalization"
         REALIZATION = "uml:Realization"
+        DATA_TYPE = "uml:DataType"
+        ENUMERATION = "uml:Enumeration"
+        
