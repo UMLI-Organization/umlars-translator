@@ -1,5 +1,5 @@
 import json
-from typing import Optional
+from typing import Optional, Iterable, Coroutine, List
 import logging
 
 from kink import inject
@@ -9,6 +9,7 @@ from contextlib import asynccontextmanager
 from src.umlars_translator.app.adapters.message_brokers.message_producer import MessageProducer
 from src.umlars_translator.app.adapters.message_brokers import config
 from src.umlars_translator.app.exceptions import QueueUnavailableError
+from src.umlars_translator.app.dtos.messages import ProcessStatusEnum, TranslatedFileMessage
 
 
 @inject(alias=MessageProducer)
@@ -65,42 +66,46 @@ class RabbitMQProducer(MessageProducer):
                 raise ValueError(f"Error while sending message: {ex}") from ex
 
 
-async def send_translated_model_message(message_data: dict, producer: Optional[MessageProducer] = None, queue_name: str = config.MESSAGE_BROKER_QUEUE_TRANSLATED_MODELS_NAME) -> None:
+async def send_translated_model_message(message_data: dict, producer: Optional[MessageProducer] = None, queue_name: str = config.MESSAGE_BROKER_QUEUE_TRANSLATED_MODELS_NAME) -> Coroutine:
     try:
         if producer is None:
             producer = RabbitMQProducer(queue_name=queue_name, rabbitmq_host=config.MESSAGE_BROKER_HOST)
-        await producer.send_message(message_data)
+        return producer.send_message(message_data)
     except Exception as ex:
         raise ValueError(f"Error while sending message: {ex}") from ex
 
 
-def create_successfull_translation_message(uml_model_id: str) -> dict:
-    return {
-        "model_id": uml_model_id,
-        "status": config.TranslationStatusEnum.FINISHED,
-        "message": "Model was successfully translated"
-    }
+def send_translated_models_messages(messages_data: Iterable[dict], producer: Optional[MessageProducer] = None, queue_name: str = config.MESSAGE_BROKER_QUEUE_TRANSLATED_MODELS_NAME) -> List[Coroutine]:
+    return [send_translated_model_message(message_data, producer, queue_name) for message_data in messages_data]
 
 
-def create_failed_translation_message(uml_model_id: str, error_message: str) -> dict:
-    return {
-        "model_id": uml_model_id,
-        "status": config.TranslationStatusEnum.FAILED,
-        "message": error_message
-    }
+def create_successfull_translation_message(file_id: Optional[str] = None) -> dict:
+    return TranslatedFileMessage(
+        id=file_id,
+        state=ProcessStatusEnum.FINISHED,
+        message="Model was successfully translated"
+    ).model_dump()
 
 
-def create_partial_success_translation_message(uml_model_id: str, error_message: str) -> dict:
-    return {
-        "model_id": uml_model_id,
-        "status": config.TranslationStatusEnum.PARTIAL_SUCCESS,
-        "message": error_message
-    }
+def create_failed_translation_message(file_id: Optional[str] = None, error_message: Optional[str] = None) -> dict:
+    return TranslatedFileMessage(
+        id=file_id,
+        state=ProcessStatusEnum.FAILED,
+        message=error_message
+    ).model_dump()
 
 
-def create_running_translation_message(uml_model_id: str) -> dict:
-    return {
-        "model_id": uml_model_id,
-        "status": config.TranslationStatusEnum.RUNNING,
-        "message": "Model translation is in progress"
-    }
+def create_partial_success_translation_message(file_id: Optional[str] = None, error_message: Optional[str] = None) -> dict:
+    return TranslatedFileMessage(
+        id=file_id,
+        state=ProcessStatusEnum.PARTIAL_SUCCESS,
+        message=error_message
+    ).model_dump()
+
+
+def create_running_translation_message(file_id: Optional[str] = None) -> dict:
+    return TranslatedFileMessage(
+        id=file_id,
+        state=ProcessStatusEnum.RUNNING,
+        message="Model translation is in progress"
+    ).model_dump()

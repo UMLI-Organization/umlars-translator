@@ -16,10 +16,3 @@ MESSAGE_BROKER_PASSWORD = os.getenv("RABBITMQ_DEFAULT_PASS", "admin")
 MESSAGE_BROKER_QUEUE_UPLOADED_FILES_NAME = os.environ.get("RABBITMQ_QUEUE_NAME_UPLOADED_FILES", "uploaded_files")
 MESSAGE_BROKER_QUEUE_TRANSLATED_MODELS_NAME = os.environ.get("RABBITMQ_QUEUE_NAME_TRANLATED_MODELS", "translated_models")
 MESSAGE_BROKER_PREFETCH_COUNT = 100
-
-
-class TranslationStatusEnum(str, Enum):
-    FINISHED = "finished"
-    PARTIAL_SUCCESS = "partial_success"
-    FAILED = "failed"
-    RUNNING = "running"

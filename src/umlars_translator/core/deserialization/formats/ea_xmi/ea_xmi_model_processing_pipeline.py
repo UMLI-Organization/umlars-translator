@@ -8,7 +8,7 @@ from src.umlars_translator.core.deserialization.abstract.xml.xml_pipeline import
     AliasToXmlKey,
 )
 from src.umlars_translator.core.deserialization.exceptions import UnableToMapError
-from src.umlars_translator.core.configuration.config_proxy import Config
+from src.umlars_translator.core.configuration.config_proxy import Config, get_configurable_value
 from src.umlars_translator.core.model.constants import UmlDiagramType
 
 
@@ -672,16 +672,19 @@ class DiagramPipe(EaXmiModelProcessingPipe):
         )
 
         diagram_type_name = aliases_to_values.pop("diagram_type")
-        diagram_type = Config.EA_DIAGRAMS_TYPES_MAPPING[diagram_type_name]
 
-        match (diagram_type):
+        diagram_type = Config.EA_DIAGRAMS_TYPES_MAPPING[diagram_type_name]
+        diagram_type_parsed = get_configurable_value(diagram_type, self.config)
+
+        self._logger.warn(f"Constructing diagram of type: {diagram_type_parsed}")
+
+        match (diagram_type_parsed):
             case UmlDiagramType.CLASS:
                 self.model_builder.construct_class_diagram(**aliases_to_values, id=diagram_id)
             case UmlDiagramType.SEQUENCE:
                 self.model_builder.construct_sequence_diagram(**aliases_to_values, id=diagram_id)
             case _:
-                self._logger.warning(f"Diagram type: {diagram_type} is not supported.")
-
+                self._logger.warning(f"Diagram type: {diagram_type_parsed} is not supported.")
 
     def _construct_diagram_elements(
         self, diagram_elements: ET.Element, diagram_id: str

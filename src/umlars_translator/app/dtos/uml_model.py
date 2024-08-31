@@ -414,7 +414,9 @@ class UmlModelElements(BaseModel):
             if isinstance(element, UmlElement):
                 if element.id in id_map:
                     if id_map[element.id] != element:
-                        raise ValueError(f"Duplicate id found with different objects: {element.id}")
+                        raise ValueError(f"Duplicate id found with different objects: {element.id}"
+                                         f"\n{element}\n{id_map[element.id]}"
+                                         )
                 else:
                     id_map[element.id] = element
 
@@ -436,8 +438,9 @@ class UmlModelElements(BaseModel):
         return values
 
 
-class UmlDiagram(UmlNamedElement):
+class UmlDiagram(UmlElement):
     description: Optional[str] = None
+    name: Optional[str] = None
 
 
 class UmlSequenceDiagramElements(BaseModel):

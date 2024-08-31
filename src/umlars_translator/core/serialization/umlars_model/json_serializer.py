@@ -334,7 +334,6 @@ class UmlToPydanticSerializer(UmlSerializer):
         return pydantic_uml.UmlClassDiagram(
             id=class_diagram.id,
             name=class_diagram.name,
-            visibility=class_diagram.visibility,
             description=class_diagram.description,
             elements=self.visit_uml_class_diagram_elements(class_diagram.elements),
         )
@@ -358,7 +357,6 @@ class UmlToPydanticSerializer(UmlSerializer):
         return pydantic_uml.UmlSequenceDiagram(
             id=sequence_diagram.id,
             name=sequence_diagram.name,
-            visibility=sequence_diagram.visibility,
             description=sequence_diagram.description,
             elements=self.visit_uml_sequence_diagram_elements(sequence_diagram.elements),
         )

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, List, Union, Optional
 
 from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement
 from src.umlars_translator.core.model.umlars_model.uml_elements import UmlElement, UmlLifeline, UmlClass, UmlAssociationEnd, UmlAssociationBase, UmlInterface, UmlPackage, UmlPrimitiveType, UmlAttribute, UmlOperation, UmlLifeline, UmlAssociationEnd, UmlAssociation, UmlAggregation, UmlComposition, UmlDependency, UmlRealization, UmlGeneralization, UmlMessage, UmlCombinedFragment, UmlDataType, UmlEnumeration, UmlPrimitiveType, UmlInteraction, UmlOccurrenceSpecification, UmlModelElements, UmlParameter, UmlOperand
@@ -9,9 +9,26 @@ if TYPE_CHECKING:
 
 
 class UmlDiagram(RegisteredInModelMixin, IUmlDiagram):
-    def __init__(self, name: str, model: 'UmlModel', id: str = None, **kwargs):
+    def __init__(self, name: Optional[str] = None, description: str = None, model: Optional['UmlModel'] = None, id: str = None, **kwargs):
         super().__init__(id=id, model=model, **kwargs)
-        self.name = name
+        self._name = name
+        self._description = description
+
+    @property
+    def name(self) -> str:
+        return self._name
+    
+    @name.setter
+    def name(self, new_name: str):
+        self._name = new_name
+
+    @property
+    def description(self) -> str:
+        return self._description
+    
+    @description.setter
+    def description(self, new_description: str):
+        self._description = new_description
 
 
 class UmlClassDiagramElements(IUmlClassDiagramElements):
@@ -25,10 +42,6 @@ class UmlClassDiagramElements(IUmlClassDiagramElements):
         self.generalizations = generalizations or []
         self.dependencies = dependencies or []
         self.realizations = realizations or []
-        self.aggregations = aggregations or []
-        self.compositions = compositions or []
-        self.attributes = attributes or []
-        self.operations = operations or []
 
     def add_element(self, element: UmlElement) -> None:
         if isinstance(element, UmlClass):
@@ -39,10 +52,16 @@ class UmlClassDiagramElements(IUmlClassDiagramElements):
             self.interfaces.append(element)
         elif isinstance(element, UmlPrimitiveType):
             self.primitive_types.append(element)
-        elif isinstance(element, UmlAttribute):
-            self.attributes.append(element)
-        elif isinstance(element, UmlOperation):
-            self.operations.append(element)
+        elif isinstance(element, UmlGeneralization):
+            self.generalizations.append(element)
+        elif isinstance(element, UmlDependency):
+            self.dependencies.append(element)
+        elif isinstance(element, UmlRealization):
+            self.realizations.append(element)
+        elif isinstance(element, UmlEnumeration):
+            self.enumerations.append(element)
+        elif isinstance(element, UmlDataType):
+            self.data_types.append(element)
         else:
             raise NotImplementedError(f"Element {element} is not supported in UmlClassDiagram.")
 
@@ -193,7 +212,7 @@ class UmlClassDiagramElements(IUmlClassDiagramElements):
 class UmlSequenceDiagramElements(IUmlSequenceDiagramElements):
     def __init__(self, interactions: List[UmlInteraction] = None, **kwargs):
         self.interactions = interactions or []
-        super().__init__(**kwargs)
+        super().__init__()
 
     def add_element(self, element: UmlElement) -> None:
         if isinstance(element, UmlInteraction):
@@ -261,7 +280,7 @@ class UmlDiagrams(IUmlDiagrams):
     def __init__(self, class_diagrams: List[UmlClassDiagram] = None, sequence_diagrams: List[UmlSequenceDiagram] = None, **kwargs):
         self.class_diagrams = class_diagrams or []
         self.sequence_diagrams = sequence_diagrams or []
-        super().__init__(**kwargs)
+        super().__init__()
 
     def add_element(self, element: UmlElement) -> 'UmlDiagrams':
         if isinstance(element, UmlClassDiagram):
