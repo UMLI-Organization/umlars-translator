@@ -22,7 +22,7 @@ class ModelTranslator:
         self._model_deserializer = model_deseializer
         self._logger = core_logger.getChild(self.__class__.__name__)
         self._logger.info("ModelTranslator initialized")
-        self._model = model_to_extend
+        self._model = model_to_extend or model_deseializer.model
 
     def translate(
         self,
@@ -34,10 +34,11 @@ class ModelTranslator:
         from_format: Optional[SupportedFormat] = None,
         model_to_extend: Optional[IUmlModel] = None,
         clear_model_afterwards: bool = False,
+        model_id: Optional[str] = None,
         to_string: bool = True,
     ) -> str | Iterable[str]:
         deserialized_model: IUmlModel = self.deserialize(
-            data, file_name, file_paths, data_batches, data_sources, from_format, model_to_extend, clear_builder_afterwards=clear_model_afterwards
+            data, file_name, file_paths, data_batches, data_sources, from_format, model_to_extend, clear_builder_afterwards=clear_model_afterwards, model_id=model_id
         )
         # TODO: serializer should accept many implementations of IUmlModel
         serialized_model = self.serialize(deserialized_model, to_string=to_string)
@@ -52,11 +53,16 @@ class ModelTranslator:
         data_sources: Optional[Iterable[DataSource]] = None,
         from_format: Optional[SupportedFormat] = None,
         model_to_extend: Optional[IUmlModel] = None,
+        model_id: Optional[str] = None,
         clear_builder_afterwards: bool = False,
     ) -> IUmlModel:
         self._logger.info("Deserializing model")
 
         model_to_extend = model_to_extend or self._model
+    
+        if model_id is not None:
+            self._logger.info(f"Model ID will be set to {model_id}")
+            model_to_extend.id = model_id
 
         if data is not None:
             deserialized_model = self._model_deserializer.deserialize(data_batches=[data], from_format=from_format, model_to_extend=model_to_extend, clear_builder_afterwards=True)

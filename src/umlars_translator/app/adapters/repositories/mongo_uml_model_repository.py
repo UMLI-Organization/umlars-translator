@@ -16,10 +16,11 @@ class MongoDBUmlModelRepository(UmlModelRepository):
     async def get(self, model_id: str) -> Optional[UmlModel]:
         db_model = await self._collection.find_one({"_id": str(model_id)})
         return UmlModel.from_mongo(db_model) if db_model else None
-
+            
     async def save(self, uml_model: UmlModel) -> UpdateResult:
-        result = await self._collection.insert_one(
+        result = await self._collection.update_one(
             {"_id": str(uml_model.id)},
             {"$set": uml_model.model_dump()},
+            upsert=True
         )
         return result

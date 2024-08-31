@@ -3,10 +3,6 @@ from typing import Optional, Iterable, Coroutine, List
 import logging
 import asyncio
 
-import tracemalloc
-tracemalloc.start()
-
-
 from kink import inject
 import aio_pika
 from contextlib import asynccontextmanager

@@ -21,7 +21,7 @@ class RegisteredInBuilderMixin:
     @id.setter
     def id(self, new_id: str) -> None:
         old_id = self.id
-        self._id = new_id
+        self._id = str(new_id)
         if self.builder:
             self.builder.register_if_not_present(self, old_id=old_id)
 

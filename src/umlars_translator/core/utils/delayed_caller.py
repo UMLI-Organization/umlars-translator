@@ -43,6 +43,9 @@ class IdToInstanceMapper:
         """
         Registers an element in the id-to-instance mapping if not already present.
         """
+        self._logger.debug(f"\n\nRegistering element {element} with id {getattr(element, 'id', 'attribute non-existent')}."
+                           "" if old_id is None else f" Old ID: {old_id}."
+                           "" if register_as_type is None else f" Registering as type: {register_as_type}.\n\n")
         try:
             element_id = element.id
         except AttributeError as ex:
@@ -54,7 +57,7 @@ class IdToInstanceMapper:
             self._id_to_instance_mapping[element_id] = element
             self._type_to_id_to_instance_mapping[type_of_element][element_id] = element
 
-        if old_id is not None and clear_old_id:
+        if old_id is not None and clear_old_id and not old_id == element_id:
             self._id_to_instance_mapping.pop(old_id, None)
             self._type_to_id_to_instance_mapping[type_of_element].pop(old_id, None)
 

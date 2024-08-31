@@ -8,6 +8,7 @@ import uvicorn
 from fastapi import FastAPI, Depends
 from fastapi.exceptions import HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient
+from pydantic import ValidationError
 
 from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
 from src.umlars_translator.app.adapters.repositories.mongo_uml_model_repository import MongoDBUmlModelRepository
@@ -92,22 +93,26 @@ app = FastAPI(lifespan=lifespan_event_handler)
 
 
 @app.get("/uml-models/{model_id}")
-async def get_uml_model(model_id: str, model_repo: UmlModelRepository = Depends(lambda: di[UmlModelRepository])):
-    model = await model_repo.get(model_id)
+async def get_uml_model(model_id: str, model_repo: UmlModelRepository = Depends(lambda: di[UmlModelRepository]), app_logger: logging.Logger = Depends(lambda: di[logging.Logger])):
+    try:
+        model = await model_repo.get(model_id)
+    except ValidationError as e:
+        app_logger.error(f"Failed to validate the model from database: {e}")
+        raise HTTPException(status_code=422, detail=f"Invalid model data. Error: {e}")
     if model is None:
         raise HTTPException(status_code=404, detail=f"Model with ID: {model_id} not found")
     return model
 
 
 @app.post("/uml-models")
-async def translate_uml_model(uml_model: UmlModel, model_repo: UmlModelRepository = Depends(lambda: di[UmlModelRepository])):
+async def translate_uml_model(uml_model: UmlModel, model_repo: UmlModelRepository = Depends(lambda: di[UmlModelRepository]), app_logger: logging.Logger = Depends(lambda: di[logging.Logger])):
     # TODO: translate
     await model_repo.save(uml_model)
     return {"status": "success"}
 
 
 @inject
-def run_app(port: int = 8080, host: str = "0.0.0.0", context: str = 'DEV', app_logger: Optional[logging.Logger] = None):
+def run_app(port: int = 8020, host: str = "0.0.0.0", context: str = 'DEV', app_logger: Optional[logging.Logger] = None):
     port = int(os.getenv("EXPOSE_ON_PORT", port))
     app_logger.error(f"\nStarting the application on port {port}\n")
 

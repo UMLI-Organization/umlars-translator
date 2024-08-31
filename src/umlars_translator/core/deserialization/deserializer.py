@@ -37,6 +37,14 @@ class ModelDeserializer:
         self._logger = core_logger.getChild(self.__class__.__name__)
         self.load_formats_support()
 
+    @property
+    def model_builder(self) -> IUmlModelBuilder:
+        return self._model_builder
+
+    @property
+    def model(self) -> IUmlModel:
+        return self._model_builder.model
+
     def load_formats_support(
         self, extensions_group_name: Optional[Iterator[str]] = None
     ) -> None:

@@ -3,9 +3,6 @@ import logging
 import asyncio
 import json
 
-import tracemalloc
-tracemalloc.start()
-
 from pydantic import ValidationError
 import aio_pika
 from kink import inject
@@ -22,6 +19,7 @@ from src.umlars_translator.app.utils.functions import retry_async
 from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
 from src.umlars_translator.app.adapters.message_brokers.rabbitmq_message_producer import RabbitMQProducer, create_failed_translation_message, create_successfull_translation_message, create_running_translation_message, send_translated_models_messages, send_translated_model_message
 from src.umlars_translator.core.translator import ModelTranslator
+from src.umlars_translator.core.deserialization.deserializer import ModelDeserializer
 
 
 @inject
@@ -91,20 +89,21 @@ class RabbitMQConsumer(MessageConsumer):
                 return
 
             running_translation_messages = map(lambda file_id: create_running_translation_message(file_id=file_id), files_ids)
-            send_running_messages_coroutines = send_translated_models_messages(running_translation_messages, self._message_producer)
+            send_running_messages_coroutines = send_translated_models_messages(running_translation_messages)
 
             try:
-                await self.process_message(model_to_translate_message)
+                uml_model = await self.get_data_from_repository(model_to_translate_message.id)
+                await send_running_messages_coroutines
+                await self.process_message(uml_model)
                 await message.ack()
                 self._logger.info("Message with delivery tag %s acknowledged", message.delivery_tag)
-                await send_running_messages_coroutines
             except Exception as ex:
                 self._logger.error(f"Failed to process message: {ex}")
                 failed_translation_messages = map(lambda file_id: create_failed_translation_message(file_id=file_id, error_message=f"Failed to process model. Error: {ex}"), files_ids)
                 await send_running_messages_coroutines
-                await send_translated_models_messages(failed_translation_messages, self._message_producer)
+                await send_translated_models_messages(failed_translation_messages)
                 await message.reject(requeue=False)
-            
+    
     def _deserialize_message(self, message: aio_pika.IncomingMessage) -> ModelToTranslateMessage:
         self._logger.debug(f"Deserializing message body: {message.body}")
         try:
@@ -119,14 +118,13 @@ class RabbitMQConsumer(MessageConsumer):
             self._logger.error(f"Validation error during message deserialization: {ex}")
             raise InputDataError(f"Validation error during message deserialization: {ex}") from ex
 
-    async def process_message(self, model_to_translate_message: ModelToTranslateMessage) -> None:
-        self._logger.info(f"Starting message processing for model ID {model_to_translate_message.id}")
-        models_repository_api_url = f"{app_config.REPOSITORY_API_URL}/{app_config.REPOSITORY_SERVICE_MODELS_ENDPOINT}/{model_to_translate_message.id}"
+    async def get_data_from_repository(self, model_to_translate_id: ModelToTranslateMessage) -> UmlModelDTO:
+        self._logger.info(f"Starting message processing for model ID {model_to_translate_id}")
+        models_repository_api_url = f"{app_config.REPOSITORY_API_URL}/{app_config.REPOSITORY_SERVICE_MODELS_ENDPOINT}/{model_to_translate_id}"
 
         self._logger.debug(f"Fetching data from repository API at {models_repository_api_url}")
         response_body = await self._repository_api_connector.get_data(models_repository_api_url)
         self._logger.debug(f"Received response from repository API")
-
         try:
             uml_model = UmlModelDTO(**response_body)
             self._logger.info(f"Deserialized UML model with ID: {uml_model.id}")
@@ -134,20 +132,25 @@ class RabbitMQConsumer(MessageConsumer):
             error_message = f"Failed to deserialize response from the repository service: {ex}. Invalid structure."
             self._logger.error(error_message)
             raise InputDataError(error_message) from ex
+        
+        return uml_model
 
+    async def process_message(self, uml_model: UmlModelDTO) -> None:
+        # To avoid data races, we need to create a new instance of ModelTranslator for each message
+        model_translator = ModelTranslator(model_deseializer=ModelDeserializer())
         scheduled_sending_coroutines = []
         try:
             for uml_file in uml_model.source_files:
                 self._logger.info(f"Processing file: {uml_file.filename}")
                 try:
-                    self._model_translator.deserialize(data_sources=[uml_file.to_data_source()], clear_builder_afterwards=False)
-                    sending_success_message_coroutine = send_translated_model_message(create_successfull_translation_message(file_id=uml_file.id), self._message_producer)
+                    model_translator.deserialize(data_sources=[uml_file.to_data_source()], clear_builder_afterwards=False, model_id=uml_model.id)
+                    sending_success_message_coroutine = send_translated_model_message(create_successfull_translation_message(file_id=uml_file.id))
                     scheduled_sending_coroutines.append(sending_success_message_coroutine)
                     self._logger.info(f"File {uml_file.filename} was successfully deserialized")
                 except Exception as ex:
                     error_message = f"Failed to deserialize file {uml_file.filename}: {ex}"
                     self._logger.error(error_message)
-                    sending_fail_message_coroutine = send_translated_model_message(create_failed_translation_message(file_id=uml_file.id, error_message=error_message), self._message_producer)
+                    sending_fail_message_coroutine = send_translated_model_message(create_failed_translation_message(file_id=uml_file.id, error_message=error_message))
                     scheduled_sending_coroutines.append(sending_fail_message_coroutine)
 
         except UnsupportedSourceDataTypeError as ex:
@@ -162,10 +165,10 @@ class RabbitMQConsumer(MessageConsumer):
             raise InputDataError(error_message) from ex
 
         self._logger.info("Serializing translated model")
-        translated_model = self._model_translator.serialize(to_string=False)
+        translated_model = model_translator.serialize(to_string=False)
         await self._uml_model_repository.save(translated_model)
-        self._model_translator.clear()
-        self._logger.info(f"Model {model_to_translate_message.id} saved and translator state cleared")
+        model_translator.clear()
+        self._logger.info(f"Model {uml_model.id} saved and translator state cleared")
         await asyncio.gather(*scheduled_sending_coroutines)
 
         self._logger.info(f"Successfully translated model: {translated_model.id}")
