@@ -2,15 +2,14 @@ from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 
 from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
-from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlModelElements, UmlAssociationBase, UmlVisibilityEnum, UmlPackage, UmlInterface, UmlInteraction, UmlLifeline
+from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlModelElements, UmlAssociationBase, UmlVisibilityEnum, UmlPackage, UmlInterface, UmlInteraction, UmlLifeline, UmlNamedElement
 from src.umlars_translator.core.model.umlars_model.mixins import RegisteredInBuilderMixin
 from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagrams
 
 
-class UmlModel(RegisteredInBuilderMixin, IUmlModel):
-    def __init__(self, builder: Optional['UmlModelBuilder'] = None, name: Optional[str] = None,  elements: Optional[UmlModelElements] = None, diagrams: Optional[UmlDiagrams] = None, metadata: Optional[dict] = None, id: Optional[str] = None, **kwargs):
-        super().__init__(id=id, builder=builder, **kwargs)
-        self.name = name
+class UmlModel(UmlNamedElement, IUmlModel):
+    def __init__(self, builder: Optional['UmlModelBuilder'] = None, name: Optional[str] = None,  visibility: Optional[UmlVisibilityEnum] = None, elements: Optional[UmlModelElements] = None, diagrams: Optional[UmlDiagrams] = None, metadata: Optional[dict] = None, id: Optional[str] = None, **kwargs):
+        super().__init__(id=id, builder=builder, name=name, visibility=visibility, **kwargs)
         self.metadata = metadata or {}
         self.elements = elements or UmlModelElements()
         self.diagrams = diagrams or UmlDiagrams()

@@ -492,12 +492,11 @@ class UmlAssociation(UmlAssociationBase, IUmlAssociation):
             self.builder.register_if_not_present(end)
 
 
-
 class UmlDirectedAssociation(UmlAssociationBase, IUmlDirectedAssociation):
     ASSOCIATION_DIRECTION = UmlAssociationDirectionEnum.DIRECTED
 
     def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, source: Optional[IUmlAssociationEnd]=None, target: Optional[IUmlAssociationEnd]=None, id: Optional[str] = None, **kwargs):
-        super().__init__(name, visibility, id=id, **kwargs)
+        super().__init__(name=name, visibility=visibility, id=id, **kwargs)
         self._source = source
         self._target = target
 
@@ -512,12 +511,14 @@ class UmlDirectedAssociation(UmlAssociationBase, IUmlDirectedAssociation):
     @source.setter
     def source(self, new_source: IUmlAssociationEnd):
         self._source = new_source
+        self._end1 = new_source
         if self.builder:
             self.builder.register_if_not_present(new_source)
 
     @target.setter
     def target(self, new_target: IUmlAssociationEnd):
         self._target = new_target
+        self._end2 = new_target
         if self.builder:
             self.builder.register_if_not_present(new_target)
 

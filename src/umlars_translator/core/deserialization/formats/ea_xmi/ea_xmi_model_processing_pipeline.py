@@ -9,7 +9,7 @@ from src.umlars_translator.core.deserialization.abstract.xml.xml_pipeline import
 )
 from src.umlars_translator.core.deserialization.exceptions import UnableToMapError
 from src.umlars_translator.core.configuration.config_proxy import Config
-
+from src.umlars_translator.core.model.constants import UmlDiagramType
 
 class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
     def _process_type_child(self, data_batch: DataBatch) -> dict[str, Any]:
@@ -584,14 +584,27 @@ class DiagramPipe(EaXmiModelProcessingPipe):
     def _construct_diagram_from_properties(
         self, diagram_properties: ET.Element, diagram_id: str
     ) -> None:
-        optional_attributes = AliasToXmlKey.from_kwargs(
+        mandatory_attributes = AliasToXmlKey.from_kwargs(
             diagram_type=self.config.EA_EXTENDED_ATTRIBUTES["property_type"],
-            diagram_name=self.config.EA_EXTENDED_ATTRIBUTES["element_name"],
+        )
+        optional_attributes = AliasToXmlKey.from_kwargs(
+            name=self.config.EA_EXTENDED_ATTRIBUTES["element_name"],
         )
         aliases_to_values = self._get_attributes_values_for_aliases(
-            diagram_properties, optional_attributes
+            diagram_properties, mandatory_attributes=mandatory_attributes, optional_attributes=optional_attributes
         )
-        self.model_builder.construct_diagram(**aliases_to_values, id=diagram_id)
+
+        diagram_type_name = aliases_to_values.pop("diagram_type")
+        diagram_type = Config.EA_DIAGRAMS_TYPES_MAPPING[diagram_type_name]
+
+        match (diagram_type):
+            case UmlDiagramType.CLASS:
+                self.model_builder.construct_class_diagram(**aliases_to_values, id=diagram_id)
+            case UmlDiagramType.SEQUENCE:
+                self.model_builder.construct_sequence_diagram(**aliases_to_values, id=diagram_id)
+            case _:
+                self._logger.warning(f"Diagram type: {diagram_type} is not supported.")
+
 
     def _construct_diagram_elements(
         self, diagram_elements: ET.Element, diagram_id: str
