@@ -13,6 +13,7 @@ from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_cons
     StarumlMDJConfig
 )
 from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException, UnableToMapError
+from src.umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum
 
 
 class StarumlMDJModelProcessingPipe(JSONModelProcessingPipe):
@@ -415,3 +416,36 @@ class UmlOperationParameterPipe(StarumlMDJModelProcessingPipe):
         
         yield from self._create_data_batches(data)
 
+
+class UmlPrimitiveTypePipe(StarumlMDJModelProcessingPipe):
+    ATTRIBUTE_CONDITIONS = [
+        JSONAttributeCondition(attribute_name="_type", expected_value="UMLPrimitiveType"),
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToJSONKey.from_kwargs(
+                id=StarumlMDJConfig.KEYS["id"],
+                name=StarumlMDJConfig.KEYS["name"],
+                kind=StarumlMDJConfig.KEYS["name"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes
+        )
+
+        try:
+            self._map_value_from_key(aliases_to_values, "kind", StarumlMDJConfig.PRIMITIVE_TYPE_MAPPING, raise_when_missing=True)
+        except UnableToMapError as ex:
+            self._logger.error(f"Unable to map primitive type: {ex}. Using default value: {UmlPrimitiveTypeKindEnum.ANY}")
+            aliases_to_values["kind"] = UmlPrimitiveTypeKindEnum.ANY
+
+        self.model_builder.construct_uml_primitive_type(**aliases_to_values)
+
+        yield from self._create_data_batches([])

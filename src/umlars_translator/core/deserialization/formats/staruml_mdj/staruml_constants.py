@@ -40,6 +40,18 @@ class StarumlMDJConfig(ConfigNamespace):
         "1..*": UmlMultiplicityEnum.ONE_OR_MORE.value,
     }
 
+    PRIMITIVE_TYPE_MAPPING: dict[str, UmlPrimitiveTypeKindEnum] = {
+        "String": UmlPrimitiveTypeKindEnum.STRING,
+        "Integer": UmlPrimitiveTypeKindEnum.INTEGER,
+        "Float": UmlPrimitiveTypeKindEnum.FLOAT,
+        "Char": UmlPrimitiveTypeKindEnum.CHAR,
+        "Boolean": UmlPrimitiveTypeKindEnum.BOOLEAN,
+        "Real": UmlPrimitiveTypeKindEnum.REAL,
+        "UnlimitedNatural": UmlPrimitiveTypeKindEnum.UNLIMITED_NATURAL,
+        "Void": UmlPrimitiveTypeKindEnum.VOID,
+        "Any": UmlPrimitiveTypeKindEnum.ANY,
+    }
+    
 
     # TODO: move to file with non-parsed constants /enums
     class EaPackagedElementTypes(str, Enum):

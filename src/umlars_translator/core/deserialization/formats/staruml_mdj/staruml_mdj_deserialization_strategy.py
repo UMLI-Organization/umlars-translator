@@ -28,6 +28,7 @@ from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_
     UmlAssociationEndPipe,
     UmlGeneralizationPipe,
     UmlInterfaceRealizationPipe,
+    UmlPrimitiveTypePipe
 )
 from src.umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
@@ -85,6 +86,9 @@ class StarumlMDJDeserializationStrategy(JSONDeserializationStrategy):
         # Add enumeration processing pipe
         uml_enumeration_pipe = uml_model_pipe.add_next(UmlEnumerationPipe())
 
+        # Add primitive type processing pipe
+        uml_primitive_type_pipe = uml_model_pipe.add_next(UmlPrimitiveTypePipe())
+        
         return root_pipe
 
     def _build_classifier_processing_pipe(

@@ -59,7 +59,7 @@ class UmlMultiplicityEnum(str, Enum):
 
 
 # TODO: new deserialized type has to supply mapping of primitive types
-class UmlPrimitiveTypeKindEnum(Enum):
+class UmlPrimitiveTypeKindEnum(str, Enum):
     """Enum class for primitive types"""
 
     STRING = "String"
@@ -78,7 +78,7 @@ class UmlAssociationDirectionEnum(str, Enum):
     BIDIRECTIONAL = "bidirectional"
 
 
-class UmlDiagramType(Enum):
+class UmlDiagramType(str, Enum):
     """Enum class for diagram types"""
 
     CLASS = "Class"
@@ -96,7 +96,7 @@ class UmlDiagramType(Enum):
     NONE = "None"
 
 
-class UmlElementType(Enum):
+class UmlElementType(str, Enum):
     """Enum class for UML element types"""
 
     PACKAGE = "Package"
