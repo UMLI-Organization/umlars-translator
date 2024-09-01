@@ -12,10 +12,20 @@ from src.umlars_translator.core.deserialization.abstract.pipeline_deserializatio
 )
 from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException
 from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_format_detection_pipeline import (
-    StarumlMDJDetectionPipe
+    StarumlMDJDetectionPipe,
 )
 from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_model_processing_pipeline import (
-    RootPipe
+    RootPipe,
+    UmlModelPipe,
+    UmlClassPipe,
+    UmlInterfacePipe,
+    UmlAttributePipe,
+    UmlOperationPipe,
+    UmlOperationParameterPipe,
+    UmlDataTypePipe,
+    UmlEnumerationPipe,
+    UmlAssociationPipe,
+    UmlAssociationEndPipe,  # Assuming this pipe is similar to UmlAssociationOwnedEndPipe
 )
 from src.umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
@@ -53,8 +63,43 @@ class StarumlMDJDeserializationStrategy(JSONDeserializationStrategy):
     CONFIG_NAMESPACE_CLASS = StarumlMDJConfig
 
     def _build_processing_pipe(self) -> ModelProcessingPipe:
+        # Start with the root pipe
         root_pipe = RootPipe()
+
+        # Build the UML model pipe chain
+        uml_model_pipe = root_pipe.add_next(UmlModelPipe())
+
+        # Add class processing pipe
+        uml_class_pipe = uml_model_pipe.add_next(UmlClassPipe())
+        self._build_classifier_processing_pipe(uml_class_pipe)
+
+        # Add interface processing pipe
+        uml_interface_pipe = uml_model_pipe.add_next(UmlInterfacePipe())
+        self._build_classifier_processing_pipe(uml_interface_pipe)
+
+        # Add data type processing pipe
+        uml_data_type_pipe = uml_model_pipe.add_next(UmlDataTypePipe())
+
+        # Add enumeration processing pipe
+        uml_enumeration_pipe = uml_model_pipe.add_next(UmlEnumerationPipe())
+
+        # Add association processing pipe
+        uml_association_pipe = uml_model_pipe.add_next(UmlAssociationPipe())
+        uml_association_pipe.add_next(UmlAssociationEndPipe())
+
         return root_pipe
+
+    def _build_classifier_processing_pipe(
+        self, parent_pipe: UmlClassPipe | UmlInterfacePipe
+    ) -> UmlClassPipe | UmlInterfacePipe:
+        # Add attribute processing pipe
+        attribute_pipe = parent_pipe.add_next(UmlAttributePipe())
+
+        # Add operation processing pipe
+        operation_pipe = parent_pipe.add_next(UmlOperationPipe())
+        operation_pipe.add_next(UmlOperationParameterPipe())
+
+        return parent_pipe
 
     def _build_format_detection_pipe(self) -> FormatDetectionPipe:
         return StarumlMDJDetectionPipe()

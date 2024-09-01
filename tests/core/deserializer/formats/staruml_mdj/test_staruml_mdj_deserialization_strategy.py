@@ -6,7 +6,7 @@ from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_
     StarumlMDJDeserializationStrategy,
 )
 from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_model_processing_pipeline import (
-    RootPipe,
+    RootPipe, UmlModelPipe,
 )
 from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_format_detection_pipeline import (
     StarumlMDJDetectionPipe,
@@ -78,17 +78,6 @@ def test_build_processing_pipe(
     assert isinstance(pipe, RootPipe)
 
 
-# def test_build_uml_model_processing_pipe(
-#     umlars_model_builder, staruml_mdj_deserialization_strategy_factory
-# ):
-#     strategy = staruml_mdj_deserialization_strategy_factory.create_strategy(
-#         model_builder=umlars_model_builder
-#     )
-#     root_pipe = strategy._build_processing_pipe()
-#     uml_model_pipe = strategy._build_uml_model_processing_pipe(root_pipe)
-#     assert isinstance(uml_model_pipe, ModelPipe)
-
-
 def test_build_format_detection_pipe(
     umlars_model_builder, staruml_mdj_deserialization_strategy_factory
 ):
@@ -99,7 +88,7 @@ def test_build_format_detection_pipe(
     assert isinstance(detection_pipe, StarumlMDJDetectionPipe)
 
 
-def test_when_retrieve_model_from_ea_xmi_then_return_model(
+def test_when_retrieve_model_from_staruml_mdj_then_return_model(
     staruml_mdj_class_data_sources,
     umlars_model_builder,
     staruml_mdj_deserialization_strategy_factory,
