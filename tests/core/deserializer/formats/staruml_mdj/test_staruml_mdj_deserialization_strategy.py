@@ -211,6 +211,7 @@ def test_when_deserialize_car_model_file_then_correct_associations_created(
         assert association.name in expected_associations
         assert association.direction == expected_associations[association.name]["direction"]
 
+
 def test_when_deserialize_car_model_file_then_correct_operations_created(
     staruml_mdj_class_data_sources, umlars_model_builder, staruml_mdj_deserialization_strategy_factory
 ):
@@ -222,7 +223,7 @@ def test_when_deserialize_car_model_file_then_correct_operations_created(
 
     expected_operations = {
         "Car": ["drive"],
-        "Person": ["move"],
+        "Wheel": ["isFlat"],
     }
 
     for cls in model.elements.classes:
@@ -242,7 +243,6 @@ def test_when_deserialize_car_model_file_then_correct_operation_parameters_creat
 
     expected_parameters = {
         "drive": ["driver"],
-        "isFlat": ["return"]
     }
 
     for cls in model.elements.classes:

@@ -84,7 +84,9 @@ class JSONModelProcessingPipe(ModelProcessingPipe):
 
             if optional_attributes is not None:
                 for alias, json_key in optional_attributes:
-                    kwargs[alias] = data.get(json_key)
+                    value = data.get(json_key)
+                    if value is not None:
+                        kwargs[alias] = value
 
         except AttributeError as ex:
             if not isinstance(data, dict):
