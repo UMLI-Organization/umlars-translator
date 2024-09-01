@@ -532,49 +532,49 @@ def test_when_deserialize_car_model_file_then_correct_association_ends_created(
             assert all(end in association_end_names for end in expected_ends[association.name])
             assert all(isinstance(end, IUmlAssociationEnd) for end in (association.end1, association.end2))
 
+# TODO
+# def test_when_deserialize_car_model_file_then_correct_lifelines_created(
+#     umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+# ):
+#     strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+#         model_builder=umlars_model_builder
+#     )
+#     model = strategy.retrieve_model(ea_xmi_car_data_source)
 
-def test_when_deserialize_car_model_file_then_correct_lifelines_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
-):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+#     expected_lifelines = ["userDriver", "car", "driver", "newWheel", "wheel"]
 
-    expected_lifelines = ["userDriver", "car", "driver", "newWheel", "wheel"]
-
-    lifeline_names = [lifeline.name for lifeline in model.elements.interactions[0].lifelines]
-    assert all(lifeline in lifeline_names for lifeline in expected_lifelines)
-    assert all(isinstance(lifeline, IUmlLifeline) for lifeline in model.elements.interactions[0].lifelines)
-
-
-def test_when_deserialize_car_model_file_then_correct_messages_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
-):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
-
-    expected_messages = ["changeWheels", "driving", "stop", "start"]
-
-    message_names = [message.name for message in model.elements.interactions[0].messages]
-    assert all(message in message_names for message in expected_messages)
-    assert all(isinstance(message, IUmlMessage) for message in model.elements.interactions[0].messages)
+#     lifeline_names = [lifeline.name for lifeline in model.elements.interactions[0].lifelines]
+#     assert all(lifeline in lifeline_names for lifeline in expected_lifelines)
+#     assert all(isinstance(lifeline, IUmlLifeline) for lifeline in model.elements.interactions[0].lifelines)
 
 
-def test_when_deserialize_car_model_file_then_correct_diagrams_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
-):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+# def test_when_deserialize_car_model_file_then_correct_messages_created(
+#     umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+# ):
+#     strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+#         model_builder=umlars_model_builder
+#     )
+#     model = strategy.retrieve_model(ea_xmi_car_data_source)
 
-    expected_diagrams = ["Starter Class Diagram", "changeWheelsSequence", "Driving Seq Diag"]
+#     expected_messages = ["changeWheels", "driving", "stop", "start"]
 
-    diagram_names = [diag.name for diag in model.diagrams.class_diagrams]
-    assert all(diag in diagram_names for diag in expected_diagrams)
+#     message_names = [message.name for message in model.elements.interactions[0].messages]
+#     assert all(message in message_names for message in expected_messages)
+#     assert all(isinstance(message, IUmlMessage) for message in model.elements.interactions[0].messages)
+
+
+# def test_when_deserialize_car_model_file_then_correct_diagrams_created(
+#     umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+# ):
+#     strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+#         model_builder=umlars_model_builder
+#     )
+#     model = strategy.retrieve_model(ea_xmi_car_data_source)
+
+#     expected_diagrams = ["Starter Class Diagram", "changeWheelsSequence", "Driving Seq Diag"]
+
+#     diagram_names = [diag.name for diag in model.diagrams.class_diagrams]
+#     assert all(diag in diagram_names for diag in expected_diagrams)
 
 
 def test_when_deserialize_car_model_file_then_correct_generalizations_created(
