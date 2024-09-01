@@ -20,7 +20,6 @@ class PapyrusXmiConfig(ParsedConfigNamespace):
 
     TAGS: dict[str, str] = {
         "root": "{{{xmi}}}XMI",
-        "documentation": "{{{xmi}}}Documentation",
         "model": "{{{uml}}}Model",
         "owned_end": "ownedEnd",
         "member_end": "memberEnd",

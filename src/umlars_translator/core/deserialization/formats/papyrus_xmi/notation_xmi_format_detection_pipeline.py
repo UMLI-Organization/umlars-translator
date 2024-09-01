@@ -18,7 +18,8 @@ class PapyrusXmiFormatDetectionPipe(XmlFormatDetectionPipe):
 
 
 class PapyrusXmiDetectionPipe(PapyrusXmiFormatDetectionPipe):
-    ASSOCIATED_XML_TAG = Config.TAGS["model"]
+    ASSOCIATED_XML_TAG = Config.TAGS["root"]
+    EXPECTED_XMI_BASE_VERSION: str = "2"
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
@@ -39,6 +40,9 @@ class PapyrusXmiDetectionPipe(PapyrusXmiFormatDetectionPipe):
 
         self._check_if_namespaces_are_correct(data)
 
+        if not aliases_to_values["xmi_version"].startswith(self.__class__.EXPECTED_XMI_BASE_VERSION):
+            raise UnsupportedFormatException("Invalid XMI version.")
+
         # Iteration over the children of the root element
         yield from self._create_data_batches(data_root)
 
@@ -53,4 +57,14 @@ class PapyrusXmiDetectionPipe(PapyrusXmiFormatDetectionPipe):
         if "eclipse" not in namespaces["uml"]:
             raise UnsupportedFormatException(
                 "The data does not contain the expected namespace uri for uml. No 'eclipse' substring found."
+            )
+        
+        if "xmi" not in namespaces:
+            raise UnsupportedFormatException(
+                "The data does not contain the expected namespace uri for xmi."
+            )
+        
+        if "notation" not in namespaces:
+            raise UnsupportedFormatException(
+                "The data does not contain the expected namespace uri for notation."
             )

@@ -36,7 +36,7 @@ from src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_
 
 @register_deserialization_strategy
 class PapyrusXmiImportParsingStrategy(XmiDeserializationStrategy):
-    SUPPORTED_FORMAT_NAME = SupportedFormat.UML_PAPYRUS
+    SUPPORTED_FORMAT_NAME = SupportedFormat.XMI_EA
     CONFIG_NAMESPACE_CLASS = PapyrusXmiConfig
 
     def _build_format_detection_pipe(self) -> PapyrusXmiDetectionPipe:
