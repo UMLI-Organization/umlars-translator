@@ -15,7 +15,7 @@ class EaXmiConfig(ParsedConfigNamespace):
     # TODO: use to check if namespace is allowed for data source
     ALLOWED_NAMESPACES: dict[str, list] = {
         "uml": ["{http://schema.omg.org/spec/UML/2.1}"],
-        "xmi": ["{http://schema.omg.org/spec/XMI/2.1}"],
+        "xmi": ["{http://schema.omg.org/spec/XMI/2.1}"]
     }
 
     TAGS: dict[str, str] = {
