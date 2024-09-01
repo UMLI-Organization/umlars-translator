@@ -16,7 +16,7 @@ from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
 from src.umlars_translator.core.model.abstract.uml_elements import (
     IUmlClass, IUmlAttribute, IUmlOperation, IUmlInterface, IUmlEnumeration, 
     IUmlDataType, IUmlPrimitiveType, IUmlAssociation, IUmlAssociationEnd, 
-    IUmlGeneralization, IUmlRealization
+    IUmlGeneralization, IUmlRealization, IUmlDirectedAssociation,
 )
 from src.umlars_translator.core.model.umlars_model.uml_model_builder import (
     UmlModelBuilder,
@@ -204,6 +204,7 @@ def test_when_deserialize_car_model_file_then_correct_associations_created(
 
     expected_associations = {
         "car_ownership": {"direction": UmlAssociationDirectionEnum.BIDIRECTIONAL},
+        None: {"direction": UmlAssociationDirectionEnum.BIDIRECTIONAL},
     }
 
     for association in model.elements.associations:

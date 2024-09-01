@@ -4,6 +4,7 @@ from src.umlars_translator.core.model.constants import (
     UmlPrimitiveTypeKindEnum,
     UmlDiagramType,
     UmlElementType,
+    UmlMultiplicityEnum
 )
 from src.umlars_translator.core.configuration.config_namespace import ConfigNamespace
 
@@ -15,6 +16,12 @@ class StarumlMDJConfig(ConfigNamespace):
         "type": "_type",
         "type_ref": "type",
         "parent_id": "_parent",
+        "end1": "end1",
+        "end2": "end2",
+        "source": "source",
+        "target": "target",
+        "reference": "reference",
+        "multiplicity": "multiplicity",
         "visibility": "visibility",
         "attributes": "attributes",
         "operations": "operations",
@@ -26,32 +33,13 @@ class StarumlMDJConfig(ConfigNamespace):
 
     }
 
-    EA_DIAGRAMS_TYPES_MAPPING: dict[str, str] = {
-        "Logical": UmlDiagramType.CLASS,
-        "Sequence": UmlDiagramType.SEQUENCE,
+    MULTIPLICITY_MAPPING: dict[str, str] = {
+        "*": UmlMultiplicityEnum.ZERO_OR_MORE.value,
+        "0..1": UmlMultiplicityEnum.ZERO_OR_ONE.value,
+        "1": UmlMultiplicityEnum.ONE.value,
+        "1..*": UmlMultiplicityEnum.ONE_OR_MORE.value,
     }
 
-    EA_TYPE_ATTRIBUTE_MAPPING: dict[str, str] = {
-        "uml:PrimitiveType": UmlElementType.PRIMITIVE_TYPE,
-        "uml:Class": UmlElementType.CLASS,
-        "uml:Interface": UmlElementType.INTERFACE,
-        "uml:Association": UmlElementType.ASSOCIATION,
-        "uml:Dependency": UmlElementType.DEPENDENCY,
-        "uml:Generalization": UmlElementType.GENERALIZATION,
-        "uml:Realization": UmlElementType.REALIZATION,
-        "uml:LiteralInteger": UmlPrimitiveTypeKindEnum.INTEGER,
-        "uml:LiteralUnlimitedNatural": UmlPrimitiveTypeKindEnum.INTEGER,
-        "EAnone_void": None,
-        "EAJava_boolean": UmlPrimitiveTypeKindEnum.BOOLEAN,
-        "EAJava_void": None,
-        "EAJava_int": UmlPrimitiveTypeKindEnum.INTEGER,
-        "EAJava_float": UmlPrimitiveTypeKindEnum.FLOAT,
-        "EAJava_char": UmlPrimitiveTypeKindEnum.CHAR,
-    }
-
-    EA_HREF_ATTRIBUTE_MAPPING: dict[str, str] = {
-        "http://schema.omg.org/spec/UML/2.1/uml.xml#Integer": UmlPrimitiveTypeKindEnum.INTEGER,
-    }
 
     # TODO: move to file with non-parsed constants /enums
     class EaPackagedElementTypes(str, Enum):

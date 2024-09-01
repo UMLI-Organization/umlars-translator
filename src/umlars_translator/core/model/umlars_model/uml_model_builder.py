@@ -257,7 +257,8 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
     def construct_uml_association_end(
         self, 
         id: Optional[str] = None, 
-        type_metadata: Optional[dict[str, Any]] = None, 
+        type_metadata: Optional[dict[str, Any]] = None,
+        type_id: Optional[str] = None,
         role: Optional[str] = None, 
         multiplicity: Optional[UmlMultiplicityEnum] = UmlMultiplicityEnum.ONE, 
         navigability: bool = True, 
@@ -269,6 +270,9 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
     ) -> "IUmlModelBuilder":
         
         referenced_type_id = type_metadata.get('referenced_type_id') if type_metadata is not None else None
+        if referenced_type_id is None:
+            referenced_type_id = type_id
+        
         self._logger.debug(f"Method called: construct_uml_association_end({args}, {kwargs})")
         element = self.get_instance_by_id(referenced_type_id)
         association = self.get_instance_by_id(association_id)
@@ -330,6 +334,14 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         # Delayed assignment if client or supplier is not available
         if client is None:
             self.register_dalayed_call_for_id(client_id, lambda instance: setattr(realization, 'client', instance))
+
+            def _queued_assign_supplier(instance: UmlElement) -> None:
+                instance.interfaces.append(realization)
+
+            self.register_dalayed_call_for_id(client_id, _queued_assign_supplier)
+        else:
+            client.interfaces.append(realization)
+
         if supplier is None:
             self.register_dalayed_call_for_id(supplier_id, lambda instance: setattr(realization, 'supplier', instance))
 
@@ -347,11 +359,19 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         # Delayed assignment if specific or general is not available
         if specific is None:
             self.register_dalayed_call_for_id(specific_id, lambda instance: setattr(generalization, 'specific', instance))
+
+            def _queued_assign_general(instance: UmlElement) -> None:
+                instance.generalizations.append(generalization)
+
+            self.register_dalayed_call_for_id(specific_id, _queued_assign_general)
+        
+        else:
+            specific.generalizations.append(generalization)
+
         if general is None:
             self.register_dalayed_call_for_id(general_id, lambda instance: setattr(generalization, 'general', instance))
 
         return self
-
 
     def construct_uml_aggregation(self, id: Optional[str] = None, source_id: str = None, target_id: str = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_aggregation({args}, {kwargs})")

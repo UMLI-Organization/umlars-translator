@@ -25,7 +25,9 @@ from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_
     UmlDataTypePipe,
     UmlEnumerationPipe,
     UmlAssociationPipe,
-    UmlAssociationEndPipe,  # Assuming this pipe is similar to UmlAssociationOwnedEndPipe
+    UmlAssociationEndPipe,
+    UmlGeneralizationPipe,
+    UmlInterfaceRealizationPipe,
 )
 from src.umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
@@ -83,10 +85,6 @@ class StarumlMDJDeserializationStrategy(JSONDeserializationStrategy):
         # Add enumeration processing pipe
         uml_enumeration_pipe = uml_model_pipe.add_next(UmlEnumerationPipe())
 
-        # Add association processing pipe
-        uml_association_pipe = uml_model_pipe.add_next(UmlAssociationPipe())
-        uml_association_pipe.add_next(UmlAssociationEndPipe())
-
         return root_pipe
 
     def _build_classifier_processing_pipe(
@@ -98,6 +96,12 @@ class StarumlMDJDeserializationStrategy(JSONDeserializationStrategy):
         # Add operation processing pipe
         operation_pipe = parent_pipe.add_next(UmlOperationPipe())
         operation_pipe.add_next(UmlOperationParameterPipe())
+
+        uml_association_pipe = parent_pipe.add_next(UmlAssociationPipe())
+        uml_association_pipe.add_next(UmlAssociationEndPipe())
+
+        uml_generalization_pipe = parent_pipe.add_next(UmlGeneralizationPipe())
+        uml_interface_realization_pipe = parent_pipe.add_next(UmlInterfaceRealizationPipe())
 
         return parent_pipe
 

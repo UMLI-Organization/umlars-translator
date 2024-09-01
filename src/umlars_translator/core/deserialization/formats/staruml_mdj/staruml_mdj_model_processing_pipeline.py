@@ -267,7 +267,10 @@ class UmlAssociationPipe(StarumlMDJModelProcessingPipe):
         try:
             mandatory_attributes = AliasToJSONKey.from_kwargs(
                 id=StarumlMDJConfig.KEYS["id"],
+            )
+            optional_attributes = AliasToJSONKey.from_kwargs(
                 name=StarumlMDJConfig.KEYS["name"],
+                visibility=StarumlMDJConfig.KEYS["visibility"],
             )
         except KeyError as ex:
             raise ValueError(
@@ -275,7 +278,7 @@ class UmlAssociationPipe(StarumlMDJModelProcessingPipe):
             )
 
         aliases_to_values = self._get_attributes_values_for_aliases(
-            data, mandatory_attributes
+            data, mandatory_attributes, optional_attributes
         )
 
         self.model_builder.construct_uml_association(**aliases_to_values)
@@ -312,7 +315,10 @@ class UmlAssociationEndPipe(StarumlMDJModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
 
+        self._map_value_from_key(aliases_to_values, "multiplicity", StarumlMDJConfig.MULTIPLICITY_MAPPING, raise_when_missing=False)
+
         self._flatten_reference(aliases_to_values, "association_id", remove_key=True)
+        self._flatten_reference(aliases_to_values, "reference", "type_id", remove_key=True)
 
         self.model_builder.construct_uml_association_end(
             **aliases_to_values
@@ -340,6 +346,8 @@ class UmlGeneralizationPipe(StarumlMDJModelProcessingPipe):
         
         aliases_to_values = self._get_attributes_values_for_aliases(data, mandatory_attributes)
         
+        self._flatten_reference(aliases_to_values, "source", "specific_id", remove_key=True)
+        self._flatten_reference(aliases_to_values, "target", "general_id", remove_key=True)
         self.model_builder.construct_uml_generalization(**aliases_to_values)
         
         yield from self._create_data_batches([])
@@ -364,7 +372,9 @@ class UmlInterfaceRealizationPipe(StarumlMDJModelProcessingPipe):
         
         aliases_to_values = self._get_attributes_values_for_aliases(data, mandatory_attributes)
         
-        self.model_builder.construct_uml_interface_realization(**aliases_to_values)
+        self._flatten_reference(aliases_to_values, "source", "client_id", remove_key=True)
+        self._flatten_reference(aliases_to_values, "target", "supplier_id", remove_key=True)
+        self.model_builder.construct_uml_realization(**aliases_to_values)
         
         yield from self._create_data_batches([])
 
