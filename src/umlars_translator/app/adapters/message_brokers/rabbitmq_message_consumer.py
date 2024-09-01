@@ -103,7 +103,7 @@ class RabbitMQConsumer(MessageConsumer):
                 await send_running_messages_coroutines
                 await send_translated_models_messages(failed_translation_messages)
                 await message.reject(requeue=False)
-    
+
     def _deserialize_message(self, message: aio_pika.IncomingMessage) -> ModelToTranslateMessage:
         self._logger.debug(f"Deserializing message body: {message.body}")
         try:
