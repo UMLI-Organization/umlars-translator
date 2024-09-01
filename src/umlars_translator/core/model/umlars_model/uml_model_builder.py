@@ -412,34 +412,40 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
 
         return self
 
-    # def construct_uml_message(self, id: Optional[str] = None, name: Optional[str] = None, send_event_id: Optional[str] = None, receive_event_id: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
-    #     self._logger.debug(f"Method called: construct_uml_message({args}, {kwargs})")
-    #     send_event = self.get_instance_by_id(send_event_id)
-    #     receive_event = self.get_instance_by_id(receive_event_id)
-    #     message = UmlMessage(id=id, name=name, send_event=send_event, receive_event=receive_event, model=self._model, builder=self)
-    #     self.add_message(message)
 
-    #     if send_event is None:
-    #         self.register_dalayed_call_for_id(send_event_id, lambda e: setattr(message, 'send_event', e))
-    #     if receive_event is None:
-    #         self.register_dalayed_call_for_id(receive_event_id, lambda e: setattr(message, 'receive_event', e))
-
-    #     return self
-
-    def construct_uml_message(self, id: Optional[str] = None, name: Optional[str] = None, send_event_id: Optional[str] = None, receive_event_id: Optional[str] = None, source_life_line_id: Optional[str] = None, target_life_line_id: Optional[str] = None, message_sort: Optional[UmlMessageSortEnum] = UmlMessageSortEnum.SYNCH_CALL, kind: Optional[UmlMessageKindEnum] = UmlMessageKindEnum.UNKNOWN, signature_id: Optional[str] = None, create_new_occurences: bool = True, interaction_id: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
+    def construct_uml_message(self, id: Optional[str] = None, name: Optional[str] = None, send_event_id: Optional[str] = None, receive_event_id: Optional[str] = None, source_lifeline_id: Optional[str] = None, target_lifeline_id: Optional[str] = None, message_sort: Optional[UmlMessageSortEnum] = UmlMessageSortEnum.SYNCH_CALL, kind: Optional[UmlMessageKindEnum] = UmlMessageKindEnum.UNKNOWN, signature_id: Optional[str] = None, create_new_occurences: bool = True, interaction_id: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_message({args}, {kwargs})")
+        interaction = self.get_instance_by_id(interaction_id)
         
         if create_new_occurences and not (send_event_id and receive_event_id):
-            source_life_line = self.get_instance_by_id(source_life_line_id)
-            target_life_line = self.get_instance_by_id(target_life_line_id)
+            source_lifeline = self.get_instance_by_id(source_lifeline_id)
+            target_lifeline = self.get_instance_by_id(target_lifeline_id)
 
-            send_event = UmlOccurrenceSpecification(covered=source_life_line, model=self._model, builder=self)
-            receive_event = UmlOccurrenceSpecification(covered=target_life_line, model=self._model, builder=self)
+            # TODO: call here self.construct_uml_occurrence_specification() for source and target lifelines
+            send_event = UmlOccurrenceSpecification(covered=source_lifeline, model=self._model, builder=self)
+            receive_event = UmlOccurrenceSpecification(covered=target_lifeline, model=self._model, builder=self)
+            self.add_element(send_event)
+            self.add_element(receive_event)
+
+            if interaction is None:
+                def _queued_add_occurrences_to_interaction(instance: UmlInteraction) -> None:
+                    instance.fragments.append(send_event)
+                    instance.fragments.append(receive_event)
+                
+                self.register_dalayed_call_for_id(interaction_id, _queued_add_occurrences_to_interaction)
+            else:
+                interaction.fragments.append(send_event)
+                interaction.fragments.append(receive_event)
+
+            if source_lifeline is None:
+                self.register_dalayed_call_for_id(source_lifeline_id, lambda instance: setattr(send_event, 'covered', instance))
+
+            if target_lifeline is None:
+                self.register_dalayed_call_for_id(target_lifeline_id, lambda instance: setattr(receive_event, 'covered', instance))
         else:
             send_event = self.get_instance_by_id(send_event_id)
             receive_event = self.get_instance_by_id(receive_event_id)
    
-        interaction = self.get_instance_by_id(interaction_id)
         signature = self.get_instance_by_id(signature_id)
 
         message = UmlMessage(
@@ -450,13 +456,9 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
 
         if send_event is None:
             self.register_dalayed_call_for_id(send_event_id, lambda event: setattr(message, 'send_event', event))
-        else:
-            send_event.message = message
 
         if receive_event is None:
             self.register_dalayed_call_for_id(receive_event_id, lambda event: setattr(message, 'receive_event', event))        
-        else:
-            receive_event.message = message
 
         if interaction is None:
             def _queued_add_message_to_interaction(instance: UmlInteraction) -> None:
@@ -468,8 +470,6 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
 
         if signature is None:
             self.register_dalayed_call_for_id(signature_id, lambda instance: setattr(message, 'signature', instance))
-        else:
-            message.signature = signature
 
         return self
 

@@ -114,8 +114,8 @@ class StarumlMDJDeserializationStrategy(JSONDeserializationStrategy):
         uml_sequence_diagram_pipe = uml_interaction_pipe.add_next(UmlSequenceDiagramPipe())
 
         uml_message_pipe = uml_interaction_pipe.add_next(UmlMessagePipe())
-        uml_life_line_pipe = uml_sequence_diagram_pipe.add_next(UmlLifelinePipe())
-        
+        uml_life_line_pipe = uml_interaction_pipe.add_next(UmlLifelinePipe())
+
 
         return root_pipe
 
