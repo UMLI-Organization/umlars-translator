@@ -1,4 +1,4 @@
-from typing import Iterator, Any
+from typing import Iterator, Any, Optional
 
 from src.umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
     ModelProcessingPipe,
@@ -16,7 +16,23 @@ from src.umlars_translator.core.deserialization.exceptions import InvalidFormatE
 
 
 class StarumlMDJModelProcessingPipe(JSONModelProcessingPipe):
-    pass
+    def _flatten_reference(self, data: dict, key: str, new_key: Optional[str] = None, reference_key: str = "$ref", remove_key: bool = False) -> dict:
+        if key not in data:
+            return data
+
+        reference = data[key] if not remove_key else data.pop(key)
+
+        if reference_key not in reference:
+            return data
+
+        new_key = new_key or key
+
+        try:
+            data[new_key] = reference[reference_key]
+        except KeyError as ex:
+            raise UnableToMapError(f"Expected dict, got {type(reference)}") from ex
+
+        return data
 
 
 class RootPipe(StarumlMDJModelProcessingPipe):
@@ -71,6 +87,8 @@ class UmlClassPipe(StarumlMDJModelProcessingPipe):
             mandatory_attributes = AliasToJSONKey.from_kwargs(
                 id=StarumlMDJConfig.KEYS["id"],
                 name=StarumlMDJConfig.KEYS["name"],
+            )
+            optional_attributes = AliasToJSONKey.from_kwargs(
                 visibility=StarumlMDJConfig.KEYS["visibility"],
             )
         except KeyError as ex:
@@ -79,7 +97,7 @@ class UmlClassPipe(StarumlMDJModelProcessingPipe):
             )
 
         aliases_to_values = self._get_attributes_values_for_aliases(
-            data, mandatory_attributes
+            data, mandatory_attributes, optional_attributes
         )
 
         self.model_builder.construct_uml_class(**aliases_to_values)
@@ -184,7 +202,8 @@ class UmlAttributePipe(StarumlMDJModelProcessingPipe):
             mandatory_attributes = AliasToJSONKey.from_kwargs(
                 id=StarumlMDJConfig.KEYS["id"],
                 name=StarumlMDJConfig.KEYS["name"],
-                type=StarumlMDJConfig.KEYS["type"],
+                type=StarumlMDJConfig.KEYS["type_ref"],
+                classifier_id=StarumlMDJConfig.KEYS["parent_id"],
             )
             optional_attributes = AliasToJSONKey.from_kwargs(
                 visibility=StarumlMDJConfig.KEYS["visibility"],
@@ -198,7 +217,9 @@ class UmlAttributePipe(StarumlMDJModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
 
-        self.model_builder.construct_uml_attribute(**aliases_to_values, classifier_id=data_batch.parent_context.get("parent_id"))
+        self._flatten_reference(aliases_to_values, "type", "type_id", remove_key=True)
+        self._flatten_reference(aliases_to_values, "classifier_id", remove_key=True)
+        self.model_builder.construct_uml_attribute(**aliases_to_values)
 
         yield from self._create_data_batches([])
 
@@ -215,6 +236,7 @@ class UmlOperationPipe(StarumlMDJModelProcessingPipe):
             mandatory_attributes = AliasToJSONKey.from_kwargs(
                 id=StarumlMDJConfig.KEYS["id"],
                 name=StarumlMDJConfig.KEYS["name"],
+                classifier_id=StarumlMDJConfig.KEYS["parent_id"],
             )
             optional_attributes = AliasToJSONKey.from_kwargs(
                 visibility=StarumlMDJConfig.KEYS["visibility"],
@@ -228,7 +250,8 @@ class UmlOperationPipe(StarumlMDJModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
 
-        self.model_builder.construct_uml_operation(**aliases_to_values, classifier_id=data_batch.parent_context.get("parent_id"))
+        self._flatten_reference(aliases_to_values, "classifier_id", remove_key=True)
+        self.model_builder.construct_uml_operation(**aliases_to_values)
 
         yield from self._create_data_batches(data.get(StarumlMDJConfig.KEYS["parameters"], []))
 
@@ -275,6 +298,7 @@ class UmlAssociationEndPipe(StarumlMDJModelProcessingPipe):
                 id=StarumlMDJConfig.KEYS["id"],
                 name=StarumlMDJConfig.KEYS["name"],
                 reference=StarumlMDJConfig.KEYS["reference"],
+                association_id=StarumlMDJConfig.KEYS["parent_id"],
             )
             optional_attributes = AliasToJSONKey.from_kwargs(
                 multiplicity=StarumlMDJConfig.KEYS["multiplicity"],
@@ -288,8 +312,10 @@ class UmlAssociationEndPipe(StarumlMDJModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
 
+        self._flatten_reference(aliases_to_values, "association_id", remove_key=True)
+
         self.model_builder.construct_uml_association_end(
-            **aliases_to_values, association_id=data_batch.parent_context.get("parent_id")
+            **aliases_to_values
         )
 
         yield from self._create_data_batches([])
@@ -353,13 +379,14 @@ class UmlOperationParameterPipe(StarumlMDJModelProcessingPipe):
 
         try:
             mandatory_attributes = AliasToJSONKey.from_kwargs(
-                id=StarumlMDJConfig.ATTRIBUTES["id"],
-                name=StarumlMDJConfig.ATTRIBUTES["name"],
+                id=StarumlMDJConfig.KEYS["id"],
+                operation_id=StarumlMDJConfig.KEYS["parent_id"],
             )
 
             optional_attributes = AliasToJSONKey.from_kwargs(
-                type=StarumlMDJConfig.ATTRIBUTES["type"],
-                direction=StarumlMDJConfig.ATTRIBUTES["direction"],
+                name=StarumlMDJConfig.KEYS["name"],
+                type=StarumlMDJConfig.KEYS["type_ref"],
+                direction=StarumlMDJConfig.KEYS["direction"],
             )
         except KeyError as ex:
             raise ValueError(
@@ -370,21 +397,10 @@ class UmlOperationParameterPipe(StarumlMDJModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
 
-        # Handling the 'type' attribute if it references another element
-        try:
-            self._map_value_from_key(
-                aliases_to_values, "type", StarumlMDJConfig.ELEMENT_REFERENCE_MAPPING
-            )
-        except UnableToMapError:
-            type_attr_value = aliases_to_values.pop("type", None)
-            if type_attr_value is not None:
-                self._logger.debug(
-                    f"Assuming type attribute value: {type_attr_value} is an ID reference."
-                )
-                aliases_to_values["type_id"] = type_attr_value
-
-        self.model_builder.construct_uml_operation_parameter(
-            **aliases_to_values, operation_id=data_batch.parent_context["parent_id"]
+        self._flatten_reference(aliases_to_values, "type", "type_id", remove_key=True)
+        self._flatten_reference(aliases_to_values, "operation_id", remove_key=True)
+        self.model_builder.construct_uml_parameter(
+            **aliases_to_values
         )
         
         yield from self._create_data_batches(data)

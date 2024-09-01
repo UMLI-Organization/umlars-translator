@@ -477,16 +477,25 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         return self
 
     # Attributes and Operations
-    def construct_uml_parameter(self, id: Optional[str] = None, name: Optional[str] = None, type_id: Optional[str] = None, direction: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
+    def construct_uml_parameter(self, id: Optional[str] = None, name: Optional[str] = None, type_id: Optional[str] = None, operation_id: Optional[str] = None, direction: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_parameter({args}, {kwargs})")
         type = self.get_instance_by_id(type_id)
         parameter = UmlParameter(id=id, name=name, type=type, direction=direction, model=self._model, builder=self)
+        operation = self.get_instance_by_id(operation_id)
+
         self.add_element(parameter)
-        self.model.elements.parameters.append(parameter)
 
         # Delayed assignment if type is not available
         if type is None:
             self.register_dalayed_call_for_id(type_id, lambda instance: setattr(parameter, 'type', instance))
+
+        if operation is not None:
+            operation.parameters.append(parameter)
+        else:
+            def _queued_assign_parameter(operation: UmlOperation) -> None:
+                operation.parameters.append(parameter)
+            
+            self.register_dalayed_call_for_id(operation_id, _queued_assign_parameter)
 
         return self
 

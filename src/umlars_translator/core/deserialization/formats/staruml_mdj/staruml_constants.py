@@ -10,10 +10,20 @@ from src.umlars_translator.core.configuration.config_namespace import ConfigName
 
 class StarumlMDJConfig(ConfigNamespace):
     KEYS: dict[str, str] = {
+        "id": "_id",
+        "name": "name",
+        "type": "_type",
+        "type_ref": "type",
+        "parent_id": "_parent",
+        "visibility": "visibility",
+        "attributes": "attributes",
+        "operations": "operations",
+        "parameters": "parameters",
+        "direction": "direction",
         "owned_elements": "ownedElements",
         "owned_attributes": "attributes",
         "owned_operations": "operations",
-        
+
     }
 
     EA_DIAGRAMS_TYPES_MAPPING: dict[str, str] = {
