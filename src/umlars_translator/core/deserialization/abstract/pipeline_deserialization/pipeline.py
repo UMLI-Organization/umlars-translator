@@ -8,6 +8,7 @@ from src.umlars_translator.core.deserialization.exceptions import (
     InvalidFormatException,
     UnsupportedFormatException,
     ImproperlyInstantiatedObjectError,
+    UnableToMapError,
 )
 from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
 from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
@@ -178,6 +179,30 @@ class ModelProcessingPipe(ABC):
         parent_context.update(kwargs)
 
         yield from (DataBatch(data, parent_context) for data in data_iterator)
+
+    def _map_value_from_key(
+        self,
+        values_dict: dict[str, str],
+        key_to_map: str,
+        mapping_dict: dict[str, Any],
+        raise_when_missing: bool = True,
+        inplace: bool = True,
+    ) -> str | None:
+        try:
+            value_to_map = values_dict[key_to_map]
+            mapped_value = mapping_dict[value_to_map]
+            if inplace:
+                values_dict[key_to_map] = mapped_value
+            else:
+                return mapped_value
+
+        except KeyError as ex:
+            if raise_when_missing:
+                raise UnableToMapError(
+                    f"Value {value_to_map} not found in mapping dict"
+                    f"or key {key_to_map} not found in values dict."
+                ) from ex
+            return None
 
     @abstractmethod
     def _process(self, data_batch: Optional[DataBatch] = None) -> Iterator[DataBatch]:

@@ -1,4 +1,4 @@
-from typing import Iterator, Optional, Callable
+from typing import Iterator, Optional, Callable, NamedTuple
 from dataclasses import dataclass
 
 from src.umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
@@ -7,6 +7,15 @@ from src.umlars_translator.core.deserialization.abstract.pipeline_deserializatio
     ModelProcessingPipe
 )
 from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException
+
+
+class AliasToJSONKey(NamedTuple):
+    alias: str
+    json_key: str
+
+    @classmethod
+    def from_kwargs(cls, **kwargs) -> Iterator["AliasToJSONKey"]:
+        return (cls(alias=alias, json_key=json_key) for alias, json_key in kwargs.items())
 
 
 @dataclass
@@ -55,6 +64,37 @@ class JSONModelProcessingPipe(ModelProcessingPipe):
             if not condition.to_callable()(data):
                 return False
         return True
+
+    def _get_attributes_values_for_aliases(
+        self,
+        data: dict,
+        mandatory_attributes: Optional[Iterator[AliasToJSONKey]] = None,
+        optional_attributes: Optional[Iterator[AliasToJSONKey]] = None,
+    ) -> dict[str, str]:
+        kwargs = {}
+        try:
+            if mandatory_attributes is not None:
+                try:
+                    for alias, json_key in mandatory_attributes:
+                        kwargs[alias] = data[json_key]
+                except KeyError as ex:
+                    raise InvalidFormatException(
+                        f"Structure of the data format was invalid. Missing key {json_key}. Error: {str(ex)}"
+                    )
+
+            if optional_attributes is not None:
+                for alias, json_key in optional_attributes:
+                    kwargs[alias] = data.get(json_key)
+
+        except AttributeError as ex:
+            if not isinstance(data, dict):
+                error_message = f"Xml processing pipeline didn't receive parsed JSON data. Received: {data} of type {type(data)}"
+            else:
+                error_message = f"Unexpected error occurred while processing JSON data. Received: {data} of type {type(data)}"
+            self._logger.error(error_message)
+            raise InvalidFormatException(error_message) from ex
+
+        return kwargs
 
 
 class JSONFormatDetectionPipe(FormatDetectionPipe, JSONModelProcessingPipe):

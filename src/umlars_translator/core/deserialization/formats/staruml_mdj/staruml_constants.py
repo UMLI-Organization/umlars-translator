@@ -11,6 +11,9 @@ from src.umlars_translator.core.configuration.config_namespace import ConfigName
 class StarumlMDJConfig(ConfigNamespace):
     KEYS: dict[str, str] = {
         "owned_elements": "ownedElements",
+        "owned_attributes": "attributes",
+        "owned_operations": "operations",
+        
     }
 
     EA_DIAGRAMS_TYPES_MAPPING: dict[str, str] = {
