@@ -2,16 +2,14 @@ import pytest
 
 from kink import di
 
-from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy import (
-    EaXmiImportParsingStrategy,
+from src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_deserialization_strategy import (
+    PapyrusXmiImportParsingStrategy,
 )
-from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
-    RootPipe,
+from src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_model_processing_pipeline import (
     UmlModelPipe,
-    ExtensionPipe,
 )
-from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
-    EaXmiDetectionPipe,
+from src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_format_detection_pipeline import (
+    PapyrusXmiDetectionPipe,
 )
 from src.umlars_translator.core.deserialization.input_processor import InputProcessor
 from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
@@ -26,11 +24,13 @@ from src.umlars_translator.core.model.umlars_model.uml_model_builder import (
 from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlAssociationDirectionEnum, UmlPrimitiveTypeKindEnum
 
 
-CAR_MODEL_FILE_PATH = "tests/core/deserializer/formats/ea_xmi/test_data/ea_car_model_xmi21-with-sequence.xml"
+CAR_MODEL_FILE_PATH_NOTATION = "tests/core/deserializer/formats/papyrus_xmi/test_data/eclipse-papyrus-car-model-with-sequence.notation"
+CAR_MODEL_FILE_PATH_UML = "tests/core/deserializer/formats/papyrus_xmi/test_data/eclipse-papyrus-car-model-with-sequence.uml"
 
 
 FILES_WITH_PAPYRUS_XMI_FORMAT = [
-    CAR_MODEL_FILE_PATH,
+    CAR_MODEL_FILE_PATH_NOTATION,
+    CAR_MODEL_FILE_PATH_UML,
 ]
 
 
@@ -46,26 +46,21 @@ def umlars_model_builder():
 
 
 @pytest.fixture
-def ea_xmi_deserialization_strategy_factory():
-    class EaXmiDeserializationStrategyFactory:
+def papyrus_xmi_deserialization_strategy_factory():
+    class PapyrusXmiDeserializationStrategyFactory:
         def create_strategy(self, model_builder):
-            return EaXmiImportParsingStrategy(model_builder=model_builder)
+            return PapyrusXmiImportParsingStrategy(model_builder=model_builder)
 
-    return EaXmiDeserializationStrategyFactory()
+    return PapyrusXmiDeserializationStrategyFactory()
 
 
 @pytest.fixture
-def ea_xmi_class_data_sources():
+def papyrus_xmi_class_data_sources():
     return list(
         InputProcessor().accept_multiple_inputs(
             file_paths_list=FILES_WITH_PAPYRUS_XMI_FORMAT
         )
     )
-
-
-@pytest.fixture
-def ea_xmi_car_data_source():
-    return InputProcessor().accept_input(file_path=CAR_MODEL_FILE_PATH)
 
 
 @pytest.fixture
@@ -101,19 +96,19 @@ def other_format_data_source():
 
 
 def test_build_processing_pipe(
-    umlars_model_builder, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
         model_builder=umlars_model_builder
     )
     pipe = strategy._build_processing_pipe()
-    assert isinstance(pipe, RootPipe)
+    assert isinstance(pipe, UmlModelPipe)
 
 
 def test_build_uml_model_processing_pipe(
-    umlars_model_builder, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
         model_builder=umlars_model_builder
     )
     root_pipe = strategy._build_processing_pipe()
@@ -121,46 +116,47 @@ def test_build_uml_model_processing_pipe(
     assert isinstance(uml_model_pipe, UmlModelPipe)
 
 
-def test_build_extension_processing_pipe(
-    umlars_model_builder, ea_xmi_deserialization_strategy_factory
-):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    root_pipe = strategy._build_processing_pipe()
-    extension_pipe = strategy._build_extension_processing_pipe(root_pipe)
-    assert isinstance(extension_pipe, ExtensionPipe)
+# def test_build_extension_processing_pipe(
+#     umlars_model_builder, papyrus_xmi_deserialization_strategy_factory
+# ):
+#     strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+#         model_builder=umlars_model_builder
+#     )
+#     root_pipe = strategy._build_processing_pipe()
+#     extension_pipe = strategy._build_extension_processing_pipe(root_pipe)
+#     assert isinstance(extension_pipe, ExtensionPipe)
 
 
 def test_build_format_detection_pipe(
-    umlars_model_builder, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
         model_builder=umlars_model_builder
     )
     detection_pipe = strategy._build_format_detection_pipe()
-    assert isinstance(detection_pipe, EaXmiDetectionPipe)
+    assert isinstance(detection_pipe, PapyrusXmiDetectionPipe)
 
 
-def test_when_retrieve_model_from_ea_xmi_then_return_model(
-    ea_xmi_class_data_sources,
+def test_when_retrieve_model_from_papyrus_xmi_then_return_model(
+    papyrus_xmi_class_data_sources,
     umlars_model_builder,
-    ea_xmi_deserialization_strategy_factory,
+    papyrus_xmi_deserialization_strategy_factory,
 ):
-    for data_source in ea_xmi_class_data_sources:
-        strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
             model_builder=umlars_model_builder
         )
-        model = strategy.retrieve_model(data_source)
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
         assert isinstance(model, IUmlModel)
 
 
 def test_when_retrieve_model_from_other_format_then_raise_exception(
     other_format_data_source,
     umlars_model_builder,
-    ea_xmi_deserialization_strategy_factory,
+    papyrus_xmi_deserialization_strategy_factory,
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
         model_builder=umlars_model_builder
     )
     with pytest.raises(InvalidFormatException):
@@ -168,9 +164,9 @@ def test_when_retrieve_model_from_other_format_then_raise_exception(
 
 
 def test_when_retrieve_model_from_other_xmi_then_raise_exception(
-    other_xmi_data_source, umlars_model_builder, ea_xmi_deserialization_strategy_factory
+    other_xmi_data_source, umlars_model_builder, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
         model_builder=umlars_model_builder
     )
     with pytest.raises(InvalidFormatException):
@@ -179,18 +175,18 @@ def test_when_retrieve_model_from_other_xmi_then_raise_exception(
 
 def test_when_create_new_strategy_deserialization_successfull(
     other_xmi_data_source,
-    ea_xmi_class_data_sources,
+    papyrus_xmi_class_data_sources,
     umlars_model_builder,
-    ea_xmi_deserialization_strategy_factory,
+    papyrus_xmi_deserialization_strategy_factory,
 ):
-    for data_source in ea_xmi_class_data_sources:
-        strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+    for data_source in papyrus_xmi_class_data_sources:
+        strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
             model_builder=umlars_model_builder
         )
         model = strategy.retrieve_model(data_source)
         assert isinstance(model, IUmlModel)
 
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
         model_builder=umlars_model_builder
     )
     with pytest.raises(InvalidFormatException):
@@ -199,12 +195,12 @@ def test_when_create_new_strategy_deserialization_successfull(
 
 def test_when_reuse_strategy_deserialization_successfull(
     other_xmi_data_source,
-    ea_xmi_class_data_sources,
+    papyrus_xmi_class_data_sources,
     umlars_model_builder,
-    ea_xmi_deserialization_strategy_factory,
+    papyrus_xmi_deserialization_strategy_factory,
 ):
-    for data_source in ea_xmi_class_data_sources:
-        strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
+    for data_source in papyrus_xmi_class_data_sources:
+        strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
             model_builder=umlars_model_builder
         )
         model = strategy.retrieve_model(data_source, clear_afterwards=True)
@@ -215,12 +211,14 @@ def test_when_reuse_strategy_deserialization_successfull(
 
 
 def test_when_deserialize_car_model_file_then_correct_model_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     assert isinstance(model, IUmlModel)
     assert model.name == "EA_Model"
@@ -235,12 +233,14 @@ def test_when_deserialize_car_model_file_then_correct_model_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_classes_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_classes = {
         "Car": {"visibility": UmlVisibilityEnum.PUBLIC},
@@ -263,12 +263,14 @@ def test_when_deserialize_car_model_file_then_correct_classes_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_packages_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     package_names = [pkg.name for pkg in model.elements.packages]
     assert isinstance(model.elements.packages, list)
@@ -277,12 +279,14 @@ def test_when_deserialize_car_model_file_then_correct_packages_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_interfaces_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_interfaces = {
         "Movable": {"visibility": UmlVisibilityEnum.PUBLIC},
@@ -295,12 +299,14 @@ def test_when_deserialize_car_model_file_then_correct_interfaces_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_enumerations_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_enums = {
         "Gender": {
@@ -318,12 +324,14 @@ def test_when_deserialize_car_model_file_then_correct_enumerations_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_datatypes_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_datatypes = {
         "Datetime": {"visibility": UmlVisibilityEnum.PUBLIC},
@@ -339,12 +347,14 @@ def test_when_deserialize_car_model_file_then_correct_datatypes_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_primitive_types_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_primitives = {
         "EAJava_boolean": UmlPrimitiveTypeKindEnum.BOOLEAN,
@@ -361,12 +371,14 @@ def test_when_deserialize_car_model_file_then_correct_primitive_types_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_associations_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     # TODO: Maybe model should be changed -> so that UmlAggregation is actually Bidirectional
     # Now this test passes, because there is no way to determine in the builder that we are deserializing an aggregation or composition
@@ -382,12 +394,14 @@ def test_when_deserialize_car_model_file_then_correct_associations_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_attributes_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_attributes = {
         "Car": ["yearOfProduction"],
@@ -401,12 +415,14 @@ def test_when_deserialize_car_model_file_then_correct_attributes_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_operations_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_operations = {
         "Car": ["canDrive", "changeWheels", "drive"],
@@ -420,12 +436,14 @@ def test_when_deserialize_car_model_file_then_correct_operations_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_association_ends_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_ends = {
         "car_ownership": ["owner", "car"],
@@ -439,12 +457,14 @@ def test_when_deserialize_car_model_file_then_correct_association_ends_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_lifelines_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_lifelines = ["userDriver", "car", "driver", "newWheel", "wheel"]
 
@@ -454,12 +474,14 @@ def test_when_deserialize_car_model_file_then_correct_lifelines_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_messages_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_messages = ["changeWheels", "driving", "stop", "start"]
 
@@ -469,12 +491,14 @@ def test_when_deserialize_car_model_file_then_correct_messages_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_diagrams_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_diagrams = ["Starter Class Diagram", "changeWheelsSequence", "Driving Seq Diag"]
 
@@ -483,12 +507,14 @@ def test_when_deserialize_car_model_file_then_correct_diagrams_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_generalizations_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_generalizations = ["Person -> Driver"]
 
@@ -498,12 +524,14 @@ def test_when_deserialize_car_model_file_then_correct_generalizations_created(
 
 
 def test_when_deserialize_car_model_file_then_correct_realizations_created(
-    umlars_model_builder, ea_xmi_car_data_source, ea_xmi_deserialization_strategy_factory
+    umlars_model_builder, papyrus_xmi_class_data_sources, papyrus_xmi_deserialization_strategy_factory
 ):
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_car_data_source)
+    model = None
+    strategy = papyrus_xmi_deserialization_strategy_factory.create_strategy(
+            model_builder=umlars_model_builder
+        )
+    for data_source in papyrus_xmi_class_data_sources:
+        model = strategy.retrieve_model(data_source, model_to_extend=model)
 
     expected_realizations = ["Driver -> Movable"]
 

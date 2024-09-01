@@ -1,3 +1,7 @@
+from src.umlars_translator.core.configuration.config_namespace import  ConfigNamespace
+from src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
+    DeserializationStrategy,
+)
 from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_constants import (
     EaXmiConfig,
 )

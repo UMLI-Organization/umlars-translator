@@ -73,8 +73,10 @@ class PapyrusXmiModelProcessingPipe(XmlModelProcessingPipe):
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
                 id=self.config.ATTRIBUTES["id"],
-                value=self.config.ATTRIBUTES["value"],
                 type=self.config.ATTRIBUTES["type"],
+            )
+            optional_attributes = AliasToXmlKey.from_kwargs(
+                value=self.config.ATTRIBUTES["value"],
             )
         except KeyError as ex:
             raise ValueError(
@@ -82,7 +84,7 @@ class PapyrusXmiModelProcessingPipe(XmlModelProcessingPipe):
             )
 
         aliases_to_values = self._get_attributes_values_for_aliases(
-            lower_value_data, mandatory_attributes
+            lower_value_data, mandatory_attributes, optional_attributes
         )
 
         self._map_value_from_key(
@@ -118,56 +120,6 @@ class PapyrusXmiModelProcessingPipe(XmlModelProcessingPipe):
         return aliases_to_values
 
 
-class RootPipe(PapyrusXmiModelProcessingPipe):
-    ASSOCIATED_XML_TAG = Config.TAGS["root"]
-
-    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
-        data_root = self._get_root_element(data_batch.data)
-        try:
-            mandatory_attributes = AliasToXmlKey.from_kwargs(
-                xmi_version=self.config.ATTRIBUTES["xmi_version"]
-            )
-        except KeyError as ex:
-            raise ValueError(
-                f"Configuration of the data format was invalid. Error: {str(ex)}"
-            )
-
-        aliases_to_values = self._get_attributes_values_for_aliases(
-            data_root, mandatory_attributes
-        )
-        self.model_builder.construct_metadata(**aliases_to_values)
-
-        # Iteration over the children of the root element
-        yield from self._create_data_batches(data_root)
-
-
-class DocumentationPipe(PapyrusXmiModelProcessingPipe):
-    ASSOCIATED_XML_TAG = Config.TAGS["documentation"]
-
-    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
-        data = data_batch.data
-
-        try:
-            mandatory_attributes = AliasToXmlKey.from_kwargs(
-                exporter=self.config.ATTRIBUTES["exporter"]
-            )
-            optional_attributes = AliasToXmlKey.from_kwargs(
-                exporterVersion=self.config.ATTRIBUTES["exporterVersion"],
-                exporterID=self.config.ATTRIBUTES["exporterID"],
-            )
-        except KeyError as ex:
-            raise ValueError(
-                f"Configuration of the data format was invalid. Missing key error: {str(ex)}"
-            )
-
-        aliases_to_values = self._get_attributes_values_for_aliases(
-            data, mandatory_attributes, optional_attributes
-        )
-        self.model_builder.construct_metadata(**aliases_to_values)
-
-        yield from self._create_data_batches(data)
-
-
 class UmlModelPipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["model"]
     # TODO: take value from config
@@ -180,7 +132,9 @@ class UmlModelPipe(PapyrusXmiModelProcessingPipe):
 
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
-                name=self.config.ATTRIBUTES["name"]
+                name=self.config.ATTRIBUTES["name"],
+                xmi_version=self.config.ATTRIBUTES["xmi_version"]
+
             )
             optional_attributes = AliasToXmlKey.from_kwargs(
                 visibility=self.config.ATTRIBUTES["visibility"]
@@ -193,39 +147,12 @@ class UmlModelPipe(PapyrusXmiModelProcessingPipe):
         aliases_to_values = self._get_attributes_values_for_aliases(
             data, mandatory_attributes, optional_attributes
         )
+
+        self.model_builder.construct_metadata(xmi_version=aliases_to_values.pop("xmi_version"))
+
         self.model_builder.construct_uml_model(**aliases_to_values)
 
         yield from self._create_data_batches(data)
-
-
-class UmlPackagePipe(PapyrusXmiModelProcessingPipe):
-    ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
-    # TODO: take value from config
-    ATTRIBUTES_CONDITIONS = [
-        XmlAttributeCondition(Config.ATTRIBUTES["type"], "uml:Package")
-    ]
-
-    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
-        data = data_batch.data
-
-        try:
-            mandatory_attributes = AliasToXmlKey.from_kwargs(
-                id=self.config.ATTRIBUTES["id"], name=self.config.ATTRIBUTES["name"]
-            )
-            optional_attributes = AliasToXmlKey.from_kwargs(
-                visibility=self.config.ATTRIBUTES["visibility"]
-            )
-        except KeyError as ex:
-            raise ValueError(
-                f"Configuration of the data format was invalid. Error: {str(ex)}"
-            )
-
-        aliases_to_values = self._get_attributes_values_for_aliases(
-            data, mandatory_attributes, optional_attributes
-        )
-        self.model_builder.construct_uml_package(**aliases_to_values)
-
-        yield from self._create_data_batches(data, parent_context={"package_id": aliases_to_values["id"]})
 
 
 class UmlClassPipe(PapyrusXmiModelProcessingPipe):
@@ -414,6 +341,8 @@ class UmlOperationParameterPipe(PapyrusXmiModelProcessingPipe):
                 )
                 aliases_to_values["type_id"] = type_attr_value
 
+        aliases_to_values.update(self._process_type_child(data_batch))
+
         self.model_builder.construct_uml_operation_parameter(
             **aliases_to_values, operation_id=data_batch.parent_context["parent_id"]
         )
@@ -510,6 +439,7 @@ class UmlAssociationPipe(PapyrusXmiModelProcessingPipe):
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
                 id=self.config.ATTRIBUTES["id"],
+                member_ends_string=self.config.ATTRIBUTES["member_end"],
             )
 
             optional_attributes = AliasToXmlKey.from_kwargs(
@@ -532,39 +462,24 @@ class UmlAssociationPipe(PapyrusXmiModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
 
+        member_ends = aliases_to_values.pop("member_ends_string")
         self.model_builder.construct_uml_association(**aliases_to_values)
         if "package_id" in data_batch.parent_context:
             self.model_builder.add_association_to_package(association_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
+
+        self._process_member_ends(member_ends)
 
         yield from self._create_data_batches(
             data, parent_context={"parent_id": aliases_to_values["id"]}
         )
 
-
-class UmlAssociationMemberEndPipe(PapyrusXmiModelProcessingPipe):
-    ASSOCIATED_XML_TAG = Config.TAGS["member_end"]
-
-    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
-        data = data_batch.data
-
-        try:
-            mandatory_attributes = AliasToXmlKey.from_kwargs(
-                idref=self.config.ATTRIBUTES["idref"],
-            )
-        except KeyError as ex:
-            raise ValueError(
-                f"Configuration of the data format was invalid. Error: {str(ex)}"
-            )
-
-        aliases_to_values = self._get_attributes_values_for_aliases(
-            data, mandatory_attributes
-        )
-
-        self.model_builder.bind_end_to_association(
-            end_id=aliases_to_values["idref"],
-            association_id=data_batch.parent_context["parent_id"],
-        )
-        yield from self._create_data_batches(data)
+        def _process_member_ends(self, member_ends_string: str) -> list[str]:
+            member_ends = member_ends_string.split(" ")
+            for member_end in member_ends:
+                self.model_builder.bind_end_to_association(
+                    end_id=member_end, association_id=self.context["parent_id"]
+                )
+                # TODO: it should register call for function that will set element to element from given If that element isnt AssociationEnd. Otherwise it would just set that ASsociationEnd to Association
 
 
 class UmlAssociationOwnedEndPipe(PapyrusXmiModelProcessingPipe):
@@ -610,94 +525,3 @@ class UmlAssociationOwnedEndPipe(PapyrusXmiModelProcessingPipe):
             data, parent_context={"parent_id": aliases_to_values["id"]}
         )
 
-
-class ExtensionPipe(PapyrusXmiModelProcessingPipe):
-    ASSOCIATED_XML_TAG = Config.TAGS["extension"]
-    ATTRIBUTES_CONDITIONS = [
-        XmlAttributeCondition(Config.ATTRIBUTES["extender"], "Enterprise Architect")
-    ]
-
-    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
-        data = data_batch.data
-        yield from self._create_data_batches(data)
-
-
-class DiagramsPipe(PapyrusXmiModelProcessingPipe):
-    ASSOCIATED_XML_TAG = Config.PAPYRUS_EXTENDED_TAGS["diagrams"]
-
-    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
-        data = data_batch.data
-        yield from self._create_data_batches(data)
-
-
-class DiagramPipe(PapyrusXmiModelProcessingPipe):
-    ASSOCIATED_XML_TAG = Config.PAPYRUS_EXTENDED_TAGS["diagram"]
-
-    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
-        data = data_batch.data
-        try:
-            mandatory_attributes = AliasToXmlKey.from_kwargs(
-                id=self.config.ATTRIBUTES["id"]
-            )
-            aliases_to_values = self._get_attributes_values_for_aliases(
-                data, mandatory_attributes
-            )
-
-            diagram_properties = data.find(self.config.PAPYRUS_EXTENDED_TAGS["properties"])
-
-            self._construct_diagram_from_properties(
-                diagram_properties, aliases_to_values["id"]
-            )
-
-            diagram_elements = data.find(self.config.PAPYRUS_EXTENDED_TAGS["elements"])
-            self._construct_diagram_elements(diagram_elements, aliases_to_values["id"])
-        except KeyError as ex:
-            raise ValueError(
-                f"Configuration of the data format was invalid. Error: {str(ex)}"
-            )
-
-        yield from self._create_data_batches(data)
-
-    def _construct_diagram_from_properties(
-        self, diagram_properties: ET.Element, diagram_id: str
-    ) -> None:
-        mandatory_attributes = AliasToXmlKey.from_kwargs(
-            diagram_type=self.config.PAPYRUS_EXTENDED_ATTRIBUTES["property_type"],
-        )
-        optional_attributes = AliasToXmlKey.from_kwargs(
-            name=self.config.PAPYRUS_EXTENDED_ATTRIBUTES["element_name"],
-        )
-        aliases_to_values = self._get_attributes_values_for_aliases(
-            diagram_properties, mandatory_attributes=mandatory_attributes, optional_attributes=optional_attributes
-        )
-
-        diagram_type_name = aliases_to_values.pop("diagram_type")
-
-        diagram_type = Config.PAPYRUS_DIAGRAMS_TYPES_MAPPING[diagram_type_name]
-        diagram_type_parsed = get_configurable_value(diagram_type, self.config)
-
-        self._logger.warn(f"Constructing diagram of type: {diagram_type_parsed}")
-
-        match (diagram_type_parsed):
-            case UmlDiagramType.CLASS:
-                self.model_builder.construct_class_diagram(**aliases_to_values, id=diagram_id)
-            case UmlDiagramType.SEQUENCE:
-                self.model_builder.construct_sequence_diagram(**aliases_to_values, id=diagram_id)
-            case _:
-                self._logger.warning(f"Diagram type: {diagram_type_parsed} is not supported.")
-
-    def _construct_diagram_elements(
-        self, diagram_elements: ET.Element, diagram_id: str
-    ) -> None:
-        self._logger.debug(f"Constructing diagram elements for diagram: {diagram_id}")
-        for element in diagram_elements:
-            mandatory_attributes = AliasToXmlKey.from_kwargs(
-                element_id=self.config.PAPYRUS_EXTENDED_ATTRIBUTES["subject"],
-            )
-            aliases_to_values = self._get_attributes_values_for_aliases(
-                element, mandatory_attributes
-            )
-
-            self.model_builder.bind_element_to_diagram(
-                element_id=aliases_to_values["element_id"], diagram_id=diagram_id
-            )

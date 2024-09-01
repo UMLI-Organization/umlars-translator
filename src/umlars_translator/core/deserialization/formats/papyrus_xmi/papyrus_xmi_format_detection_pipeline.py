@@ -25,7 +25,8 @@ class PapyrusXmiDetectionPipe(PapyrusXmiFormatDetectionPipe):
         data_root = self._get_root_element(data)
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
-                xmi_version=self.config.ATTRIBUTES["xmi_version"]
+                xmi_version=self.config.ATTRIBUTES["xmi_version"],
+                uml_namespace=self.config.ATTRIBUTES["uml_namespace"]
             )
         except KeyError as ex:
             raise ValueError(
@@ -37,20 +38,10 @@ class PapyrusXmiDetectionPipe(PapyrusXmiFormatDetectionPipe):
             mandatory_attributes,
         )
 
-        self._check_if_namespaces_are_correct(data)
-
-        # Iteration over the children of the root element
-        yield from self._create_data_batches(data_root)
-
-    def _check_if_namespaces_are_correct(self, data: str) -> None:
-        namespaces = retrieve_namespaces(data)
-        if not namespaces:
-            raise UnsupportedFormatException(
-                "No namespaces found in the provided data. "
-                "The data is not in the expected format."
-            )
-        
-        if "eclipse" not in namespaces["uml"]:
+        if "eclipse" not in aliases_to_values["uml_namespace"]:
             raise UnsupportedFormatException(
                 "The data does not contain the expected namespace uri for uml. No 'eclipse' substring found."
             )
+
+        # Iteration over the children of the root element
+        yield from self._create_data_batches(data_root)

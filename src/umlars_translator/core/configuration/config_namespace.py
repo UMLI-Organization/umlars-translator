@@ -39,10 +39,14 @@ class ParsedConfigNamespace(ConfigNamespace):
     def _format_dict(data: dict, namespace_patterns: dict) -> dict:
         formatted_data = {}
         for key, value in data.items():
-            if isinstance(value, str):
-                value = value.format(**namespace_patterns)
-            if isinstance(key, str):
-                key = key.format(**namespace_patterns)
+            try:
+                if isinstance(value, str):
+                    value = value.format(**namespace_patterns)
+                if isinstance(key, str):
+                    key = key.format(**namespace_patterns)
+            except KeyError:
+                # If no namespace match is found, the value or key is left as is
+                ...
 
             formatted_data[key] = value
         return formatted_data

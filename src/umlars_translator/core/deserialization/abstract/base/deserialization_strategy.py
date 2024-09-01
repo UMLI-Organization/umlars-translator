@@ -89,7 +89,7 @@ class DeserializationStrategy(ABC):
     @abstractmethod
     def _retrieve_model(
         self, data_source: DataSource, clear_afterwards: bool = True
-        ) -> IUmlModel:
+    ) -> IUmlModel:
         """
         Method resposible for the main processing of the source data.
         It performs the transformations required to retrieve all the data from source format into the UML Model.

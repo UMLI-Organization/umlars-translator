@@ -11,7 +11,7 @@ from src.umlars_translator.core.configuration.config_namespace import ParsedConf
 # TODO: split config into parsed config and normal - so u can use normal enums etc and get IDE suggestions
 
 
-class PapyrusXmiConfig(ParsedConfigNamespace):
+class NotationXmiConfig(ParsedConfigNamespace):
     # TODO: use to check if namespace is allowed for data source
     ALLOWED_NAMESPACES: dict[str, list] = {
         "uml": ["{http://schema.omg.org/spec/UML/2.1}"],
@@ -35,6 +35,8 @@ class PapyrusXmiConfig(ParsedConfigNamespace):
         "operand": "operand",
         "guard": "guard",
         "specification": "specification",
+        "diagram": "{{{notation}}}Diagram",
+        "diagrams": "diagrams",
         "properties": "properties",
         "elements": "elements",
         "element": "element",
@@ -50,7 +52,7 @@ class PapyrusXmiConfig(ParsedConfigNamespace):
         "id": "{{{xmi}}}id",
         "type": "{{{xmi}}}type",
         "xmi_version": "{{{xmi}}}version",
-        "uml_namespace": "{{{uml}}}uml",
+        "notation_namespace": "{{{notation}}}notation",
         "exporter": "exporter",
         "exporterVersion": "exporterVersion",
         "exporterID": "exporterID",
