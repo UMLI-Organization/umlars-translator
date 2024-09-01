@@ -17,7 +17,7 @@ from src.umlars_translator.core.deserialization.formats.papyrus_xmi.notation_xmi
 )
 
 from src.umlars_translator.core.deserialization.formats.papyrus_xmi.notation_xmi_format_detection_pipeline import (
-    NotationXmiDetectionPipe,
+    NotationXmiDetectionPipe
 )
 
 

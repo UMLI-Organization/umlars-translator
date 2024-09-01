@@ -26,7 +26,6 @@ class PapyrusXmiDetectionPipe(PapyrusXmiFormatDetectionPipe):
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
                 xmi_version=self.config.ATTRIBUTES["xmi_version"],
-                uml_namespace=self.config.ATTRIBUTES["uml_namespace"]
             )
         except KeyError as ex:
             raise ValueError(
@@ -38,7 +37,7 @@ class PapyrusXmiDetectionPipe(PapyrusXmiFormatDetectionPipe):
             mandatory_attributes,
         )
 
-        if "eclipse" not in aliases_to_values["uml_namespace"]:
+        if "eclipse" not in data_root.tag:
             raise UnsupportedFormatException(
                 "The data does not contain the expected namespace uri for uml. No 'eclipse' substring found."
             )

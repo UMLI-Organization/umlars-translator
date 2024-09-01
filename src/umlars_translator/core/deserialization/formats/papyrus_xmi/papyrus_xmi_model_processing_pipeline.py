@@ -9,7 +9,7 @@ from src.umlars_translator.core.deserialization.abstract.xml.xml_pipeline import
 )
 from src.umlars_translator.core.deserialization.exceptions import UnableToMapError
 from src.umlars_translator.core.configuration.config_proxy import Config, get_configurable_value
-from src.umlars_translator.core.model.constants import UmlDiagramType
+from src.umlars_translator.core.model.constants import UmlDiagramType, UmlVisibilityEnum
 
 
 class PapyrusXmiModelProcessingPipe(XmlModelProcessingPipe):
@@ -129,6 +129,7 @@ class UmlModelPipe(PapyrusXmiModelProcessingPipe):
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
+        data_root = self._get_root_element(data)
 
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
@@ -145,14 +146,18 @@ class UmlModelPipe(PapyrusXmiModelProcessingPipe):
             )
 
         aliases_to_values = self._get_attributes_values_for_aliases(
-            data, mandatory_attributes, optional_attributes
+            data_root, mandatory_attributes, optional_attributes
+        )
+
+        self._map_value_from_key(
+            aliases_to_values, "visibility", {None: UmlVisibilityEnum.PUBLIC}, raise_when_missing=False
         )
 
         self.model_builder.construct_metadata(xmi_version=aliases_to_values.pop("xmi_version"))
 
         self.model_builder.construct_uml_model(**aliases_to_values)
 
-        yield from self._create_data_batches(data)
+        yield from self._create_data_batches(data_root)
 
 
 class UmlClassPipe(PapyrusXmiModelProcessingPipe):
@@ -182,6 +187,11 @@ class UmlClassPipe(PapyrusXmiModelProcessingPipe):
         aliases_to_values = self._get_attributes_values_for_aliases(
             data, mandatory_attributes, optional_attributes
         )
+        
+        self._map_value_from_key(
+            aliases_to_values, "visibility", {None: UmlVisibilityEnum.PUBLIC}, raise_when_missing=False
+        )
+
         self.model_builder.construct_uml_class(**aliases_to_values)
         if "package_id" in data_batch.parent_context:
             self.model_builder.add_class_to_package(class_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
@@ -314,10 +324,10 @@ class UmlOperationParameterPipe(PapyrusXmiModelProcessingPipe):
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
                 id=self.config.ATTRIBUTES["id"],
-                name=self.config.ATTRIBUTES["name"],
             )
 
             optional_attributes = AliasToXmlKey.from_kwargs(
+                name=self.config.ATTRIBUTES["name"],
                 type=self.config.ATTRIBUTES["type"],
             )
         except KeyError as ex:
@@ -380,6 +390,10 @@ class UmlDataTypePipe(PapyrusXmiModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
 
+        self._map_value_from_key(
+            aliases_to_values, "visibility", {None: UmlVisibilityEnum.PUBLIC}, raise_when_missing=False
+        )
+
         self.model_builder.construct_uml_data_type(**aliases_to_values)
         if "package_id" in data_batch.parent_context:
             self.model_builder.add_data_type_to_package(data_type_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
@@ -418,6 +432,10 @@ class UmlEnumerationPipe(PapyrusXmiModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
 
+        self._map_value_from_key(
+            aliases_to_values, "visibility", {None: UmlVisibilityEnum.PUBLIC}, raise_when_missing=False
+        )
+
         self.model_builder.construct_uml_enumeration(**aliases_to_values)
         if "package_id" in data_batch.parent_context:
             self.model_builder.add_enumeration_to_package(enumeration_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
@@ -439,10 +457,10 @@ class UmlAssociationPipe(PapyrusXmiModelProcessingPipe):
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
                 id=self.config.ATTRIBUTES["id"],
-                member_ends_string=self.config.ATTRIBUTES["member_end"],
             )
 
             optional_attributes = AliasToXmlKey.from_kwargs(
+                member_ends_string=self.config.ATTRIBUTES["member_end"],
                 name=self.config.ATTRIBUTES["name"],
                 visibility=self.config.ATTRIBUTES["visibility"],
                 is_derived=self.config.ATTRIBUTES["is_derived"],
@@ -467,19 +485,22 @@ class UmlAssociationPipe(PapyrusXmiModelProcessingPipe):
         if "package_id" in data_batch.parent_context:
             self.model_builder.add_association_to_package(association_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
 
-        self._process_member_ends(member_ends)
+        self._process_member_ends(member_ends, association_id=aliases_to_values["id"])
 
         yield from self._create_data_batches(
             data, parent_context={"parent_id": aliases_to_values["id"]}
         )
 
-        def _process_member_ends(self, member_ends_string: str) -> list[str]:
-            member_ends = member_ends_string.split(" ")
-            for member_end in member_ends:
-                self.model_builder.bind_end_to_association(
-                    end_id=member_end, association_id=self.context["parent_id"]
-                )
-                # TODO: it should register call for function that will set element to element from given If that element isnt AssociationEnd. Otherwise it would just set that ASsociationEnd to Association
+    def _process_member_ends(self, member_ends_string: str | None, association_id: str) -> None:
+        if member_ends_string is None:
+            return
+        
+        member_ends = member_ends_string.split(" ")
+        for member_end in member_ends:
+            self.model_builder.bind_end_to_association(
+                end_id=member_end, association_id=association_id
+            )
+            # TODO: it should register call for function that will set element to element from given If that element isnt AssociationEnd. Otherwise it would just set that ASsociationEnd to Association
 
 
 class UmlAssociationOwnedEndPipe(PapyrusXmiModelProcessingPipe):

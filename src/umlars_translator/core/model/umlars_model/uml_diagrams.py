@@ -62,6 +62,10 @@ class UmlClassDiagramElements(IUmlClassDiagramElements):
             self.enumerations.append(element)
         elif isinstance(element, UmlDataType):
             self.data_types.append(element)
+        elif isinstance(element, UmlAttribute):
+            ...
+        elif isinstance(element, UmlOperation):
+            ...
         else:
             raise NotImplementedError(f"Element {element} is not supported in UmlClassDiagram.")
 

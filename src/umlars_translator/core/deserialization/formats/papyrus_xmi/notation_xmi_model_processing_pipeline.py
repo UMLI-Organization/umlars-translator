@@ -31,11 +31,12 @@ class DiagramPipe(NotationXmiModelProcessingPipe):
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
+
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
                 id=self.config.ATTRIBUTES["id"],
                 name=self.config.ATTRIBUTES["name"],
-                type=self.config.ATTRIBUTES["type"],
+                type=self.config.PAPYRUS_EXTENDED_ATTRIBUTES["type"],
             )
             aliases_to_values = self._get_attributes_values_for_aliases(
                 data, mandatory_attributes
@@ -59,7 +60,7 @@ class DiagramPipe(NotationXmiModelProcessingPipe):
         self._logger.debug(f"Constructing diagram elements for diagram: {diagram_id}")
         for element in diagram_elements:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
-                element_href=self.config.PAPYRUS_EXTENDED_ATTRIBUTES["href"],
+                element_href=self.config.ATTRIBUTES["href"],
             )
             aliases_to_values = self._get_attributes_values_for_aliases(
                 element, mandatory_attributes

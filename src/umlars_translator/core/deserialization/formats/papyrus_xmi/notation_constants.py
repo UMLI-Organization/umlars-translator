@@ -101,7 +101,7 @@ class NotationXmiConfig(ParsedConfigNamespace):
 
     PAPYRUS_EXTENDED_ATTRIBUTES: dict[str, str] = {
         "idref": "{{{xmi}}}idref",
-        "type": "{{{xmi}}}type",
+        "type": "type",
         "name": "name",
         "package": "package",
         "connector_idref": "{{{xmi}}}idref",
