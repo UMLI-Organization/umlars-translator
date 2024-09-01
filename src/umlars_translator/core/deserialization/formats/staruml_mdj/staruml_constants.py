@@ -4,7 +4,8 @@ from src.umlars_translator.core.model.constants import (
     UmlPrimitiveTypeKindEnum,
     UmlDiagramType,
     UmlElementType,
-    UmlMultiplicityEnum
+    UmlMultiplicityEnum,
+    UmlMessageSortEnum
 )
 from src.umlars_translator.core.configuration.config_namespace import ConfigNamespace
 
@@ -35,7 +36,9 @@ class StarumlMDJConfig(ConfigNamespace):
         "messages": "messages",
         "participants": "participants",
         "fragments": "fragments",
-
+        "message_sort": "messageSort",
+        "represent": "represent",
+        "signature": "signature",
     }
 
     MULTIPLICITY_MAPPING: dict[str, str] = {
@@ -55,6 +58,15 @@ class StarumlMDJConfig(ConfigNamespace):
         "UnlimitedNatural": UmlPrimitiveTypeKindEnum.UNLIMITED_NATURAL,
         "Void": UmlPrimitiveTypeKindEnum.VOID,
         "Any": UmlPrimitiveTypeKindEnum.ANY,
+    }
+
+    MESSAGE_SORT_MAPPING: dict[str, UmlMessageSortEnum] = {
+        "synchCall": UmlMessageSortEnum.SYNCH_CALL,
+        "asynchCall": UmlMessageSortEnum.ASYNCH_CALL,
+        "asynchSignal": UmlMessageSortEnum.ASYNCH_CALL,
+        "createMessage": UmlMessageSortEnum.CREATE,
+        "deleteMessage": UmlMessageSortEnum.DELETE,
+        "returnMessage": UmlMessageSortEnum.REPLY,
     }
 
 

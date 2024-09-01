@@ -321,14 +321,21 @@ class IUmlComposition(IUmlDirectedAssociation):
 
 
 # Interaction Elements
-class IUmlOccurrenceSpecification(IUmlElement):
+class IUmlOrderedElement(ABC):
+    @property
+    @abstractmethod
+    def ordering_key(self) -> int:
+        ...
+
+
+class IUmlOccurrenceSpecification(IUmlElement, IUmlOrderedElement):
     @property
     @abstractmethod
     def covered(self) -> "IUmlLifeline":
         ...
 
 
-class IUmlInteractionUse(IUmlElement):
+class IUmlInteractionUse(IUmlElement, IUmlOrderedElement):
     @property
     @abstractmethod
     def covered(self) -> List["IUmlLifeline"]:
@@ -340,7 +347,7 @@ class IUmlInteractionUse(IUmlElement):
         ...
 
 
-class IUmlCombinedFragment(IUmlElement):
+class IUmlCombinedFragment(IUmlElement, IUmlOrderedElement):
     @property
     @abstractmethod
     def operands(self) -> List["IUmlOperand"]:

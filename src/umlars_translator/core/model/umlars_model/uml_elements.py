@@ -2,7 +2,7 @@ from typing import List, Optional, Union, ClassVar, TYPE_CHECKING
 
 
 from src.umlars_translator.core.model.umlars_model.mixins import RegisteredInModelMixin
-from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlNamedElement, IUmlPrimitiveType, IUmlClassifier, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration, IUmlAttribute, IUmlParameter, IUmlOperation, IUmlGeneralization, IUmlDependency, IUmlAssociationEnd, IUmlAssociationBase, IUmlAssociation, IUmlDirectedAssociation, IUmlAggregation, IUmlComposition, IUmlRealization, IUmlLifeline, IUmlMessage, IUmlCombinedFragment, IUmlInteractionUse, IUmlInteraction, IUmlPackage, IUmlOccurrenceSpecification, IUmlOperand, IUmlModelElements
+from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlNamedElement, IUmlPrimitiveType, IUmlClassifier, IUmlClass, IUmlInterface, IUmlOrderedElement, IUmlDataType, IUmlEnumeration, IUmlAttribute, IUmlParameter, IUmlOperation, IUmlGeneralization, IUmlDependency, IUmlAssociationEnd, IUmlAssociationBase, IUmlAssociation, IUmlDirectedAssociation, IUmlAggregation, IUmlComposition, IUmlRealization, IUmlLifeline, IUmlMessage, IUmlCombinedFragment, IUmlInteractionUse, IUmlInteraction, IUmlPackage, IUmlOccurrenceSpecification, IUmlOperand, IUmlModelElements
 from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum, UmlPrimitiveTypeKindEnum, UmlAssociationDirectionEnum, UmlParameterDirectionEnum, UmlInteractionOperatorEnum, UmlMessageSortEnum, UmlMessageKindEnum
 
 
@@ -540,7 +540,20 @@ class UmlComposition(UmlDirectedAssociation, IUmlComposition):
 
 
 # Interaction
-class UmlOccurrenceSpecification(UmlElement, IUmlOccurrenceSpecification):
+class UmlOrderedElement(IUmlOrderedElement):
+    def __init__(self, ordering_key: int, **kwargs):
+        self._ordering_key = ordering_key
+
+    @property
+    def ordering_key(self) -> int:
+        return self._ordering_key
+
+    @ordering_key.setter
+    def ordering_key(self, new_ordering_key: int):
+        self._ordering_key = new_ordering_key
+
+
+class UmlOccurrenceSpecification(UmlElement, UmlOrderedElement, IUmlOccurrenceSpecification):
     def __init__(self, covered: IUmlLifeline, id: Optional[str] = None, **kwargs):
         super().__init__(id=id, **kwargs)
         self.covered = covered
@@ -556,7 +569,7 @@ class UmlOccurrenceSpecification(UmlElement, IUmlOccurrenceSpecification):
             self.builder.register_if_not_present(new_covered)
 
     
-class UmlCombinedFragment(UmlElement, IUmlCombinedFragment):
+class UmlCombinedFragment(UmlElement, UmlOrderedElement, IUmlCombinedFragment):
     def __init__(self, operator: UmlInteractionOperatorEnum, operands: List[IUmlOperand], covered: List["UmlLifeline"], id: Optional[str] = None, **kwargs):
         super().__init__(id=id, **kwargs)
         self.operator = operator
@@ -594,7 +607,7 @@ class UmlCombinedFragment(UmlElement, IUmlCombinedFragment):
                 self.builder.register_if_not_present(lifeline)
 
     
-class UmlInteractionUse(UmlElement, IUmlInteractionUse):
+class UmlInteractionUse(UmlElement, UmlOrderedElement, IUmlInteractionUse):
     def __init__(self, covered: List["UmlLifeline"], interaction: "UmlInteraction", id: Optional[str] = None, **kwargs):
         super().__init__(id=id, **kwargs)
         self.covered = covered
@@ -732,22 +745,35 @@ class UmlLifeline(UmlNamedElement, IUmlLifeline):
 
 
 class UmlInteraction(UmlNamedElement, IUmlInteraction):
-    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, lifelines: Optional[List[IUmlLifeline]] = None, messages: Optional[List[IUmlMessage]] = None, fragments: Optional[List[Union[IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment]]] = None, id: Optional[str] = None, **kwargs):
+    def __init__(self, name: Optional[str] = None, visibility: UmlVisibilityEnum = UmlVisibilityEnum.PUBLIC, lifelines: Optional[List[IUmlLifeline]] = None, messages: Optional[List[IUmlMessage]] = None, fragments: Optional[List[Union[IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment]]] = None, user_ordering_keys: bool = False, id: Optional[str] = None, **kwargs):
         super().__init__(name, visibility, id=id, **kwargs)
         self.lifelines = lifelines or []
         self.messages = messages or []
         self.fragments = fragments or []
+        self._user_ordering_keys = user_ordering_keys
 
     @property
     def fragments(self) -> List[Union[IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment]]:
+        if self.user_ordering_keys:
+            return sorted(self._fragments, key=lambda x: x.ordering_key)
         return self._fragments
     
     @fragments.setter
     def fragments(self, new_fragments: List[Union[IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment]]):
         self._fragments = new_fragments
         if self.builder:
-            for fragment in new_fragments:
+            for i, fragment in enumerate(new_fragments):
                 self.builder.register_if_not_present(fragment)
+                fragment.ordering_key = i
+        else:
+            for i, fragment in enumerate(new_fragments):
+                fragment.ordering_key = i
+        
+    def set_fragments(self, new_fragments: List[Union[IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment]], sort_by_ordering_key: bool = False):
+        if sort_by_ordering_key:
+            new_fragments = sorted(new_fragments, key=lambda x: x.ordering_key) if sort_by_ordering_key else new_fragments
+    
+        self.fragments = new_fragments
 
     @property
     def lifelines(self) -> List[IUmlLifeline]:
@@ -770,6 +796,14 @@ class UmlInteraction(UmlNamedElement, IUmlInteraction):
         if self.builder:
             for message in new_messages:
                 self.builder.register_if_not_present(message)
+
+    @property
+    def user_ordering_keys(self) -> bool:
+        return self._user_ordering_keys
+    
+    @user_ordering_keys.setter
+    def user_ordering_keys(self, new_user_ordering_keys: bool):
+        self._user_ordering_keys = new_user_ordering_keys
 
 
 class UmlModelElements(UmlElement, IUmlModelElements):

@@ -33,7 +33,9 @@ from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_
     UmlCollaborationPipe,
     UmlAnyViewPipe,
     UmlInteractionPipe,
-    UmlSequenceDiagramPipe
+    UmlSequenceDiagramPipe,
+    UmlLifelinePipe,
+    UmlMessagePipe,
 )
 from src.umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
@@ -110,6 +112,10 @@ class StarumlMDJDeserializationStrategy(JSONDeserializationStrategy):
 
         # Add sequence diagram processing pipe
         uml_sequence_diagram_pipe = uml_interaction_pipe.add_next(UmlSequenceDiagramPipe())
+
+        uml_message_pipe = uml_interaction_pipe.add_next(UmlMessagePipe())
+        uml_life_line_pipe = uml_sequence_diagram_pipe.add_next(UmlLifelinePipe())
+        
 
         return root_pipe
 

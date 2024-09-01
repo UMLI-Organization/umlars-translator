@@ -192,6 +192,7 @@ class ModelProcessingPipe(ABC):
         raise_when_missing: bool = True,
         inplace: bool = True,
     ) -> str | None:
+        value_to_map = None
         try:
             value_to_map = values_dict[key_to_map]
             mapped_value = mapping_dict[value_to_map]

@@ -13,7 +13,7 @@ from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_cons
     StarumlMDJConfig
 )
 from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException, UnableToMapError
-from src.umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum
+from src.umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum, UmlMessageSortEnum
 
 
 class StarumlMDJModelProcessingPipe(JSONModelProcessingPipe):
@@ -586,3 +586,82 @@ class UmlSequenceDiagramPipe(StarumlMDJModelProcessingPipe):
         yield from self._create_data_batches(data.get(StarumlMDJConfig.KEYS["owned_views"], []), parent_context={"diagram_id": aliases_to_values["id"]})
 
 
+class UmlMessagePipe(StarumlMDJModelProcessingPipe):
+    ATTRIBUTE_CONDITIONS = [
+        JSONAttributeCondition(attribute_name="_type", expected_value="UMLMessage"),
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToJSONKey.from_kwargs(
+                id=StarumlMDJConfig.KEYS["id"],
+                name=StarumlMDJConfig.KEYS["name"],
+                source=StarumlMDJConfig.KEYS["source"],
+                target=StarumlMDJConfig.KEYS["target"],
+                interaction_id=StarumlMDJConfig.KEYS["parent_id"],
+            )
+            optional_attributes = AliasToJSONKey.from_kwargs(
+                visibility=StarumlMDJConfig.KEYS["visibility"],
+                message_sort=StarumlMDJConfig.KEYS["message_sort"],
+                signature=StarumlMDJConfig.KEYS["signature"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes, optional_attributes
+        )
+
+        self._flatten_reference(aliases_to_values, "source", "source_lifeline_id", remove_key=True)
+        self._flatten_reference(aliases_to_values, "target", "target_lifeline_id", remove_key=True)
+        self._flatten_reference(aliases_to_values, "interaction_id", remove_key=True)
+        self._flatten_reference(aliases_to_values, "signature", "signature_id", remove_key=True)
+
+        try:
+            self._map_value_from_key(aliases_to_values, "message_sort", StarumlMDJConfig.MESSAGE_SORT_MAPPING, raise_when_missing=True)
+        except UnableToMapError as ex:
+            self._logger.error(f"Unable to map message sort: {ex}. Using default value: {UmlMessageSortEnum.SYNCH_CALL}")
+            aliases_to_values["message_sort"] = UmlMessageSortEnum.SYNCH_CALL
+
+        self.model_builder.construct_uml_message(**aliases_to_values, create_new_occurences=True)
+
+        yield from self._create_data_batches([])
+
+
+class UmlLifelinePipe(StarumlMDJModelProcessingPipe):
+    ATTRIBUTE_CONDITIONS = [
+        JSONAttributeCondition(attribute_name="_type", expected_value="UMLLifeline"),
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToJSONKey.from_kwargs(
+                id=StarumlMDJConfig.KEYS["id"],
+                name=StarumlMDJConfig.KEYS["name"],
+                interaction_id=StarumlMDJConfig.KEYS["parent_id"],
+            )
+            optional_attributes = AliasToJSONKey.from_kwargs(
+                visibility=StarumlMDJConfig.KEYS["visibility"],
+                represents_id=StarumlMDJConfig.KEYS["represent"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes, optional_attributes
+        )
+
+        self._flatten_reference(aliases_to_values, "interaction_id", remove_key=True)
+        self._flatten_reference(aliases_to_values, "represents_id", remove_key=True)
+
+        self.model_builder.construct_uml_lifeline(**aliases_to_values)
+
+        yield from self._create_data_batches(data.get(StarumlMDJConfig.KEYS["fragments"], []))
