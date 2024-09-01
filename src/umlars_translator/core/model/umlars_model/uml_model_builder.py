@@ -477,7 +477,7 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
         return self
 
     # Attributes and Operations
-    def construct_uml_parameter(self, id: Optional[str] = None, name: Optional[str] = None, type_id: Optional[str] = None, operation_id: Optional[str] = None, direction: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
+    def construct_uml_parameter(self, id: Optional[str] = None, name: Optional[str] = None, type_id: Optional[str] = None, operation_id: Optional[str] = None, direction: Optional[str] = UmlParameterDirectionEnum.IN, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_parameter({args}, {kwargs})")
         type = self.get_instance_by_id(type_id)
         parameter = UmlParameter(id=id, name=name, type=type, direction=direction, model=self._model, builder=self)
