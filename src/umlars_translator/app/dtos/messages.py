@@ -31,5 +31,6 @@ class TranslatedFileMessage(QueueMessage):
     id: str | int
     state: ProcessStatusEnum = ProcessStatusEnum.RUNNING
     message: Optional[str] = None
+    process_id: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

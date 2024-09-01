@@ -93,37 +93,41 @@ async def send_translated_models_messages(messages_data: Iterable[dict], produce
     return asyncio.gather(*[send_translated_model_message(message_data, producer, queue_name) for message_data in messages_data])
 
 
-def create_successfull_translation_message(file_id: Optional[str] = None) -> dict:
+def create_successfull_translation_message(file_id: str, process_id: str) -> dict:
     logging.debug(f"Creating successful translation message for file ID: {file_id}")
     return TranslatedFileMessage(
         id=file_id,
+        process_id=process_id,
         state=ProcessStatusEnum.FINISHED,
         message="Model was successfully translated"
     ).model_dump()
 
 
-def create_failed_translation_message(file_id: Optional[str] = None, error_message: Optional[str] = None) -> dict:
+def create_failed_translation_message(file_id: str, process_id: str, error_message: Optional[str] = None) -> dict:
     logging.debug(f"Creating failed translation message for file ID: {file_id} with error: {error_message}")
     return TranslatedFileMessage(
         id=file_id,
+        process_id=process_id,
         state=ProcessStatusEnum.FAILED,
         message=error_message
     ).model_dump()
 
 
-def create_partial_success_translation_message(file_id: Optional[str] = None, error_message: Optional[str] = None) -> dict:
+def create_partial_success_translation_message(file_id: str, process_id: str, error_message: Optional[str] = None) -> dict:
     logging.debug(f"Creating partial success translation message for file ID: {file_id} with error: {error_message}")
     return TranslatedFileMessage(
         id=file_id,
+        process_id=process_id,
         state=ProcessStatusEnum.PARTIAL_SUCCESS,
         message=error_message
     ).model_dump()
 
 
-def create_running_translation_message(file_id: Optional[str] = None) -> dict:
+def create_running_translation_message(file_id: str, process_id: str) -> dict:
     logging.debug(f"Creating running translation message for file ID: {file_id}")
     return TranslatedFileMessage(
         id=file_id,
+        process_id=process_id,
         state=ProcessStatusEnum.RUNNING,
         message="Model translation is in progress"
     ).model_dump()
