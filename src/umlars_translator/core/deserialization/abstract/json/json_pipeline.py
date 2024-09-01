@@ -1,3 +1,4 @@
+import re
 from typing import Iterator, Optional, Callable, NamedTuple
 from dataclasses import dataclass
 
@@ -23,10 +24,13 @@ class JSONAttributeCondition:
     attribute_name: str
     expected_value: str
     when_missing_raise_exception: bool = False
+    regexp: bool = False
 
     def to_callable(self) -> Callable:
         def attribute_condition(data: dict) -> bool:
             try:
+                if self.regexp:
+                    return re.match(self.expected_value, data[self.attribute_name])
                 return data[self.attribute_name] == self.expected_value
             except KeyError as ex:
                 if self.when_missing_raise_exception:
@@ -40,6 +44,10 @@ class JSONAttributeCondition:
                 ) from ex
 
         return attribute_condition
+    
+    @classmethod
+    def from_regex(cls, attribute_name: str, expected_value: str) -> "JSONAttributeCondition":
+        return cls(attribute_name=attribute_name, expected_value=expected_value, regexp=True)
 
 
 class JSONModelProcessingPipe(ModelProcessingPipe):

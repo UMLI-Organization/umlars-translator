@@ -449,3 +449,140 @@ class UmlPrimitiveTypePipe(StarumlMDJModelProcessingPipe):
         self.model_builder.construct_uml_primitive_type(**aliases_to_values)
 
         yield from self._create_data_batches([])
+
+
+class UmlClassDiagramPipe(StarumlMDJModelProcessingPipe):
+    ATTRIBUTE_CONDITIONS = [
+        JSONAttributeCondition(attribute_name="_type", expected_value="UMLClassDiagram"),
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToJSONKey.from_kwargs(
+                id=StarumlMDJConfig.KEYS["id"],
+                name=StarumlMDJConfig.KEYS["name"],
+            )
+            optional_attributes = AliasToJSONKey.from_kwargs(
+                visibility=StarumlMDJConfig.KEYS["visibility"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes, optional_attributes
+        )
+
+        self.model_builder.construct_class_diagram(**aliases_to_values)
+
+        yield from self._create_data_batches(data.get(StarumlMDJConfig.KEYS["owned_views"], []), parent_context={"diagram_id": aliases_to_values["id"]})
+
+
+class UmlAnyViewPipe(StarumlMDJModelProcessingPipe):
+    ATTRIBUTE_CONDITIONS = [
+        JSONAttributeCondition.from_regex(attribute_name="_type", expected_value="UML.*View"),
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToJSONKey.from_kwargs(
+                model=StarumlMDJConfig.KEYS["model"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes
+        )
+
+        self._flatten_reference(aliases_to_values, "model", "element_id", remove_key=True)
+        aliases_to_values["diagram_id"] = data_batch.parent_context["diagram_id"]
+
+        self.model_builder.bind_element_to_diagram(**aliases_to_values)
+
+        yield from self._create_data_batches(data.get(StarumlMDJConfig.KEYS["owned_views"], []), parent_context={"diagram_id": aliases_to_values["diagram_id"]})
+
+
+class UmlCollaborationPipe(StarumlMDJModelProcessingPipe):
+    ATTRIBUTE_CONDITIONS = [
+        JSONAttributeCondition(attribute_name="_type", expected_value="UMLCollaboration"),
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        yield from self._create_data_batches(data.get(StarumlMDJConfig.KEYS["owned_elements"], []))
+
+
+class UmlInteractionPipe(StarumlMDJModelProcessingPipe):
+    ATTRIBUTE_CONDITIONS = [
+        JSONAttributeCondition(attribute_name="_type", expected_value="UMLInteraction"),
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToJSONKey.from_kwargs(
+                id=StarumlMDJConfig.KEYS["id"],
+                name=StarumlMDJConfig.KEYS["name"],
+            )
+            optional_attributes = AliasToJSONKey.from_kwargs(
+                visibility=StarumlMDJConfig.KEYS["visibility"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes, optional_attributes
+        )
+
+        self.model_builder.construct_uml_interaction(**aliases_to_values)
+
+        yield from self._create_data_batches(data.get(StarumlMDJConfig.KEYS["owned_elements"], []) +
+                                             data.get(StarumlMDJConfig.KEYS["messages"], []) + 
+                                             data.get(StarumlMDJConfig.KEYS["participants"], []) +
+                                             data.get(StarumlMDJConfig.KEYS["fragments"], []),
+                                             parent_context={"interaction_id": aliases_to_values["id"]})
+
+    
+class UmlSequenceDiagramPipe(StarumlMDJModelProcessingPipe):
+    ATTRIBUTE_CONDITIONS = [
+        JSONAttributeCondition(attribute_name="_type", expected_value="UMLSequenceDiagram"),
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToJSONKey.from_kwargs(
+                id=StarumlMDJConfig.KEYS["id"],
+                name=StarumlMDJConfig.KEYS["name"],
+            )
+            optional_attributes = AliasToJSONKey.from_kwargs(
+                visibility=StarumlMDJConfig.KEYS["visibility"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes, optional_attributes
+        )
+
+        self.model_builder.construct_sequence_diagram(**aliases_to_values)
+        self.model_builder.bind_element_to_diagram(element_id=data_batch.parent_context["interaction_id"], diagram_id=aliases_to_values["id"])
+
+        yield from self._create_data_batches(data.get(StarumlMDJConfig.KEYS["owned_views"], []), parent_context={"diagram_id": aliases_to_values["id"]})
+
+

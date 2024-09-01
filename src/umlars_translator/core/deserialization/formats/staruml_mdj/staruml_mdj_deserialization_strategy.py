@@ -28,7 +28,12 @@ from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_
     UmlAssociationEndPipe,
     UmlGeneralizationPipe,
     UmlInterfaceRealizationPipe,
-    UmlPrimitiveTypePipe
+    UmlPrimitiveTypePipe, 
+    UmlClassDiagramPipe,
+    UmlCollaborationPipe,
+    UmlAnyViewPipe,
+    UmlInteractionPipe,
+    UmlSequenceDiagramPipe
 )
 from src.umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
@@ -89,6 +94,23 @@ class StarumlMDJDeserializationStrategy(JSONDeserializationStrategy):
         # Add primitive type processing pipe
         uml_primitive_type_pipe = uml_model_pipe.add_next(UmlPrimitiveTypePipe())
         
+        # Add class diagram processing pipe
+        uml_class_diagram_pipe = uml_model_pipe.add_next(UmlClassDiagramPipe())
+
+        # Add view processing pipe
+        uml_any_view_pipe_for_class = uml_class_diagram_pipe.add_next(UmlAnyViewPipe())
+        # Provide recursive view processing to add all elements to the model
+        uml_any_view_pipe_for_class.add_next(uml_any_view_pipe_for_class)
+
+        # Add collaboration processing pipe
+        uml_collaboration_pipe = uml_model_pipe.add_next(UmlCollaborationPipe())
+
+        # Add interaction processing pipe
+        uml_interaction_pipe = uml_collaboration_pipe.add_next(UmlInteractionPipe())
+
+        # Add sequence diagram processing pipe
+        uml_sequence_diagram_pipe = uml_interaction_pipe.add_next(UmlSequenceDiagramPipe())
+
         return root_pipe
 
     def _build_classifier_processing_pipe(

@@ -66,6 +66,8 @@ class UmlClassDiagramElements(IUmlClassDiagramElements):
             ...
         elif isinstance(element, UmlOperation):
             ...
+        elif isinstance(element, UmlDiagram):
+            ...
         else:
             raise NotImplementedError(f"Element {element} is not supported in UmlClassDiagram.")
 
@@ -221,6 +223,8 @@ class UmlSequenceDiagramElements(IUmlSequenceDiagramElements):
     def add_element(self, element: UmlElement) -> None:
         if isinstance(element, UmlInteraction):
             self.interactions.append(element)
+        elif isinstance(element, UmlDiagram):
+            ...
         else:
             raise NotImplementedError(f"Element {element} is not supported in UmlSequenceDiagram.")
 

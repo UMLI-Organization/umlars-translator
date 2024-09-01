@@ -81,7 +81,9 @@ class ModelProcessingPipe(ABC):
 
         if update_successors:
             for successor in self._successors:
-                successor.set_model_builder(new_model_builder)
+                # In case of circular dependencies, the successor can be the same object as the predecessor.
+                if successor is not self:
+                    successor.set_model_builder(new_model_builder)
 
     def set_config(
         self,
@@ -99,7 +101,9 @@ class ModelProcessingPipe(ABC):
 
         if update_successors:
             for successor in self._successors:
-                successor.set_config(new_config)
+                # In case of circular dependencies, the successor can be the same object as the predecessor.
+                if successor is not self:
+                    successor.set_config(new_config)
 
     def add_next(
         self,

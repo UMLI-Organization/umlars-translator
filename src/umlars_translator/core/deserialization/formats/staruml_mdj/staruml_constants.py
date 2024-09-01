@@ -30,6 +30,11 @@ class StarumlMDJConfig(ConfigNamespace):
         "owned_elements": "ownedElements",
         "owned_attributes": "attributes",
         "owned_operations": "operations",
+        "owned_views": "ownedViews",
+        "model": "model",
+        "messages": "messages",
+        "participants": "participants",
+        "fragments": "fragments",
 
     }
 
@@ -51,7 +56,7 @@ class StarumlMDJConfig(ConfigNamespace):
         "Void": UmlPrimitiveTypeKindEnum.VOID,
         "Any": UmlPrimitiveTypeKindEnum.ANY,
     }
-    
+
 
     # TODO: move to file with non-parsed constants /enums
     class EaPackagedElementTypes(str, Enum):
