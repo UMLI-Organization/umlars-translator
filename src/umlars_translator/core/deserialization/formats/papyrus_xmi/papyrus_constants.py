@@ -11,7 +11,7 @@ from src.umlars_translator.core.configuration.config_namespace import ParsedConf
 # TODO: split config into parsed config and normal - so u can use normal enums etc and get IDE suggestions
 
 
-class EaXmiConfig(ParsedConfigNamespace):
+class PapyrusXmiConfig(ParsedConfigNamespace):
     # TODO: use to check if namespace is allowed for data source
     ALLOWED_NAMESPACES: dict[str, list] = {
         "uml": ["{http://schema.omg.org/spec/UML/2.1}"],
@@ -85,7 +85,7 @@ class EaXmiConfig(ParsedConfigNamespace):
         "value": "value",
     }
 
-    EA_EXTENDED_TAGS: dict[str, str] = {
+    PAPYRUS_EXTENDED_TAGS: dict[str, str] = {
         "elements": "elements",
         "element": "element",
         "model": "model",
@@ -100,7 +100,7 @@ class EaXmiConfig(ParsedConfigNamespace):
         "diagram_model": "model",
     }
 
-    EA_EXTENDED_ATTRIBUTES: dict[str, str] = {
+    PAPYRUS_EXTENDED_ATTRIBUTES: dict[str, str] = {
         "idref": "{{{xmi}}}idref",
         "type": "{{{xmi}}}type",
         "name": "name",
@@ -119,12 +119,12 @@ class EaXmiConfig(ParsedConfigNamespace):
         "subject": "subject",
     }
 
-    EA_DIAGRAMS_TYPES_MAPPING: dict[str, str] = {
+    PAPYRUS_DIAGRAMS_TYPES_MAPPING: dict[str, str] = {
         "Logical": UmlDiagramType.CLASS,
         "Sequence": UmlDiagramType.SEQUENCE,
     }
 
-    EA_TYPE_ATTRIBUTE_MAPPING: dict[str, str] = {
+    PAPYRUS_TYPE_ATTRIBUTE_MAPPING: dict[str, str] = {
         "uml:PrimitiveType": UmlElementType.PRIMITIVE_TYPE,
         "uml:Class": UmlElementType.CLASS,
         "uml:Interface": UmlElementType.INTERFACE,
@@ -142,12 +142,12 @@ class EaXmiConfig(ParsedConfigNamespace):
         "EAJava_char": UmlPrimitiveTypeKindEnum.CHAR,
     }
 
-    EA_HREF_ATTRIBUTE_MAPPING: dict[str, str] = {
+    PAPYRUS_HREF_ATTRIBUTE_MAPPING: dict[str, str] = {
         "http://schema.omg.org/spec/UML/2.1/uml.xml#Integer": UmlPrimitiveTypeKindEnum.INTEGER,
     }
 
     # TODO: move to file with non-parsed constants /enums
-    class EaPackagedElementTypes(str, Enum):
+    class PapyrusPackagedElementTypes(str, Enum):
         """
         String enum is used to allow comparison with xml data.
         """

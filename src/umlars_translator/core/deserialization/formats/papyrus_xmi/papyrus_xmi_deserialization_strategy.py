@@ -1,5 +1,5 @@
-from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_constants import (
-    EaXmiConfig,
+from src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_constants import (
+    PapyrusXmiConfig,
 )
 from src.umlars_translator.core.deserialization.abstract.xml.xml_deserialization_strategy import (
     XmiDeserializationStrategy,
@@ -8,7 +8,7 @@ from src.umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
 )
 from src.umlars_translator.config import SupportedFormat
-from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
+from src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_model_processing_pipeline import (
     RootPipe,
     DocumentationPipe,
     UmlModelPipe,
@@ -28,20 +28,20 @@ from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_proc
     UmlEnumerationPipe,
 )
 
-from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
-    EaXmiDetectionPipe,
-    EaXmiDocumentationDetectionPipe,
+from src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_format_detection_pipeline import (
+    PapyrusXmiDetectionPipe,
+    PapyrusXmiDocumentationDetectionPipe,
 )
 
 
 @register_deserialization_strategy
-class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
+class PapyrusXmiImportParsingStrategy(XmiDeserializationStrategy):
     SUPPORTED_FORMAT_NAME = SupportedFormat.XMI_EA
-    CONFIG_NAMESPACE_CLASS = EaXmiConfig
+    CONFIG_NAMESPACE_CLASS = PapyrusXmiConfig
 
-    def _build_format_detection_pipe(self) -> EaXmiDetectionPipe:
-        xmi_detection_pipe = EaXmiDetectionPipe()
-        xmi_detection_pipe.add_next(EaXmiDocumentationDetectionPipe())
+    def _build_format_detection_pipe(self) -> PapyrusXmiDetectionPipe:
+        xmi_detection_pipe = PapyrusXmiDetectionPipe()
+        xmi_detection_pipe.add_next(PapyrusXmiDocumentationDetectionPipe())
         return xmi_detection_pipe
 
     def _build_processing_pipe(self) -> RootPipe:

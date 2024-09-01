@@ -26,14 +26,11 @@ from src.umlars_translator.core.model.umlars_model.uml_model_builder import (
 from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlAssociationDirectionEnum, UmlPrimitiveTypeKindEnum
 
 
-LIBRARY_MODEL_FILE_PATH = "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_library.xml"
 CAR_MODEL_FILE_PATH = "tests/core/deserializer/formats/ea_xmi/test_data/ea_car_model_xmi21-with-sequence.xml"
 
 
-FILES_WITH_EA_XMI_FORMAT = [
-    "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_basic.xml",
-    LIBRARY_MODEL_FILE_PATH,
-    "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_car-model-xmi-21.xml",
+FILES_WITH_PAPYRUS_XMI_FORMAT = [
+    CAR_MODEL_FILE_PATH,
 ]
 
 
@@ -61,14 +58,9 @@ def ea_xmi_deserialization_strategy_factory():
 def ea_xmi_class_data_sources():
     return list(
         InputProcessor().accept_multiple_inputs(
-            file_paths_list=FILES_WITH_EA_XMI_FORMAT
+            file_paths_list=FILES_WITH_PAPYRUS_XMI_FORMAT
         )
     )
-
-
-@pytest.fixture
-def ea_xmi_library_data_source():
-    return InputProcessor().accept_input(file_path=LIBRARY_MODEL_FILE_PATH)
 
 
 @pytest.fixture
@@ -220,93 +212,6 @@ def test_when_reuse_strategy_deserialization_successfull(
 
     with pytest.raises(InvalidFormatException):
         strategy.retrieve_model(other_xmi_data_source)
-
-
-def test_when_deserialize_library_file_then_correct_model_created(
-    umlars_model_builder, ea_xmi_library_data_source, ea_xmi_deserialization_strategy_factory
-):
-    # Deserialize the model from the XMI data source
-    strategy = ea_xmi_deserialization_strategy_factory.create_strategy(
-        model_builder=umlars_model_builder
-    )
-    model = strategy.retrieve_model(ea_xmi_library_data_source)
-    
-    # Assertions to check if the created model is an instance of IUmlModel
-    assert isinstance(model, IUmlModel)
-    assert model.name == "EA_Model"
-    
-    # Assertions to check if the root package is correctly deserialized
-    root_package = model.elements.packages[0]
-    assert isinstance(root_package, IUmlPackage)
-    assert root_package.name == "Basic Class Diagram with Attributes and Operations"
-    
-    # Assertions to check if classes are correctly deserialized
-
-    # Extract the model elements
-    model_elements = model.elements
-    assert model_elements is not None
-    
-    # Check that the correct number of classes and associations were created
-    assert len(model_elements.classes) == 3  # There are 3 classes in the XMI input
-    assert len(model_elements.associations) == 2  # There are 2 associations in the XMI input
-    
-    # Verify class names and properties
-    class_a = next((cls for cls in model_elements.classes if cls.name == "Class A"), None)
-    class_b = next((cls for cls in model_elements.classes if cls.name == "Class B"), None)
-    class_c = next((cls for cls in model_elements.classes if cls.name == "Class C"), None)
-
-    assert class_a is not None
-    assert class_a.visibility == UmlVisibilityEnum.PUBLIC
-    
-    assert class_b is not None
-    assert class_b.visibility == UmlVisibilityEnum.PUBLIC
-    assert class_c is not None
-    assert class_c.visibility == UmlVisibilityEnum.PUBLIC
-
-    # Verify attributes in Class A
-    assert len(class_a.attributes) == 2
-    attribute_a = next((attr for attr in class_a.attributes if attr.name == "Attribute A"), None)
-    attribute_b = next((attr for attr in class_a.attributes if attr.name == "Attribute B"), None)
-    
-    assert attribute_a is not None
-    assert attribute_a.visibility == UmlVisibilityEnum.PRIVATE
-    assert attribute_b is not None
-    assert attribute_b.visibility == UmlVisibilityEnum.PRIVATE
-
-    # Verify operations in Class A
-    assert len(class_a.operations) == 2
-    operation_a = next((op for op in class_a.operations if op.name == "Operation A"), None)
-    operation_b = next((op for op in class_a.operations if op.name == "Operation B"), None)
-
-    assert operation_a is not None
-    assert operation_a.visibility == UmlVisibilityEnum.PUBLIC
-    assert operation_b is not None
-    assert operation_b.visibility == UmlVisibilityEnum.PUBLIC
-    
-    # Assertions to check if associations are correctly deserialized
-    association_a = next((assoc for assoc in model_elements.associations if assoc.name == "Association A"), None)
-    association_b = next((assoc for assoc in model_elements.associations if assoc.name == "Association B"), None)
-    
-    assert association_a is not None
-    assert association_a.visibility == UmlVisibilityEnum.PUBLIC
-
-    assert association_b is not None
-    assert association_b.visibility == UmlVisibilityEnum.PUBLIC
-    
-    # Assertions to check if ends of Association A are correctly deserialized
-    assert association_a.end1.name == "role b"
-    assert association_a.end2.name == "role a"
-    
-    # Assertions to check if ends of Association B are correctly deserialized
-    assert association_b.end1.name == "role c"
-    assert association_b.end2.name == "role a"
-
-    # Verify that the associations are correctly linked to the classes
-    assert association_a.end1.element == class_b
-    assert association_a.end2.element == class_a
-    
-    assert association_b.end1.element == class_c
-    assert association_b.end2.element == class_a
 
 
 def test_when_deserialize_car_model_file_then_correct_model_created(

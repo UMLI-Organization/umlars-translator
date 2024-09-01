@@ -12,11 +12,11 @@ from src.umlars_translator.core.configuration.config_proxy import Config
 # The following classes are used to detect the format of the data
 
 
-class EaXmiFormatDetectionPipe(XmlFormatDetectionPipe):
+class PapyrusXmiFormatDetectionPipe(XmlFormatDetectionPipe):
     ...
 
 
-class EaXmiDetectionPipe(EaXmiFormatDetectionPipe):
+class PapyrusXmiDetectionPipe(PapyrusXmiFormatDetectionPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["root"]
     EXPECTED_XMI_VERSION: str = "2.1"
 
@@ -44,7 +44,7 @@ class EaXmiDetectionPipe(EaXmiFormatDetectionPipe):
         yield from self._create_data_batches(data_root)
 
 
-class EaXmiDocumentationDetectionPipe(EaXmiFormatDetectionPipe):
+class PapyrusXmiDocumentationDetectionPipe(PapyrusXmiFormatDetectionPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["documentation"]
     # TODO: take from config
     EXPECTED_EXPORTER: str = "Enterprise Architect"

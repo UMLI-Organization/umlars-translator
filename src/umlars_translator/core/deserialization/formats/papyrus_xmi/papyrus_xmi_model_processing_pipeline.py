@@ -12,7 +12,7 @@ from src.umlars_translator.core.configuration.config_proxy import Config, get_co
 from src.umlars_translator.core.model.constants import UmlDiagramType
 
 
-class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
+class PapyrusXmiModelProcessingPipe(XmlModelProcessingPipe):
     def _process_type_child(self, data_batch: DataBatch) -> dict[str, Any]:
         data = data_batch.data
         attribute_type_data = data.find(self.config.TAGS["type"])
@@ -37,7 +37,7 @@ class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
         self._map_value_from_key(
             aliases_to_values,
             "type",
-            self.config.EA_TYPE_ATTRIBUTE_MAPPING,
+            self.config.PAPYRUS_TYPE_ATTRIBUTE_MAPPING,
             raise_when_missing=False,
         )
         self._process_type_metadata(aliases_to_values)
@@ -49,7 +49,7 @@ class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
         self._map_value_from_key(
             aliases_to_values,
             "href",
-            self.config.EA_HREF_ATTRIBUTE_MAPPING,
+            self.config.PAPYRUS_HREF_ATTRIBUTE_MAPPING,
             raise_when_missing=False,
         )
         aliases_to_values["type_metadata"].update(
@@ -86,7 +86,7 @@ class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
         )
 
         self._map_value_from_key(
-            aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING
+            aliases_to_values, "type", self.config.PAPYRUS_TYPE_ATTRIBUTE_MAPPING
         )
 
         return aliases_to_values
@@ -112,13 +112,13 @@ class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
             upper_value_data, mandatory_attributes
         )
         self._map_value_from_key(
-            aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING
+            aliases_to_values, "type", self.config.PAPYRUS_TYPE_ATTRIBUTE_MAPPING
         )
 
         return aliases_to_values
 
 
-class RootPipe(EaXmiModelProcessingPipe):
+class RootPipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["root"]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
@@ -141,7 +141,7 @@ class RootPipe(EaXmiModelProcessingPipe):
         yield from self._create_data_batches(data_root)
 
 
-class DocumentationPipe(EaXmiModelProcessingPipe):
+class DocumentationPipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["documentation"]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
@@ -168,7 +168,7 @@ class DocumentationPipe(EaXmiModelProcessingPipe):
         yield from self._create_data_batches(data)
 
 
-class UmlModelPipe(EaXmiModelProcessingPipe):
+class UmlModelPipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["model"]
     # TODO: take value from config
     ATTRIBUTES_CONDITIONS = [
@@ -198,7 +198,7 @@ class UmlModelPipe(EaXmiModelProcessingPipe):
         yield from self._create_data_batches(data)
 
 
-class UmlPackagePipe(EaXmiModelProcessingPipe):
+class UmlPackagePipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
     # TODO: take value from config
     ATTRIBUTES_CONDITIONS = [
@@ -228,11 +228,11 @@ class UmlPackagePipe(EaXmiModelProcessingPipe):
         yield from self._create_data_batches(data, parent_context={"package_id": aliases_to_values["id"]})
 
 
-class UmlClassPipe(EaXmiModelProcessingPipe):
+class UmlClassPipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
     ATTRIBUTES_CONDITIONS = [
         XmlAttributeCondition(
-            Config.ATTRIBUTES["type"], Config.EaPackagedElementTypes.CLASS
+            Config.ATTRIBUTES["type"], Config.PapyrusPackagedElementTypes.CLASS
         )
     ]
 
@@ -262,11 +262,11 @@ class UmlClassPipe(EaXmiModelProcessingPipe):
         yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
 
 
-class UmlInterfacePipe(EaXmiModelProcessingPipe):
+class UmlInterfacePipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
     ATTRIBUTES_CONDITIONS = [
         XmlAttributeCondition(
-            Config.ATTRIBUTES["type"], Config.EaPackagedElementTypes.INTERFACE
+            Config.ATTRIBUTES["type"], Config.PapyrusPackagedElementTypes.INTERFACE
         )
     ]
 
@@ -296,7 +296,7 @@ class UmlInterfacePipe(EaXmiModelProcessingPipe):
         yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
 
 
-class UmlAttributePipe(EaXmiModelProcessingPipe):
+class UmlAttributePipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["owned_attribute"]
     ATTRIBUTES_CONDITIONS = [
         XmlAttributeCondition(Config.ATTRIBUTES["type"], "uml:Property")
@@ -341,7 +341,7 @@ class UmlAttributePipe(EaXmiModelProcessingPipe):
         )
 
 
-class UmlOperationPipe(EaXmiModelProcessingPipe):
+class UmlOperationPipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["owned_operation"]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
@@ -378,7 +378,7 @@ class UmlOperationPipe(EaXmiModelProcessingPipe):
         )
 
 
-class UmlOperationParameterPipe(EaXmiModelProcessingPipe):
+class UmlOperationParameterPipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["operation_parameter"]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
@@ -404,7 +404,7 @@ class UmlOperationParameterPipe(EaXmiModelProcessingPipe):
 
         try:
             self._map_value_from_key(
-                aliases_to_values, "type", self.config.EA_TYPE_ATTRIBUTE_MAPPING
+                aliases_to_values, "type", self.config.PAPYRUS_TYPE_ATTRIBUTE_MAPPING
             )
         except UnableToMapError:
             type_attr_value = aliases_to_values.pop("type")
@@ -422,11 +422,11 @@ class UmlOperationParameterPipe(EaXmiModelProcessingPipe):
         )
 
 
-class UmlDataTypePipe(EaXmiModelProcessingPipe):
+class UmlDataTypePipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
     ATTRIBUTES_CONDITIONS = [
         XmlAttributeCondition(
-            Config.ATTRIBUTES["type"], Config.EaPackagedElementTypes.DATA_TYPE
+            Config.ATTRIBUTES["type"], Config.PapyrusPackagedElementTypes.DATA_TYPE
         )
     ]
 
@@ -460,11 +460,11 @@ class UmlDataTypePipe(EaXmiModelProcessingPipe):
         )
 
 
-class UmlEnumerationPipe(EaXmiModelProcessingPipe):
+class UmlEnumerationPipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
     ATTRIBUTES_CONDITIONS = [
         XmlAttributeCondition(
-            Config.ATTRIBUTES["type"], Config.EaPackagedElementTypes.ENUMERATION
+            Config.ATTRIBUTES["type"], Config.PapyrusPackagedElementTypes.ENUMERATION
         )
     ]
 
@@ -498,7 +498,7 @@ class UmlEnumerationPipe(EaXmiModelProcessingPipe):
         )
 
 
-class UmlAssociationPipe(EaXmiModelProcessingPipe):
+class UmlAssociationPipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
     ATTRIBUTES_CONDITIONS = [
         XmlAttributeCondition(Config.ATTRIBUTES["type"], "uml:Association")
@@ -541,7 +541,7 @@ class UmlAssociationPipe(EaXmiModelProcessingPipe):
         )
 
 
-class UmlAssociationMemberEndPipe(EaXmiModelProcessingPipe):
+class UmlAssociationMemberEndPipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["member_end"]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
@@ -567,7 +567,7 @@ class UmlAssociationMemberEndPipe(EaXmiModelProcessingPipe):
         yield from self._create_data_batches(data)
 
 
-class UmlAssociationOwnedEndPipe(EaXmiModelProcessingPipe):
+class UmlAssociationOwnedEndPipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["owned_end"]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
@@ -611,7 +611,7 @@ class UmlAssociationOwnedEndPipe(EaXmiModelProcessingPipe):
         )
 
 
-class ExtensionPipe(EaXmiModelProcessingPipe):
+class ExtensionPipe(PapyrusXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["extension"]
     ATTRIBUTES_CONDITIONS = [
         XmlAttributeCondition(Config.ATTRIBUTES["extender"], "Enterprise Architect")
@@ -622,16 +622,16 @@ class ExtensionPipe(EaXmiModelProcessingPipe):
         yield from self._create_data_batches(data)
 
 
-class DiagramsPipe(EaXmiModelProcessingPipe):
-    ASSOCIATED_XML_TAG = Config.EA_EXTENDED_TAGS["diagrams"]
+class DiagramsPipe(PapyrusXmiModelProcessingPipe):
+    ASSOCIATED_XML_TAG = Config.PAPYRUS_EXTENDED_TAGS["diagrams"]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
         yield from self._create_data_batches(data)
 
 
-class DiagramPipe(EaXmiModelProcessingPipe):
-    ASSOCIATED_XML_TAG = Config.EA_EXTENDED_TAGS["diagram"]
+class DiagramPipe(PapyrusXmiModelProcessingPipe):
+    ASSOCIATED_XML_TAG = Config.PAPYRUS_EXTENDED_TAGS["diagram"]
 
     def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
         data = data_batch.data
@@ -643,13 +643,13 @@ class DiagramPipe(EaXmiModelProcessingPipe):
                 data, mandatory_attributes
             )
 
-            diagram_properties = data.find(self.config.EA_EXTENDED_TAGS["properties"])
+            diagram_properties = data.find(self.config.PAPYRUS_EXTENDED_TAGS["properties"])
 
             self._construct_diagram_from_properties(
                 diagram_properties, aliases_to_values["id"]
             )
 
-            diagram_elements = data.find(self.config.EA_EXTENDED_TAGS["elements"])
+            diagram_elements = data.find(self.config.PAPYRUS_EXTENDED_TAGS["elements"])
             self._construct_diagram_elements(diagram_elements, aliases_to_values["id"])
         except KeyError as ex:
             raise ValueError(
@@ -662,10 +662,10 @@ class DiagramPipe(EaXmiModelProcessingPipe):
         self, diagram_properties: ET.Element, diagram_id: str
     ) -> None:
         mandatory_attributes = AliasToXmlKey.from_kwargs(
-            diagram_type=self.config.EA_EXTENDED_ATTRIBUTES["property_type"],
+            diagram_type=self.config.PAPYRUS_EXTENDED_ATTRIBUTES["property_type"],
         )
         optional_attributes = AliasToXmlKey.from_kwargs(
-            name=self.config.EA_EXTENDED_ATTRIBUTES["element_name"],
+            name=self.config.PAPYRUS_EXTENDED_ATTRIBUTES["element_name"],
         )
         aliases_to_values = self._get_attributes_values_for_aliases(
             diagram_properties, mandatory_attributes=mandatory_attributes, optional_attributes=optional_attributes
@@ -673,7 +673,7 @@ class DiagramPipe(EaXmiModelProcessingPipe):
 
         diagram_type_name = aliases_to_values.pop("diagram_type")
 
-        diagram_type = Config.EA_DIAGRAMS_TYPES_MAPPING[diagram_type_name]
+        diagram_type = Config.PAPYRUS_DIAGRAMS_TYPES_MAPPING[diagram_type_name]
         diagram_type_parsed = get_configurable_value(diagram_type, self.config)
 
         self._logger.warn(f"Constructing diagram of type: {diagram_type_parsed}")
@@ -692,7 +692,7 @@ class DiagramPipe(EaXmiModelProcessingPipe):
         self._logger.debug(f"Constructing diagram elements for diagram: {diagram_id}")
         for element in diagram_elements:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
-                element_id=self.config.EA_EXTENDED_ATTRIBUTES["subject"],
+                element_id=self.config.PAPYRUS_EXTENDED_ATTRIBUTES["subject"],
             )
             aliases_to_values = self._get_attributes_values_for_aliases(
                 element, mandatory_attributes
