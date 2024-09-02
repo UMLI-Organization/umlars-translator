@@ -5,6 +5,7 @@ from src.umlars_translator.core.model.constants import (
     UmlDiagramType,
     UmlElementType,
     UmlMultiplicityEnum,
+    UmlInteractionOperatorEnum,
     UmlMessageSortEnum
 )
 from src.umlars_translator.core.configuration.config_namespace import ConfigNamespace
@@ -21,6 +22,7 @@ class StarumlMDJConfig(ConfigNamespace):
         "end2": "end2",
         "source": "source",
         "target": "target",
+        "refers_to": "refersTo",
         "reference": "reference",
         "multiplicity": "multiplicity",
         "visibility": "visibility",
@@ -39,6 +41,9 @@ class StarumlMDJConfig(ConfigNamespace):
         "message_sort": "messageSort",
         "represent": "represent",
         "signature": "signature",
+        "operator": "interactionOperator",
+        "guard": "guard",
+        "operands": "operands",
     }
 
     MULTIPLICITY_MAPPING: dict[str, str] = {
@@ -67,6 +72,17 @@ class StarumlMDJConfig(ConfigNamespace):
         "createMessage": UmlMessageSortEnum.CREATE,
         "deleteMessage": UmlMessageSortEnum.DELETE,
         "returnMessage": UmlMessageSortEnum.REPLY,
+    }
+
+    COMBINED_FRAGMENT_OPERATOR_MAPPING: dict[str, UmlInteractionOperatorEnum] = {
+        "alt": UmlInteractionOperatorEnum.ALT,
+        "opt": UmlInteractionOperatorEnum.OPT,
+        "par": UmlInteractionOperatorEnum.PAR,
+        "loop": UmlInteractionOperatorEnum.LOOP,
+        "break": UmlInteractionOperatorEnum.BREAK,
+        "neg": UmlInteractionOperatorEnum.NEG,
+        "assert": UmlInteractionOperatorEnum.ASSERT,
+        "ignore": UmlInteractionOperatorEnum.IGNORE,
     }
 
 

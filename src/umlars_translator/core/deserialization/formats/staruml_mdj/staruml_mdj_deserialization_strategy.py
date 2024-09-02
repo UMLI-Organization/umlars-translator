@@ -36,6 +36,9 @@ from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_
     UmlSequenceDiagramPipe,
     UmlLifelinePipe,
     UmlMessagePipe,
+    UmlInteractionUsePipe,
+    UmlCombinedFragmentPipe,
+    UmlInteractionOperandPipe,
 )
 from src.umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
@@ -116,6 +119,9 @@ class StarumlMDJDeserializationStrategy(JSONDeserializationStrategy):
         uml_message_pipe = uml_interaction_pipe.add_next(UmlMessagePipe())
         uml_life_line_pipe = uml_interaction_pipe.add_next(UmlLifelinePipe())
 
+        uml_interaction_use_pipe = uml_interaction_pipe.add_next(UmlInteractionUsePipe())
+        uml_combined_fragment_pipe = uml_interaction_pipe.add_next(UmlCombinedFragmentPipe())
+        uml_interaction_operand_pipe = uml_combined_fragment_pipe.add_next(UmlInteractionOperandPipe())
 
         return root_pipe
 

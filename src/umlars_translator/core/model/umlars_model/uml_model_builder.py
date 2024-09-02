@@ -485,30 +485,47 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
 
         return self
 
-    def construct_uml_interaction_use(self, id: Optional[str] = None, covered_ids: Optional[List[str]] = None, interaction_id: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
+    def construct_uml_interaction_use(self, id: Optional[str] = None, covered_ids: Optional[List[str]] = None, referred_interaction_id: Optional[str] = None, parent_interaction_id: Optional[str] = None, name: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_interaction_use({args}, {kwargs})")
         covered = [self.get_instance_by_id(covered_id) for covered_id in (covered_ids or [])]
-        interaction = self.get_instance_by_id(interaction_id)
-        interaction_use = UmlInteractionUse(id=id, covered=covered, interaction=interaction, model=self._model, builder=self)
-        self.add_element(interaction_use)
-        self.model.elements.interaction_uses.append(interaction_use)
+        referred_interaction = self.get_instance_by_id(referred_interaction_id)
+        interaction_use = UmlInteractionUse(id=id, covered=covered, interaction=referred_interaction, model=self._model, builder=self)
+        parent_interaction = self.get_instance_by_id(parent_interaction_id)
 
-        # Delayed assignments if covered elements or interaction is not available
+        self.add_element(interaction_use)
+
+        if parent_interaction is not None:
+            parent_interaction.fragments.append(interaction_use)
+        else:
+            def _queued_assign_interaction_use(interaction: UmlInteraction) -> None:
+                interaction.fragments.append(interaction_use)
+            
+            self.register_dalayed_call_for_id(parent_interaction_id, _queued_assign_interaction_use)
+
+        # Delayed assignments if covered elements or referred_interaction is not available
         for covered_id, covered_instance in zip(covered_ids or [], covered):
             if covered_instance is None:
                 self.register_dalayed_call_for_id(covered_id, lambda instance: interaction_use.covered.append(instance))
-        if interaction is None:
-            self.register_dalayed_call_for_id(interaction_id, lambda instance: setattr(interaction_use, 'interaction', instance))
+        if referred_interaction is None:
+            self.register_dalayed_call_for_id(referred_interaction_id, lambda instance: setattr(interaction_use, 'interaction', instance))
 
         return self
 
-    def construct_uml_combined_fragment(self, id: Optional[str] = None, operand_ids: Optional[List[str]] = None, operator: Optional[str] = None, covered_ids: Optional[List[str]] = None, *args, **kwargs) -> "IUmlModelBuilder":
+    def construct_uml_combined_fragment(self, id: Optional[str] = None, operand_ids: Optional[List[str]] = None, operator: Optional[str] = None, covered_ids: Optional[List[str]] = None, interaction_id: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_combined_fragment({args}, {kwargs})")
         operands = [self.get_instance_by_id(operand_id) for operand_id in (operand_ids or [])]
         covered = [self.get_instance_by_id(covered_id) for covered_id in (covered_ids or [])]
+        interaction = self.get_instance_by_id(interaction_id)
         combined_fragment = UmlCombinedFragment(id=id, operands=operands, covered=covered, operator=operator, model=self._model, builder=self)
         self.add_element(combined_fragment)
-        self.model.elements.combined_fragments.append(combined_fragment)
+
+        if interaction is not None:
+            interaction.fragments.append(combined_fragment)
+        else:
+            def _queued_assign_combined_fragment(interaction: UmlInteraction) -> None:
+                interaction.fragments.append(combined_fragment)
+            
+            self.register_dalayed_call_for_id(interaction_id, _queued_assign_combined_fragment)
 
         # Delayed assignments for operands and covered elements
         for operand_id, operand_instance in zip(operand_ids or [], operands):
@@ -520,12 +537,21 @@ class UmlModelBuilder(DalayedIdToInstanceMapper, IUmlModelBuilder):
 
         return self
 
-    def construct_uml_operand(self, id: Optional[str] = None, guard: Optional[str] = None, fragment_ids: Optional[List[str]] = None, *args, **kwargs) -> "IUmlModelBuilder":
+    def construct_uml_operand(self, id: Optional[str] = None, guard: Optional[str] = None, fragment_ids: Optional[List[str]] = None, combined_fragment_id: Optional[str] = None, *args, **kwargs) -> "IUmlModelBuilder":
         self._logger.debug(f"Method called: construct_uml_operand({args}, {kwargs})")
         fragments = [self.get_instance_by_id(fragment_id) for fragment_id in (fragment_ids or [])]
+        combined_fragment = self.get_instance_by_id(combined_fragment_id)
+
         operand = UmlOperand(id=id, guard=guard, fragments=fragments, model=self._model, builder=self)
         self.add_element(operand)
-        self.model.elements.operands.append(operand)
+        
+        if combined_fragment is not None:
+            combined_fragment.operands.append(operand)
+        else:
+            def _queued_assign_operand(combined_fragment: UmlCombinedFragment) -> None:
+                combined_fragment.operands.append(operand)
+            
+            self.register_dalayed_call_for_id(combined_fragment_id, _queued_assign_operand)
 
         # Delayed assignments for fragments
         for fragment_id, fragment_instance in zip(fragment_ids or [], fragments):

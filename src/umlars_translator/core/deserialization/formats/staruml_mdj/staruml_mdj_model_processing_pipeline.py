@@ -13,7 +13,7 @@ from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_cons
     StarumlMDJConfig
 )
 from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException, UnableToMapError
-from src.umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum, UmlMessageSortEnum
+from src.umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum, UmlMessageSortEnum, UmlInteractionOperatorEnum
 
 
 class StarumlMDJModelProcessingPipe(JSONModelProcessingPipe):
@@ -665,3 +665,110 @@ class UmlLifelinePipe(StarumlMDJModelProcessingPipe):
         self.model_builder.construct_uml_lifeline(**aliases_to_values)
 
         yield from self._create_data_batches(data.get(StarumlMDJConfig.KEYS["fragments"], []))
+
+    
+class UmlCombinedFragmentPipe(StarumlMDJModelProcessingPipe):
+    ATTRIBUTE_CONDITIONS = [
+        JSONAttributeCondition(attribute_name="_type", expected_value="UMLCombinedFragment"),
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToJSONKey.from_kwargs(
+                id=StarumlMDJConfig.KEYS["id"],
+                operator=StarumlMDJConfig.KEYS["operator"],
+                interaction_id=StarumlMDJConfig.KEYS["parent_id"],
+            )
+            optional_attributes = AliasToJSONKey.from_kwargs(
+                name=StarumlMDJConfig.KEYS["name"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes, optional_attributes
+        )
+
+        self._flatten_reference(aliases_to_values, "interaction_id", remove_key=True)
+
+        try:
+            self._map_value_from_key(aliases_to_values, "operator", StarumlMDJConfig.COMBINED_FRAGMENT_OPERATOR_MAPPING, raise_when_missing=True)
+        except UnableToMapError as ex:
+            self._logger.error(f"Unable to map combined fragment operator: {ex}. Using default value: {UmlInteractionOperatorEnum.ALT}")
+            aliases_to_values["operator"] = UmlInteractionOperatorEnum.ALT
+
+        self.model_builder.construct_uml_combined_fragment(**aliases_to_values)
+
+        yield from self._create_data_batches(data.get(StarumlMDJConfig.KEYS["operands"], []))
+
+
+class UmlInteractionOperandPipe(StarumlMDJModelProcessingPipe):
+    ATTRIBUTE_CONDITIONS = [
+        JSONAttributeCondition(attribute_name="_type", expected_value="UMLInteractionOperand"),
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToJSONKey.from_kwargs(
+                id=StarumlMDJConfig.KEYS["id"],
+                guard=StarumlMDJConfig.KEYS["guard"],
+                combined_fragment_id=StarumlMDJConfig.KEYS["parent_id"],
+            )
+            optional_attributes = AliasToJSONKey.from_kwargs(
+                name=StarumlMDJConfig.KEYS["name"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes, optional_attributes
+        )
+
+        self._flatten_reference(aliases_to_values, "combined_fragment_id", remove_key=True)
+
+        self.model_builder.construct_uml_operand(**aliases_to_values)
+
+        yield from self._create_data_batches(data.get(StarumlMDJConfig.KEYS["fragments"], []))
+
+
+class UmlInteractionUsePipe(StarumlMDJModelProcessingPipe):
+    ATTRIBUTE_CONDITIONS = [
+        JSONAttributeCondition(attribute_name="_type", expected_value="UMLInteractionUse"),
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToJSONKey.from_kwargs(
+                id=StarumlMDJConfig.KEYS["id"],
+                referred_interaction_id=StarumlMDJConfig.KEYS["refers_to"],
+                parent_interaction_id=StarumlMDJConfig.KEYS["parent_id"],
+            )
+            optional_attributes = AliasToJSONKey.from_kwargs(
+                name=StarumlMDJConfig.KEYS["name"],
+                visibility=StarumlMDJConfig.KEYS["visibility"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+        
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes, optional_attributes
+        )
+
+        self._flatten_reference(aliases_to_values, "referred_interaction_id", remove_key=True)
+        self._flatten_reference(aliases_to_values, "parent_interaction_id", remove_key=True)
+
+        self.model_builder.construct_uml_interaction_use(**aliases_to_values)
+
+        yield from self._create_data_batches([])

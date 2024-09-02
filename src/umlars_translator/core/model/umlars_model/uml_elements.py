@@ -569,7 +569,7 @@ class UmlOccurrenceSpecification(UmlElement, UmlOrderedElement, IUmlOccurrenceSp
             self.builder.register_if_not_present(new_covered)
 
     
-class UmlCombinedFragment(UmlElement, UmlOrderedElement, IUmlCombinedFragment):
+class UmlCombinedFragment(UmlNamedElement, UmlOrderedElement, IUmlCombinedFragment):
     def __init__(self, operator: UmlInteractionOperatorEnum, operands: List[IUmlOperand], covered: List["UmlLifeline"], id: Optional[str] = None, **kwargs):
         super().__init__(id=id, **kwargs)
         self.operator = operator
@@ -607,7 +607,7 @@ class UmlCombinedFragment(UmlElement, UmlOrderedElement, IUmlCombinedFragment):
                 self.builder.register_if_not_present(lifeline)
 
     
-class UmlInteractionUse(UmlElement, UmlOrderedElement, IUmlInteractionUse):
+class UmlInteractionUse(UmlNamedElement, UmlOrderedElement, IUmlInteractionUse):
     def __init__(self, covered: List["UmlLifeline"], interaction: "UmlInteraction", id: Optional[str] = None, **kwargs):
         super().__init__(id=id, **kwargs)
         self.covered = covered

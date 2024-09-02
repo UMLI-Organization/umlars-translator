@@ -335,7 +335,7 @@ class IUmlOccurrenceSpecification(IUmlElement, IUmlOrderedElement):
         ...
 
 
-class IUmlInteractionUse(IUmlElement, IUmlOrderedElement):
+class IUmlInteractionUse(IUmlNamedElement, IUmlOrderedElement):
     @property
     @abstractmethod
     def covered(self) -> List["IUmlLifeline"]:
@@ -347,7 +347,7 @@ class IUmlInteractionUse(IUmlElement, IUmlOrderedElement):
         ...
 
 
-class IUmlCombinedFragment(IUmlElement, IUmlOrderedElement):
+class IUmlCombinedFragment(IUmlNamedElement, IUmlOrderedElement):
     @property
     @abstractmethod
     def operands(self) -> List["IUmlOperand"]:
