@@ -55,3 +55,4 @@ ea_xmi = "src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deser
 papyrus_xmi = "src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_deserialization_strategy"
 notation_xmi = "src.umlars_translator.core.deserialization.formats.papyrus_xmi.notation_xmi_deserialization_strategy"
 staruml_mdj = "src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_deserialization_strategy"
+
