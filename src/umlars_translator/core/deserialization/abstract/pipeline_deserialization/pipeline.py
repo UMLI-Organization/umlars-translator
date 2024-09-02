@@ -4,14 +4,15 @@ from logging import Logger
 
 from kink import inject
 
-from umlars_translator.core.deserialization.exceptions import (
+from src.umlars_translator.core.deserialization.exceptions import (
     InvalidFormatException,
     UnsupportedFormatException,
     ImproperlyInstantiatedObjectError,
+    UnableToMapError,
 )
-from umlars_translator.core.model.abstract.uml_model import IUmlModel
-from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
-from umlars_translator.core.configuration.config_namespace import ConfigNamespace
+from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
+from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from src.umlars_translator.core.configuration.config_namespace import ConfigNamespace
 
 
 def require_instantiated_builder(method: Callable) -> Callable:
@@ -42,11 +43,11 @@ class ModelProcessingPipe(ABC):
         self,
         successors: Optional[Iterator["ModelProcessingPipe"]] = None,
         predecessor: Optional["ModelProcessingPipe"] = None,
-        model_builder: Optional[IUmlModelBuilder] = None,
+        model_builder: IUmlModelBuilder | None = None,
         config: Optional[ConfigNamespace] = None,
-        logger: Optional[Logger] = None,
+        core_logger: Optional[Logger] = None,
     ) -> None:
-        self._logger = logger.getChild(self.__class__.__name__)
+        self._logger = core_logger.getChild(self.__class__.__name__)
         self._successors = successors if successors is not None else []
         self._predecessor = predecessor
         self._model_builder = model_builder
@@ -80,7 +81,9 @@ class ModelProcessingPipe(ABC):
 
         if update_successors:
             for successor in self._successors:
-                successor.set_model_builder(new_model_builder)
+                # In case of circular dependencies, the successor can be the same object as the predecessor.
+                if successor is not self:
+                    successor.set_model_builder(new_model_builder)
 
     def set_config(
         self,
@@ -98,7 +101,9 @@ class ModelProcessingPipe(ABC):
 
         if update_successors:
             for successor in self._successors:
-                successor.set_config(new_config)
+                # In case of circular dependencies, the successor can be the same object as the predecessor.
+                if successor is not self:
+                    successor.set_config(new_config)
 
     def add_next(
         self,
@@ -178,6 +183,31 @@ class ModelProcessingPipe(ABC):
         parent_context.update(kwargs)
 
         yield from (DataBatch(data, parent_context) for data in data_iterator)
+
+    def _map_value_from_key(
+        self,
+        values_dict: dict[str, str],
+        key_to_map: str,
+        mapping_dict: dict[str, Any],
+        raise_when_missing: bool = True,
+        inplace: bool = True,
+    ) -> str | None:
+        value_to_map = None
+        try:
+            value_to_map = values_dict[key_to_map]
+            mapped_value = mapping_dict[value_to_map]
+            if inplace:
+                values_dict[key_to_map] = mapped_value
+            else:
+                return mapped_value
+
+        except KeyError as ex:
+            if raise_when_missing:
+                raise UnableToMapError(
+                    f"Value {value_to_map} not found in mapping dict"
+                    f"or key {key_to_map} not found in values dict."
+                ) from ex
+            return None
 
     @abstractmethod
     def _process(self, data_batch: Optional[DataBatch] = None) -> Iterator[DataBatch]:

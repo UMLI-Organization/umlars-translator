@@ -1,7 +1,84 @@
 from enum import Enum
 
 
-class DiagramType(Enum):
+class UmlAssociationTypeEnum(str, Enum):
+    ASSOCIATION = "association"
+    AGGREGATION = "aggregation"
+    COMPOSITION = "composition"
+
+
+class UmlInteractionOperatorEnum(str, Enum):
+    ALT = "alt"
+    BREAK = "break"
+    CRITICAL = "critical"
+    ELSE = "else"
+    IGNORE = "ignore"
+    LOOP = "loop"
+    PAR = "par"
+    STRICT = "strict"
+    NEG = "neg"
+    ASSERT = "assert"
+    REF = "ref"
+    SEQ = "seq"
+    SD = "sd"
+    OPT = "opt"
+
+class UmlParameterDirectionEnum(str, Enum):
+    IN = "in"
+    OUT = "out"
+    INOUT = "inout"
+    RETURN = "return"
+
+class UmlMessageSortEnum(str, Enum):
+    SYNCH_CALL = "synchCall"
+    ASYNCH_CALL = "asynchCall"
+    REPLY = "reply"
+    CREATE = "create"
+    DELETE = "delete"
+
+
+class UmlMessageKindEnum(str, Enum):
+    COMPLETE = "complete"
+    LOST = "lost"
+    FOUND = "found"
+    UNKNOWN = "unknown"
+
+
+class UmlVisibilityEnum(str, Enum):
+    PUBLIC = "public"
+    PRIVATE = "private"
+    PROTECTED = "protected"
+    PACKAGE = "package"
+
+
+class UmlMultiplicityEnum(str, Enum):
+    ZERO_OR_ONE = "0..1"
+    ONE = "1"
+    ZERO_OR_MORE = "0..*"
+    ONE_OR_MORE = "1..*"
+
+
+# TODO: new deserialized type has to supply mapping of primitive types
+class UmlPrimitiveTypeKindEnum(str, Enum):
+    """Enum class for primitive types"""
+
+    STRING = "String"
+    INTEGER = "Integer"
+    FLOAT = "Float"
+    CHAR = "Char"
+    BOOLEAN = "Boolean"
+    REAL = "Real"
+    UNLIMITED_NATURAL = "UnlimitedNatural"
+    VOID = "Void"
+    ANY = "Any"
+
+
+class UmlAssociationDirectionEnum(str, Enum):
+    DIRECTED = "directed"
+    BIDIRECTIONAL = "bidirectional"
+
+
+class UmlDiagramType(str, Enum):
     """Enum class for diagram types"""
 
     CLASS = "Class"
@@ -19,21 +96,7 @@ class DiagramType(Enum):
     NONE = "None"
 
 
-class PrimitiveTypes(Enum):
-    """Enum class for primitive types"""
-
-    STRING = "String"
-    INTEGER = "Integer"
-    FLOAT = "Float"
-    CHAR = "Char"
-    BOOLEAN = "Boolean"
-    REAL = "Real"
-    UNLIMITED_NATURAL = "UnlimitedNatural"
-    VOID = "Void"
-    ANY = "Any"
-
-
-class UmlElementType(Enum):
+class UmlElementType(str, Enum):
     """Enum class for UML element types"""
 
     PACKAGE = "Package"

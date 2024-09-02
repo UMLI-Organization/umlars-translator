@@ -1,14 +1,18 @@
-from umlars_translator.core.deserialization.formats.ea_xmi.ea_constants import (
+from src.umlars_translator.core.configuration.config_namespace import  ConfigNamespace
+from src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
+    DeserializationStrategy,
+)
+from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_constants import (
     EaXmiConfig,
 )
-from umlars_translator.core.deserialization.abstract.xml.xml_deserialization_strategy import (
+from src.umlars_translator.core.deserialization.abstract.xml.xml_deserialization_strategy import (
     XmiDeserializationStrategy,
 )
-from umlars_translator.core.deserialization.factory import (
+from src.umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
 )
-from umlars_translator.core.deserialization.config import SupportedFormat
-from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
+from src.umlars_translator.config import SupportedFormat
+from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
     RootPipe,
     DocumentationPipe,
     UmlModelPipe,
@@ -24,9 +28,11 @@ from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processi
     UmlAssociationPipe,
     UmlAssociationMemberEndPipe,
     UmlAssociationOwnedEndPipe,
+    UmlDataTypePipe,
+    UmlEnumerationPipe,
 )
 
-from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
+from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
     EaXmiDetectionPipe,
     EaXmiDocumentationDetectionPipe,
 )
@@ -56,6 +62,8 @@ class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
         self._build_uml_class_processing_pipe(package_pipe)
         self._build_uml_interface_processing_pipe(package_pipe)
         self._build_association_processing_pipe(package_pipe)
+        self._build_uml_data_type_processing_pipe(package_pipe)
+        self._build_uml_enumeration_processing_pipe(package_pipe)
 
         return uml_model_pipe
 
@@ -93,8 +101,20 @@ class EaXmiImportParsingStrategy(XmiDeserializationStrategy):
     ) -> UmlClassPipe | UmlInterfacePipe:
         self._build_uml_attribute_processing_pipe(parent_pipe)
         self._build_uml_operation_processing_pipe(parent_pipe)
-
         return parent_pipe
+    
+    def _build_uml_data_type_processing_pipe(
+        self, parent_pipe: UmlPackagePipe
+    ) -> UmlDataTypePipe:
+        data_type_pipe = parent_pipe.add_next(UmlDataTypePipe())
+        return data_type_pipe
+    
+    def _build_uml_enumeration_processing_pipe(
+        self, parent_pipe: UmlPackagePipe
+    ) -> UmlEnumerationPipe:
+        enumeration_pipe = parent_pipe.add_next(UmlEnumerationPipe())
+        return enumeration_pipe
+    
 
     def _build_association_processing_pipe(
         self, parent_pipe: UmlPackagePipe

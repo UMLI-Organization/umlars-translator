@@ -4,11 +4,11 @@ from logging import Logger
 
 from kink import inject
 
-from umlars_translator.core.deserialization.config import SupportedFormat
-from umlars_translator.core.deserialization.data_source import DataSource
-from umlars_translator.core.model.abstract.uml_model import IUmlModel
-from umlars_translator.core.configuration.config_namespace import ConfigNamespace
-from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from src.umlars_translator.config import SupportedFormat
+from src.umlars_translator.core.deserialization.data_source import DataSource
+from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
+from src.umlars_translator.core.configuration.config_namespace import ConfigNamespace
+from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 
 
 @inject
@@ -23,11 +23,11 @@ class DeserializationStrategy(ABC):
 
     def __init__(
         self,
-        logger: Optional[Logger] = None,
+        core_logger: Optional[Logger] = None,
         config_namespace: Optional[ConfigNamespace] = None,
-        model_builder: Optional[IUmlModelBuilder] = None,
+        model_builder: IUmlModelBuilder | None = None,
     ) -> None:
-        self._logger = logger.getChild(self.__class__.__name__)
+        self._logger = core_logger.getChild(self.__class__.__name__)
         self._model_builder = model_builder
         self._config = (
             config_namespace
@@ -62,6 +62,9 @@ class DeserializationStrategy(ABC):
         Method used by a final user to check if a specific format can be deserialized.
         Uses self._can_deserialize_format_data and self.__class__.__SUPPORTED_FORMAT_NAME to check if the format is supported.
         """
+        if format is None and format_data is not None:
+            format = format_data.format
+
         return (
             format is self.__class__.get_supported_format()
             or self._can_deserialize_format_data(format_data)
@@ -73,8 +76,20 @@ class DeserializationStrategy(ABC):
         Helper method used to check if the format data is valid for deserialization.
         """
 
+    def retrieve_model(
+        self, data_source: DataSource, model_to_extend: Optional[IUmlModel]=None, initilized_builder: Optional[IUmlModelBuilder] = None, clear_afterwards: bool = True
+        ) -> IUmlModel:
+        self._model_builder = initilized_builder or self._model_builder
+    
+        if model_to_extend:
+            self._model_builder.model = model_to_extend
+    
+        return self._retrieve_model(data_source, clear_afterwards=clear_afterwards)
+
     @abstractmethod
-    def retrieve_model(self, data_source: DataSource) -> IUmlModel:
+    def _retrieve_model(
+        self, data_source: DataSource, clear_afterwards: bool = True
+    ) -> IUmlModel:
         """
         Method resposible for the main processing of the source data.
         It performs the transformations required to retrieve all the data from source format into the UML Model.

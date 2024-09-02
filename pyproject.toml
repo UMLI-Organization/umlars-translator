@@ -23,9 +23,17 @@ packages = [{include = "umlars_translator", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.111.0"
+fastapi = "^0.111.1"
 uvicorn = {extras = ["standard"], version = "^0.30.1"}
 kink = "^0.8.0"
+pydantic = "^2.7.4"
+watchfiles = "0.21.0"
+motor = "^3.5.1"
+aio-pika = "^9.4.2"
+aiohttp = "^3.9.5"
+pytest-mock = "^3.14.0"
+pytest-asyncio = "^0.24.0"
+pytest = "^8.3.2"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -34,7 +42,6 @@ mkdocstrings = { extras = ["python"], version = "^0.24.0" }
 mkdocs-material = "^9.5.3"
 tox = "^4.11.4"
 black = "^23.10.1"
-pytest = "^7.4.4"
 
 
 [build-system]
@@ -43,5 +50,8 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry.plugins]
-[tool.poetry.plugins."umlars_translator.core.deserialization.abstract.base.deserialization_strategy"]
-ea_xmi = "umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy"
+[tool.poetry.plugins."src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy"]
+ea_xmi = "src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy"
+papyrus_xmi = "src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_deserialization_strategy"
+notation_xmi = "src.umlars_translator.core.deserialization.formats.papyrus_xmi.notation_xmi_deserialization_strategy"
+staruml_mdj = "src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_deserialization_strategy"

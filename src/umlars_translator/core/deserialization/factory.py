@@ -2,11 +2,12 @@ from typing import Type, Optional, Dict
 
 from kink import inject
 
-from umlars_translator.core.deserialization.config import SupportedFormat
-from umlars_translator.core.deserialization.data_source import DataSource
-from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from src.umlars_translator.config import SupportedFormat
+from src.umlars_translator.core.deserialization.data_source import DataSource
+from src.umlars_translator.core.deserialization.exceptions import UnsupportedSourceDataTypeError
+from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 
-from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
+from src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
     DeserializationStrategy,
 )
 
@@ -33,7 +34,6 @@ class DeserializationStrategyFactory:
     def get_strategy(
         self,
         *,
-        format: Optional[SupportedFormat] = None,
         format_data_source: Optional[DataSource] = None,
         model_builder: Optional[IUmlModelBuilder] = None,
         **kwargs,
@@ -49,7 +49,7 @@ class DeserializationStrategyFactory:
             return stategy_class(model_builder=model_builder, **kwargs)
 
         strategy_class = (
-            self._registered_strategies.get(format) if format is not None else None
+            self._registered_strategies.get(format_data_source.format) if format_data_source.format is not None else None
         )
 
         if strategy_class is not None:
@@ -60,7 +60,7 @@ class DeserializationStrategyFactory:
             for strategy_class in self._registered_strategies.values()
             if (
                 strategy_instance := create_strategy(strategy_class)
-            ).can_deserialize_format(format, format_data_source)
+            ).can_deserialize_format(format_data_source.format, format_data_source)
         ]
 
         if len(strategies_instances_for_data) > 1:
@@ -71,7 +71,7 @@ class DeserializationStrategyFactory:
                 f"Strategies: {strategies_instances_for_data}"
             )
         elif len(strategies_instances_for_data) == 0:
-            raise ValueError("No strategy can deserialize the format data.")
+            raise UnsupportedSourceDataTypeError("No strategy can deserialize the format data.")
         else:
             strategy_instance = strategies_instances_for_data[0]
 

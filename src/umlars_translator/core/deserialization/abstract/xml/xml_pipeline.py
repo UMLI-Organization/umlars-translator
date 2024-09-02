@@ -2,18 +2,17 @@ from xml.etree import ElementTree as ET
 from typing import Callable, Iterator, Optional, NamedTuple, Any
 from dataclasses import dataclass
 
-from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
-from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
+from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from src.umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
     ModelProcessingPipe,
     FormatDetectionPipe,
     DataBatch,
 )
-from umlars_translator.core.deserialization.exceptions import (
+from src.umlars_translator.core.deserialization.exceptions import (
     InvalidFormatException,
-    UnableToMapError,
 )
-from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
-from umlars_translator.core.configuration.config_proxy import (
+from src.umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
+from src.umlars_translator.core.configuration.config_proxy import (
     ConfigProxy,
     get_configurable_value,
 )
@@ -129,6 +128,14 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
 
         return all(condition(data) for condition in self._attributes_conditions)
 
+    @staticmethod
+    def _are_tags_matching(tag_1: str, tag_2: str) -> bool:
+        # URI is not parsed in the same way by the ElementTree always
+        # When the same XMI file was parsed with deleted <elements>, <primitiveTypes> and <profiles> - ET suddenly started to add '/' at the end of the URI
+        tag_1 = tag_1.replace('/}', '}')
+        tag_2 = tag_2.replace('/}', '}')
+        return (tag_1 == tag_2)
+
     def _can_process(self, data_batch: Optional[DataBatch] = None) -> bool:
         data: ET.ElementTree | ET.Element = data_batch.data
 
@@ -137,7 +144,7 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
 
         try:
             return (
-                data.tag == self._associated_xml_tag or self._associated_xml_tag is None
+                self._associated_xml_tag is None or self._are_tags_matching(data.tag, self._associated_xml_tag)
             ) and self._has_required_attributes_values(data)
         except AttributeError as ex:
             if not isinstance(data, ET.Element):
@@ -189,30 +196,6 @@ class XmlModelProcessingPipe(ModelProcessingPipe):
             error_message = f"Xml processing pipeline didn't receive parsed xml data. Received: {data} of type {type(data)}"
             self._logger.error(error_message)
             raise InvalidFormatException(error_message) from ex
-
-    def _map_value_from_key(
-        self,
-        values_dict: dict[str, str],
-        key_to_map: str,
-        mapping_dict: dict[str, Any],
-        raise_when_missing: bool = True,
-        inplace: bool = True,
-    ) -> str | None:
-        try:
-            value_to_map = values_dict[key_to_map]
-            mapped_value = mapping_dict[value_to_map]
-            if inplace:
-                values_dict[key_to_map] = mapped_value
-            else:
-                return mapped_value
-
-        except KeyError as ex:
-            if raise_when_missing:
-                raise UnableToMapError(
-                    f"Value {value_to_map} not found in mapping dict"
-                    f"or key {key_to_map} not found in values dict."
-                ) from ex
-            return None
 
 
 class XmlFormatDetectionPipe(FormatDetectionPipe, XmlModelProcessingPipe):

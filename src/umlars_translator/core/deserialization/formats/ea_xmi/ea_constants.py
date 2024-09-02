@@ -1,21 +1,21 @@
 from enum import Enum
 
-from umlars_translator.core.model.constants import (
-    DiagramType,
-    PrimitiveTypes,
+from src.umlars_translator.core.model.constants import (
+    UmlPrimitiveTypeKindEnum,
+    UmlDiagramType,
     UmlElementType,
 )
-from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
+from src.umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
 
 
-# TODO: split config into parsed config and normal - so u can use normal enums etc
+# TODO: split config into parsed config and normal - so u can use normal enums etc and get IDE suggestions
 
 
 class EaXmiConfig(ParsedConfigNamespace):
     # TODO: use to check if namespace is allowed for data source
     ALLOWED_NAMESPACES: dict[str, list] = {
         "uml": ["{http://schema.omg.org/spec/UML/2.1}"],
-        "xmi": ["{http://schema.omg.org/spec/XMI/2.1}"],
+        "xmi": ["{http://schema.omg.org/spec/XMI/2.1}"]
     }
 
     TAGS: dict[str, str] = {
@@ -120,8 +120,8 @@ class EaXmiConfig(ParsedConfigNamespace):
     }
 
     EA_DIAGRAMS_TYPES_MAPPING: dict[str, str] = {
-        "Logical": DiagramType.CLASS,
-        "Sequence": DiagramType.SEQUENCE,
+        "Logical": UmlDiagramType.CLASS,
+        "Sequence": UmlDiagramType.SEQUENCE,
     }
 
     EA_TYPE_ATTRIBUTE_MAPPING: dict[str, str] = {
@@ -132,18 +132,18 @@ class EaXmiConfig(ParsedConfigNamespace):
         "uml:Dependency": UmlElementType.DEPENDENCY,
         "uml:Generalization": UmlElementType.GENERALIZATION,
         "uml:Realization": UmlElementType.REALIZATION,
-        "uml:LiteralInteger": PrimitiveTypes.INTEGER,
-        "uml:LiteralUnlimitedNatural": PrimitiveTypes.INTEGER,
+        "uml:LiteralInteger": UmlPrimitiveTypeKindEnum.INTEGER,
+        "uml:LiteralUnlimitedNatural": UmlPrimitiveTypeKindEnum.INTEGER,
         "EAnone_void": None,
-        "EAJava_boolean": PrimitiveTypes.BOOLEAN,
+        "EAJava_boolean": UmlPrimitiveTypeKindEnum.BOOLEAN,
         "EAJava_void": None,
-        "EAJava_int": PrimitiveTypes.INTEGER,
-        "EAJava_float": PrimitiveTypes.FLOAT,
-        "EAJava_char": PrimitiveTypes.CHAR,
+        "EAJava_int": UmlPrimitiveTypeKindEnum.INTEGER,
+        "EAJava_float": UmlPrimitiveTypeKindEnum.FLOAT,
+        "EAJava_char": UmlPrimitiveTypeKindEnum.CHAR,
     }
 
     EA_HREF_ATTRIBUTE_MAPPING: dict[str, str] = {
-        "http://schema.omg.org/spec/UML/2.1/uml.xml#Integer": PrimitiveTypes.INTEGER,
+        "http://schema.omg.org/spec/UML/2.1/uml.xml#Integer": UmlPrimitiveTypeKindEnum.INTEGER,
     }
 
     # TODO: move to file with non-parsed constants /enums
@@ -159,3 +159,6 @@ class EaXmiConfig(ParsedConfigNamespace):
         DEPENDENCY = "uml:Dependency"
         GENERALIZATION = "uml:Generalization"
         REALIZATION = "uml:Realization"
+        DATA_TYPE = "uml:DataType"
+        ENUMERATION = "uml:Enumeration"
+        

@@ -3,10 +3,10 @@ setup:
 	poetry install
 
 test:
-	poetry run pytest
+	poetry run python -m pytest
 
 tox-test:
-	poetry run tox
+	poetry run python -m tox
 
 docs:
 	poetry run mkdocs serve
@@ -43,9 +43,11 @@ docker-setup:
 	poetry install --no-interaction --no-ansi
 
 server-start:
-	poetry run uvicorn src.umlars_translator.app.main:app --reload --host="0.0.0.0" --port=8080
+	poetry install
+	poetry run python3 -m umlars_translator --run-server
 
 server-start-dev:
-	poetry run uvicorn src.umlars_translator.app.main:app --reload --host="0.0.0.0" --port=8080
+	poetry install
+	poetry run python3 -m umlars_translator --run-server
 
 .PHONY: setup tests docs clean export version-new-release version-new-prerelease publish publish-test

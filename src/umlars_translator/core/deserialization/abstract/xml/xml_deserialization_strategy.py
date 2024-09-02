@@ -1,13 +1,16 @@
+from abc import abstractmethod
 from typing import Any
-import io
 from xml.etree import ElementTree as ET
 
-from umlars_translator.core.deserialization.data_source import DataSource
-from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline_deserialization_strategy import (
+from src.umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace, ConfigNamespace
+from src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy import DeserializationStrategy
+from src.umlars_translator.core.deserialization.data_source import DataSource
+from src.umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline_deserialization_strategy import (
     PipelineDeserializationStrategy,
 )
-from umlars_translator.core.deserialization.exceptions import InvalidFormatException
-from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
+from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException
+from src.umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
+from src.umlars_translator.core.deserialization.abstract.xml.utils import retrieve_namespaces
 
 
 class XmlDeserializationStrategy(PipelineDeserializationStrategy):
@@ -34,23 +37,8 @@ class XmlDeserializationStrategy(PipelineDeserializationStrategy):
         )
 
     def _parse_config(self, source: DataSource) -> ParsedConfigNamespace:
-        namespaces = self._retrieve_namespaces(source)
+        namespaces = retrieve_namespaces(source)
         return self.config.parse(namespaces)
-
-    def _retrieve_namespaces(self, source: DataSource) -> dict[str, str]:
-        namespaces = {}
-        xml_file_like_data_reference = (
-            source.file_path
-            if source.file_path is not None
-            else io.StringIO(source.retrieved_data)
-        )
-
-        for event, elem in ET.iterparse(
-            xml_file_like_data_reference, events=("start-ns",)
-        ):
-            prefix, uri = elem
-            namespaces[prefix] = uri
-        return namespaces
 
 
 class XmiDeserializationStrategy(XmlDeserializationStrategy):

@@ -1,12 +1,12 @@
 from typing import Iterator
 
-from umlars_translator.core.deserialization.abstract.xml.xml_pipeline import (
+from src.umlars_translator.core.deserialization.abstract.xml.xml_pipeline import (
     XmlFormatDetectionPipe,
     DataBatch,
     AliasToXmlKey,
 )
-from umlars_translator.core.deserialization.exceptions import UnsupportedFormatException
-from umlars_translator.core.configuration.config_proxy import Config
+from src.umlars_translator.core.deserialization.exceptions import UnsupportedFormatException
+from src.umlars_translator.core.configuration.config_proxy import Config
 
 
 # The following classes are used to detect the format of the data

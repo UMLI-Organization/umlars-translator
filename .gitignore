@@ -17,4 +17,9 @@ venv
 src/umlars_translator/core/model/old_model
 src/umlars_translator/core/model/pyuml2
 src/umlars_translator/__trash
+.env*
 
+__trash
+
+mongo_data
+uml_model.db

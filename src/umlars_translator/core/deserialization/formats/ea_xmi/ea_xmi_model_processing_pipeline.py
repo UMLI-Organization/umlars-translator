@@ -1,14 +1,15 @@
 from xml.etree import ElementTree as ET
 from typing import Iterator, Any
 
-from umlars_translator.core.deserialization.abstract.xml.xml_pipeline import (
+from src.umlars_translator.core.deserialization.abstract.xml.xml_pipeline import (
     XmlModelProcessingPipe,
     XmlAttributeCondition,
     DataBatch,
     AliasToXmlKey,
 )
-from umlars_translator.core.deserialization.exceptions import UnableToMapError
-from umlars_translator.core.configuration.config_proxy import Config
+from src.umlars_translator.core.deserialization.exceptions import UnableToMapError
+from src.umlars_translator.core.configuration.config_proxy import Config, get_configurable_value
+from src.umlars_translator.core.model.constants import UmlDiagramType
 
 
 class EaXmiModelProcessingPipe(XmlModelProcessingPipe):
@@ -224,7 +225,7 @@ class UmlPackagePipe(EaXmiModelProcessingPipe):
         )
         self.model_builder.construct_uml_package(**aliases_to_values)
 
-        yield from self._create_data_batches(data)
+        yield from self._create_data_batches(data, parent_context={"package_id": aliases_to_values["id"]})
 
 
 class UmlClassPipe(EaXmiModelProcessingPipe):
@@ -240,6 +241,7 @@ class UmlClassPipe(EaXmiModelProcessingPipe):
 
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
+                id=self.config.ATTRIBUTES["id"],
                 name=self.config.ATTRIBUTES["name"]
             )
             optional_attributes = AliasToXmlKey.from_kwargs(
@@ -254,8 +256,10 @@ class UmlClassPipe(EaXmiModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
         self.model_builder.construct_uml_class(**aliases_to_values)
+        if "package_id" in data_batch.parent_context:
+            self.model_builder.add_class_to_package(class_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
 
-        yield from self._create_data_batches(data)
+        yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
 
 
 class UmlInterfacePipe(EaXmiModelProcessingPipe):
@@ -271,6 +275,7 @@ class UmlInterfacePipe(EaXmiModelProcessingPipe):
 
         try:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
+                id=self.config.ATTRIBUTES["id"],
                 name=self.config.ATTRIBUTES["name"]
             )
             optional_attributes = AliasToXmlKey.from_kwargs(
@@ -285,8 +290,10 @@ class UmlInterfacePipe(EaXmiModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
         self.model_builder.construct_uml_interface(**aliases_to_values)
+        if "package_id" in data_batch.parent_context:
+            self.model_builder.add_interface_to_package(interface_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
 
-        yield from self._create_data_batches(data)
+        yield from self._create_data_batches(data, parent_context={"parent_id": aliases_to_values["id"]})
 
 
 class UmlAttributePipe(EaXmiModelProcessingPipe):
@@ -327,7 +334,8 @@ class UmlAttributePipe(EaXmiModelProcessingPipe):
         aliases_to_values.update(self._process_type_child(data_batch))
         aliases_to_values.update(self._process_attribute_multiplicity(data_batch))
 
-        self.model_builder.construct_uml_attribute(**aliases_to_values)
+        self.model_builder.construct_uml_attribute(**aliases_to_values, classifier_id=data_batch.parent_context["parent_id"])
+
         yield from self._create_data_batches(
             data, parent_context={"parent_id": aliases_to_values["id"]}
         )
@@ -364,7 +372,7 @@ class UmlOperationPipe(EaXmiModelProcessingPipe):
             data, mandatory_attributes, optional_attributes
         )
 
-        self.model_builder.construct_uml_operation(**aliases_to_values)
+        self.model_builder.construct_uml_operation(**aliases_to_values, classifier_id=data_batch.parent_context["parent_id"])
         yield from self._create_data_batches(
             data, parent_context={"parent_id": aliases_to_values["id"]}
         )
@@ -414,6 +422,82 @@ class UmlOperationParameterPipe(EaXmiModelProcessingPipe):
         )
 
 
+class UmlDataTypePipe(EaXmiModelProcessingPipe):
+    ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
+    ATTRIBUTES_CONDITIONS = [
+        XmlAttributeCondition(
+            Config.ATTRIBUTES["type"], Config.EaPackagedElementTypes.DATA_TYPE
+        )
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToXmlKey.from_kwargs(
+                id=self.config.ATTRIBUTES["id"],
+                name=self.config.ATTRIBUTES["name"],
+            )
+
+            optional_attributes = AliasToXmlKey.from_kwargs(
+                visibility=self.config.ATTRIBUTES["visibility"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes, optional_attributes
+        )
+
+        self.model_builder.construct_uml_data_type(**aliases_to_values)
+        if "package_id" in data_batch.parent_context:
+            self.model_builder.add_data_type_to_package(data_type_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
+
+        yield from self._create_data_batches(
+            data, parent_context={"parent_id": aliases_to_values["id"]}
+        )
+
+
+class UmlEnumerationPipe(EaXmiModelProcessingPipe):
+    ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
+    ATTRIBUTES_CONDITIONS = [
+        XmlAttributeCondition(
+            Config.ATTRIBUTES["type"], Config.EaPackagedElementTypes.ENUMERATION
+        )
+    ]
+
+    def _process(self, data_batch: DataBatch) -> Iterator[DataBatch]:
+        data = data_batch.data
+
+        try:
+            mandatory_attributes = AliasToXmlKey.from_kwargs(
+                id=self.config.ATTRIBUTES["id"],
+                name=self.config.ATTRIBUTES["name"],
+            )
+
+            optional_attributes = AliasToXmlKey.from_kwargs(
+                visibility=self.config.ATTRIBUTES["visibility"],
+            )
+        except KeyError as ex:
+            raise ValueError(
+                f"Configuration of the data format was invalid. Error: {str(ex)}"
+            )
+
+        aliases_to_values = self._get_attributes_values_for_aliases(
+            data, mandatory_attributes, optional_attributes
+        )
+
+        self.model_builder.construct_uml_enumeration(**aliases_to_values)
+        if "package_id" in data_batch.parent_context:
+            self.model_builder.add_enumeration_to_package(enumeration_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
+
+        yield from self._create_data_batches(
+            data, parent_context={"parent_id": aliases_to_values["id"]}
+        )
+
+
 class UmlAssociationPipe(EaXmiModelProcessingPipe):
     ASSOCIATED_XML_TAG = Config.TAGS["packaged_element"]
     ATTRIBUTES_CONDITIONS = [
@@ -449,6 +533,9 @@ class UmlAssociationPipe(EaXmiModelProcessingPipe):
         )
 
         self.model_builder.construct_uml_association(**aliases_to_values)
+        if "package_id" in data_batch.parent_context:
+            self.model_builder.add_association_to_package(association_id=aliases_to_values["id"], package_id=data_batch.parent_context["package_id"])
+
         yield from self._create_data_batches(
             data, parent_context={"parent_id": aliases_to_values["id"]}
         )
@@ -494,6 +581,7 @@ class UmlAssociationOwnedEndPipe(EaXmiModelProcessingPipe):
 
             optional_attributes = AliasToXmlKey.from_kwargs(
                 name=self.config.ATTRIBUTES["name"],
+                role=self.config.ATTRIBUTES["name"],
                 visibility=self.config.ATTRIBUTES["visibility"],
                 is_static=self.config.ATTRIBUTES["is_static"],
                 is_ordered=self.config.ATTRIBUTES["is_ordered"],
@@ -573,18 +661,35 @@ class DiagramPipe(EaXmiModelProcessingPipe):
     def _construct_diagram_from_properties(
         self, diagram_properties: ET.Element, diagram_id: str
     ) -> None:
-        optional_attributes = AliasToXmlKey.from_kwargs(
+        mandatory_attributes = AliasToXmlKey.from_kwargs(
             diagram_type=self.config.EA_EXTENDED_ATTRIBUTES["property_type"],
-            diagram_name=self.config.EA_EXTENDED_ATTRIBUTES["element_name"],
+        )
+        optional_attributes = AliasToXmlKey.from_kwargs(
+            name=self.config.EA_EXTENDED_ATTRIBUTES["element_name"],
         )
         aliases_to_values = self._get_attributes_values_for_aliases(
-            diagram_properties, optional_attributes
+            diagram_properties, mandatory_attributes=mandatory_attributes, optional_attributes=optional_attributes
         )
-        self.model_builder.construct_diagram(**aliases_to_values, id=diagram_id)
+
+        diagram_type_name = aliases_to_values.pop("diagram_type")
+
+        diagram_type = Config.EA_DIAGRAMS_TYPES_MAPPING[diagram_type_name]
+        diagram_type_parsed = get_configurable_value(diagram_type, self.config)
+
+        self._logger.warn(f"Constructing diagram of type: {diagram_type_parsed}")
+
+        match (diagram_type_parsed):
+            case UmlDiagramType.CLASS:
+                self.model_builder.construct_class_diagram(**aliases_to_values, id=diagram_id)
+            case UmlDiagramType.SEQUENCE:
+                self.model_builder.construct_sequence_diagram(**aliases_to_values, id=diagram_id)
+            case _:
+                self._logger.warning(f"Diagram type: {diagram_type_parsed} is not supported.")
 
     def _construct_diagram_elements(
         self, diagram_elements: ET.Element, diagram_id: str
     ) -> None:
+        self._logger.debug(f"Constructing diagram elements for diagram: {diagram_id}")
         for element in diagram_elements:
             mandatory_attributes = AliasToXmlKey.from_kwargs(
                 element_id=self.config.EA_EXTENDED_ATTRIBUTES["subject"],

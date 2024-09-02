@@ -1,15 +1,23 @@
 import argparse
+from typing import Optional
+from logging import Logger
+import os
 
-from umlars_translator.core.deserialization.config import SupportedFormat
-from umlars_translator.core.translator import ModelTranslator
-from umlars_translator.core.utils.functions import get_enum_members_values
+from kink import inject
+
+from src.umlars_translator.config import SupportedFormat
+from src.umlars_translator.core.translator import ModelTranslator
+from src.umlars_translator.core.utils.functions import get_enum_members_values
+from src.umlars_translator.app.main import run_app
 
 
+@inject
 class CLIManager:
-    def __init__(self) -> None:
+    def __init__(self, logger: Optional[Logger] = None) -> None:
         self._parser = argparse.ArgumentParser(
             description="Tool for translating UML diagrams from external formats into other formats."
         )
+        self._logger = logger.getChild(self.__class__.__name__)
         self._add_arguments()
 
     def _add_supported_formats_argumets(self) -> None:
@@ -43,12 +51,26 @@ class CLIManager:
             self._parser.print_help()
 
     def _run_server(self) -> None:
-        print("Running REST API server...")
-        # TODO: Add logic to start the REST API server here
+        self._logger.info("Running REST API server...")
+        run_app()
 
     def _translate_files(self, file_names, from_format) -> None:
-        print(f"Translating files {file_names} to {from_format}...")
+        self._logger.info(f"Translating files {file_names} from format {from_format}...")
         translator = ModelTranslator()
-        print(list(translator.translate(file_names, from_format)))
+        current_working_directory = os.getcwd()
+        output_directory = os.path.join(current_working_directory, "output")
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
+        self._logger.info(f"Output directory: {output_directory}")
 
-        # TODO: Add logic to translate the file here
+        for file_name in file_names:
+            file_base_name = os.path.basename(file_name)
+            self._logger.info(f"Translating file {file_base_name}...")
+            
+            output_file_name = f"{file_base_name}_translated.umj"
+            output_location = os.path.join(output_directory, output_file_name)
+            with open(output_location, "w") as output_file:
+                translated_data = translator.translate(file_name=file_name, from_format=from_format, clear_model_afterwards=True)
+                output_file.write(translated_data)
+
+            self._logger.info(f"File {file_name} translated to {output_location}")
