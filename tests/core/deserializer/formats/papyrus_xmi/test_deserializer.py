@@ -391,3 +391,112 @@ def test_when_deserialize_car_model_file_then_correct_realizations_created(
     realizations = [f"{realization.client.name} -> {realization.supplier.name}" for realization in model.elements.realizations]
     assert all(realization in expected_realizations for realization in realizations)
     assert all(isinstance(realization, IUmlRealization) for realization in model.elements.realizations)
+
+
+
+def test_when_deserialize_car_model_file_then_correct_number_of_diagrams(
+    umlars_model_builder, papyrus_xmi_class_data_sources, umlars_deserializer
+):
+    model = umlars_deserializer.deserialize(
+        data_sources=papyrus_xmi_class_data_sources,
+    )
+
+    # Expected number of class diagrams and sequence diagrams
+    expected_class_diagrams_count = 1
+    expected_sequence_diagrams_count = 2
+
+    assert len(model.diagrams.class_diagrams) == expected_class_diagrams_count
+    assert len(model.diagrams.sequence_diagrams) == expected_sequence_diagrams_count
+
+
+def test_when_deserialize_car_model_file_then_correct_class_diagram_elements(
+    umlars_model_builder, papyrus_xmi_class_data_sources, umlars_deserializer
+):
+    model = umlars_deserializer.deserialize(
+        data_sources=papyrus_xmi_class_data_sources,
+    )
+
+    expected_classes = ["Car", "Driver", "Person", "Wheel"]
+    expected_datatypes = ["Datetime"]
+    expected_enumerations = ["Gender"]
+    expected_interfaces = ["Movable"]
+
+    class_diagram = model.diagrams.class_diagrams[0]
+
+    class_names = [cls.name for cls in class_diagram.elements.classes]
+    datatype_names = [dt.name for dt in class_diagram.elements.data_types]
+    enumeration_names = [enum.name for enum in class_diagram.elements.enumerations]
+    interface_names = [iface.name for iface in class_diagram.elements.interfaces]
+
+    assert len(class_diagram.elements.classes) == len(expected_classes)
+    assert len(class_diagram.elements.data_types) == len(expected_datatypes)
+    assert len(class_diagram.elements.enumerations) == len(expected_enumerations)
+    assert len(class_diagram.elements.interfaces) == len(expected_interfaces)
+
+    assert all(cls in class_names for cls in expected_classes)
+    assert all(dt in datatype_names for dt in expected_datatypes)
+    assert all(enum in enumeration_names for enum in expected_enumerations)
+    assert all(iface in interface_names for iface in expected_interfaces)
+
+
+# def test_when_deserialize_car_model_file_then_correct_sequence_diagram_elements(
+#     umlars_model_builder, papyrus_xmi_class_data_sources, umlars_deserializer
+# ):
+#     model = umlars_deserializer.deserialize(
+#         data_sources=papyrus_xmi_class_data_sources,
+#     )
+
+#     expected_lifelines_seq1 = ["userDriver", "car", "driver", "newWheel", "wheel"]
+#     expected_lifelines_seq2 = ["driver", "car", "wheel", "newWheel"]
+
+#     seq_diagram1 = model.diagrams.sequence_diagrams[0]
+#     seq_diagram2 = model.diagrams.sequence_diagrams[1]
+
+#     lifeline_names_seq1 = [lifeline.name for lifeline in seq_diagram1.lifelines]
+#     lifeline_names_seq2 = [lifeline.name for lifeline in seq_diagram2.lifelines]
+
+#     assert all(lifeline in lifeline_names_seq1 for lifeline in expected_lifelines_seq1)
+#     assert all(lifeline in lifeline_names_seq2 for lifeline in expected_lifelines_seq2)
+
+
+# def test_when_deserialize_car_model_file_then_correct_messages_in_sequence_diagrams(
+#     umlars_model_builder, papyrus_xmi_class_data_sources, umlars_deserializer
+# ):
+#     model = umlars_deserializer.deserialize(
+#         data_sources=papyrus_xmi_class_data_sources,
+#     )
+
+#     expected_messages_seq1 = ["changeWheels", "reply", "delete", "create"]
+#     expected_messages_seq2 = ["driving", "reply", "synch", "asynch"]
+
+#     seq_diagram1 = model.diagrams.sequence_diagrams[0]
+#     seq_diagram2 = model.diagrams.sequence_diagrams[1]
+
+#     message_names_seq1 = [message.name for message in seq_diagram1.elements.interactions[0].messages]
+#     message_names_seq2 = [message.name for message in seq_diagram2.elements.interactions[0].messages]
+
+#     assert all(message in message_names_seq1 for message in expected_messages_seq1)
+#     assert all(message in message_names_seq2 for message in expected_messages_seq2)
+
+
+# def test_when_deserialize_car_model_file_then_correct_associations_in_class_diagram(
+#     umlars_model_builder, papyrus_xmi_class_data_sources, umlars_deserializer
+# ):
+#     model = umlars_deserializer.deserialize(
+#         data_sources=papyrus_xmi_class_data_sources,
+#     )
+
+#     expected_associations = [
+#         {"source": "Driver", "target": "Car", "name": "drives"},
+#         {"source": "Car", "target": "Wheel", "name": "has"},
+#     ]
+
+#     class_diagram = model.diagrams.class_diagrams[0]
+#     association_data = [
+#         {"source": assoc.source.name, "target": assoc.target.name, "name": assoc.name}
+#         for assoc in class_diagram.associations
+#     ]
+
+#     assert len(class_diagram.associations) == len(expected_associations)
+#     for assoc in expected_associations:
+#         assert assoc in association_data
