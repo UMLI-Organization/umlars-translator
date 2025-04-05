@@ -1,9 +1,9 @@
 from typing import List, Optional, Union, ClassVar, TYPE_CHECKING
 
 
-from src.umlars_translator.core.model.umlars_model.mixins import RegisteredInModelMixin
-from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlNamedElement, IUmlPrimitiveType, IUmlClassifier, IUmlClass, IUmlInterface, IUmlOrderedElement, IUmlDataType, IUmlEnumeration, IUmlAttribute, IUmlParameter, IUmlOperation, IUmlGeneralization, IUmlDependency, IUmlAssociationEnd, IUmlAssociationBase, IUmlAssociation, IUmlDirectedAssociation, IUmlAggregation, IUmlComposition, IUmlRealization, IUmlLifeline, IUmlMessage, IUmlCombinedFragment, IUmlInteractionUse, IUmlInteraction, IUmlPackage, IUmlOccurrenceSpecification, IUmlOperand, IUmlModelElements
-from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum, UmlPrimitiveTypeKindEnum, UmlAssociationDirectionEnum, UmlParameterDirectionEnum, UmlInteractionOperatorEnum, UmlMessageSortEnum, UmlMessageKindEnum
+from umlars_translator.core.model.umlars_model.mixins import RegisteredInModelMixin
+from umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlNamedElement, IUmlPrimitiveType, IUmlClassifier, IUmlClass, IUmlInterface, IUmlOrderedElement, IUmlDataType, IUmlEnumeration, IUmlAttribute, IUmlParameter, IUmlOperation, IUmlGeneralization, IUmlDependency, IUmlAssociationEnd, IUmlAssociationBase, IUmlAssociation, IUmlDirectedAssociation, IUmlAggregation, IUmlComposition, IUmlRealization, IUmlLifeline, IUmlMessage, IUmlCombinedFragment, IUmlInteractionUse, IUmlInteraction, IUmlPackage, IUmlOccurrenceSpecification, IUmlOperand, IUmlModelElements
+from umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum, UmlPrimitiveTypeKindEnum, UmlAssociationDirectionEnum, UmlParameterDirectionEnum, UmlInteractionOperatorEnum, UmlMessageSortEnum, UmlMessageKindEnum
 
 
 # Base and Common Elements

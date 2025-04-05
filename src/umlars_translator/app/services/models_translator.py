@@ -1,4 +1,4 @@
-# from src.umlars_translator.core.translator import ModelTranslator
+# from umlars_translator.core.translator import ModelTranslator
 
 
 # def translate_data(file_names, raw_data, from_format):

@@ -1,9 +1,9 @@
 from typing import Optional
 import aiohttp
 
-from src.umlars_translator.app.adapters.apis.api_connector import ApiConnector, ServiceConnectionData
-from src.umlars_translator.app.utils.functions import retry_async
-from src.umlars_translator.app.exceptions import ServiceConnectionError, NotYetAvailableError, ExternalServiceOperationError, ServiceUnexpectedBehaviorError
+from umlars_translator.app.adapters.apis.api_connector import ApiConnector, ServiceConnectionData
+from umlars_translator.app.utils.functions import retry_async
+from umlars_translator.app.exceptions import ServiceConnectionError, NotYetAvailableError, ExternalServiceOperationError, ServiceUnexpectedBehaviorError
 
 
 class RestApiConnector(ApiConnector):

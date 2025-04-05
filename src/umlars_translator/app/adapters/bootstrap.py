@@ -1,7 +1,7 @@
 from kink import di
 
-from src.umlars_translator.app.adapters.apis.rest_api_connector import RestApiConnector
-from src.umlars_translator.app import config
+from umlars_translator.app.adapters.apis.rest_api_connector import RestApiConnector
+from umlars_translator.app import config
 
 
 def bootstrap_di() -> None:

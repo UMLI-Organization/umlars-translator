@@ -3,8 +3,8 @@ import logging
 
 from kink import di
 
-from src.umlars_translator.app.adapters.message_brokers import config
-from src.umlars_translator.logger import add_file_handler
+from umlars_translator.app.adapters.message_brokers import config
+from umlars_translator.logger import add_file_handler
 
 
 def bootstrap_di() -> None:

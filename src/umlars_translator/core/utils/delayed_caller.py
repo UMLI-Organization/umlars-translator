@@ -6,7 +6,7 @@ from abc import ABC
 
 from kink import inject
 
-from src.umlars_translator.core.utils.exceptions import IdMismatchException
+from umlars_translator.core.utils.exceptions import IdMismatchException
 
 
 def evaluate_elements_afterwards(blocking: bool = False) -> Callable:
@@ -43,9 +43,9 @@ class IdToInstanceMapper:
         """
         Registers an element in the id-to-instance mapping if not already present.
         """
-        self._logger.debug(f"\n\nRegistering element {element} with id {getattr(element, 'id', 'attribute non-existent')}."
+        self._logger.debug(f"Registering element {element} with id {getattr(element, 'id', 'attribute non-existent')}."
                            "" if old_id is None else f" Old ID: {old_id}."
-                           "" if register_as_type is None else f" Registering as type: {register_as_type}.\n\n")
+                           "" if register_as_type is None else f" Registering as type: {register_as_type}.")
         try:
             element_id = element.id
         except AttributeError as ex:

@@ -1,15 +1,15 @@
 import pytest
 from unittest.mock import Mock
-from src.umlars_translator.core.model.umlars_model.uml_model import UmlModel
-from src.umlars_translator.core.model.umlars_model.uml_elements import (
+from umlars_translator.core.model.umlars_model.uml_model import UmlModel
+from umlars_translator.core.model.umlars_model.uml_elements import (
     UmlClass, UmlInterface, UmlDataType, UmlEnumeration, UmlPrimitiveType, UmlAttribute, UmlOperation,
     UmlLifeline, UmlAssociation, UmlAssociationEnd, UmlAggregation, UmlComposition, UmlRealization,
     UmlGeneralization, UmlDependency, UmlParameter, UmlMessage, UmlInteraction, UmlOccurrenceSpecification,
     UmlInteractionUse, UmlCombinedFragment, UmlOperand
 )
-from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagram
-from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum
-from src.umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
+from umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagram
+from umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum
+from umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
 
 # Fixtures
 @pytest.fixture

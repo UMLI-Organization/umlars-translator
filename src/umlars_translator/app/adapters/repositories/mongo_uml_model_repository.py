@@ -3,8 +3,8 @@ from typing import Optional
 from pymongo import MongoClient
 from pymongo.results import UpdateResult
 
-from src.umlars_translator.app.dtos.uml_model import UmlModel
-from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
+from umlars_translator.app.dtos.uml_model import UmlModel
+from umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
 
 
 class MongoDBUmlModelRepository(UmlModelRepository):

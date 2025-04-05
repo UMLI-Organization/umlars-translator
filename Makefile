@@ -3,10 +3,11 @@ setup:
 	poetry install
 
 test:
-	poetry run python -m pytest
+	poetry run python3 -m pytest
 
 tox-test:
-	poetry run python -m tox
+	poetry install
+	poetry run python3 -m tox
 
 docs:
 	poetry run mkdocs serve
@@ -34,7 +35,7 @@ version-new-release:
 	poetry version patch
 
 publish-test:
-	poetry publish --build -r test-pypi
+	poetry publish --build -r testpypi
 
 publish:
 	poetry publish --build
@@ -49,5 +50,8 @@ server-start:
 server-start-dev:
 	poetry install
 	poetry run python3 -m umlars_translator --run-server
+
+translate:
+	poetry run python3 -m umlars_translator $(ARGS)
 
 .PHONY: setup tests docs clean export version-new-release version-new-prerelease publish publish-test

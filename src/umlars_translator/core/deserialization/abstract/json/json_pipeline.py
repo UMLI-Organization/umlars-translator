@@ -2,12 +2,12 @@ import re
 from typing import Iterator, Optional, Callable, NamedTuple
 from dataclasses import dataclass
 
-from src.umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
+from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
     DataBatch,
     FormatDetectionPipe,
     ModelProcessingPipe
 )
-from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException
+from umlars_translator.core.deserialization.exceptions import InvalidFormatException
 
 
 class AliasToJSONKey(NamedTuple):

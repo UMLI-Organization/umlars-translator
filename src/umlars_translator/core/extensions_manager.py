@@ -9,6 +9,7 @@ from kink import inject
 class ExtensionsManager:
     """
     Class used to manage extensions of the application. It allows to load plugins from directories and filter them by categories.
+    Manages application extensions (plugins) via Python entry points.
     """
 
     def __init__(
@@ -26,27 +27,33 @@ class ExtensionsManager:
             if self._extensions_modules_groups_names is None:
                 self._logger.error("No extensions modules groups names provided.")
                 raise ValueError("No extensions modules groups names provided.")
-
             extensions_modules_groups_names = self._extensions_modules_groups_names
 
-        entry_points = importlib.metadata.entry_points()
-        self._logger.info(f"Entry points: {len(entry_points)}")
+        all_entry_points = importlib.metadata.entry_points()
+        self._logger.info(f"Entry points loaded: {len(all_entry_points)}")
 
-        for extension_module_group_name in extensions_modules_groups_names:
-            self._logger.info(f"Loading plugins for group: {extension_module_group_name}")
+        for group in extensions_modules_groups_names:
+            self._logger.info(f"Loading plugins for group: {group}")
 
-            if extension_module_group_name in entry_points:
-                self._logger.info(f"Found plugins for group: {extension_module_group_name}")
-                for entry_point in entry_points[extension_module_group_name]:
-                    self._logger.info(f"Loading plugin: {entry_point.name}")
-                    try:
-                        plugin_class = entry_point.load()
-                        self._logger.info(f"Loaded plugin: {plugin_class.__name__}")
-                    except ModuleNotFoundError as ex:
-                        error_message = (
-                            f"Plugin {entry_point.name} could not be loaded."
-                            f"Check pyproject.toml tool.poetry section for the plugin path. Set the plugin path to the correct value and run poetry install."
-                            f"Error: : {ex}"
-                        )
-                        self._logger.error(error_message)
-                        raise ModuleNotFoundError(error_message) from ex
+            # Correct: filter entry points for the specific group
+            matching_eps = all_entry_points.select(group=group)
+
+            if not matching_eps:
+                self._logger.warning(f"No plugins found for group: {group}")
+                continue
+
+            self._logger.info(f"Found {len(matching_eps)} plugins for group: {group}")
+
+            for entry_point in matching_eps:
+                self._logger.info(f"Loading plugin: {entry_point.name}")
+                try:
+                    plugin_class = entry_point.load()
+                    self._logger.info(f"Loaded plugin: {plugin_class.__name__}")
+                except ModuleNotFoundError as ex:
+                    msg = (
+                        f"Plugin '{entry_point.name}' could not be loaded. "
+                        f"Check your [tool.poetry.plugins] section in pyproject.toml.\n"
+                        f"Error: {ex}"
+                    )
+                    self._logger.error(msg)
+                    raise ModuleNotFoundError(msg) from ex

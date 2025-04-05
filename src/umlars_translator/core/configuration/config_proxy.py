@@ -2,7 +2,7 @@ from typing import Any, NamedTuple, Iterator, Optional, Callable
 from collections import deque
 from enum import Enum
 
-from src.umlars_translator.core.configuration.config_namespace import ConfigNamespace
+from umlars_translator.core.configuration.config_namespace import ConfigNamespace
 
 
 class SupportedOperationType(Enum):

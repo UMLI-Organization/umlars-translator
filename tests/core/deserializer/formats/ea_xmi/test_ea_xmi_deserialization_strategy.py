@@ -2,28 +2,28 @@ import pytest
 
 from kink import di
 
-from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy import (
+from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy import (
     EaXmiImportParsingStrategy,
 )
-from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
+from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_model_processing_pipeline import (
     RootPipe,
     UmlModelPipe,
     ExtensionPipe,
 )
-from src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
+from umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_format_detection_pipeline import (
     EaXmiDetectionPipe,
 )
-from src.umlars_translator.core.deserialization.input_processor import InputProcessor
-from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
-from src.umlars_translator.core.model.abstract.uml_diagrams import IUmlDiagrams, IUmlClassDiagram, IUmlSequenceDiagram
-from src.umlars_translator.core.model.abstract.uml_elements import IUmlPackage, IUmlModelElements, IUmlClass, IUmlAttribute, IUmlOperation, IUmlInterface, IUmlEnumeration, IUmlDataType, IUmlPrimitiveType, IUmlAssociation, IUmlDirectedAssociation, IUmlAssociationEnd, IUmlLifeline, IUmlMessage, IUmlGeneralization, IUmlRealization
-from src.umlars_translator.core.deserialization.exceptions import (
+from umlars_translator.core.deserialization.input_processor import InputProcessor
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
+from umlars_translator.core.model.abstract.uml_diagrams import IUmlDiagrams, IUmlClassDiagram, IUmlSequenceDiagram
+from umlars_translator.core.model.abstract.uml_elements import IUmlPackage, IUmlModelElements, IUmlClass, IUmlAttribute, IUmlOperation, IUmlInterface, IUmlEnumeration, IUmlDataType, IUmlPrimitiveType, IUmlAssociation, IUmlDirectedAssociation, IUmlAssociationEnd, IUmlLifeline, IUmlMessage, IUmlGeneralization, IUmlRealization
+from umlars_translator.core.deserialization.exceptions import (
     InvalidFormatException,
 )
-from src.umlars_translator.core.model.umlars_model.uml_model_builder import (
+from umlars_translator.core.model.umlars_model.uml_model_builder import (
     UmlModelBuilder,
 )
-from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlAssociationDirectionEnum, UmlPrimitiveTypeKindEnum
+from umlars_translator.core.model.constants import UmlVisibilityEnum, UmlAssociationDirectionEnum, UmlPrimitiveTypeKindEnum
 
 
 LIBRARY_MODEL_FILE_PATH = "tests/core/deserializer/formats/ea_xmi/test_data/ea_xmi_class_library.xml"

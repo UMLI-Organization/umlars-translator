@@ -5,13 +5,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from aio_pika import IncomingMessage
 from pydantic import ValidationError
 
-from src.umlars_translator.app.exceptions import QueueUnavailableError, InputDataError
-from src.umlars_translator.app.adapters.message_brokers.rabbitmq_message_producer import RabbitMQProducer
-from src.umlars_translator.app.dtos.messages import ModelToTranslateMessage
-from src.umlars_translator.app.adapters.apis.rest_api_connector import RestApiConnector
-from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
-from src.umlars_translator.core.translator import ModelTranslator
-from src.umlars_translator.app.adapters.message_brokers.rabbitmq_message_consumer import RabbitMQConsumer
+from umlars_translator.app.exceptions import QueueUnavailableError, InputDataError
+from umlars_translator.app.adapters.message_brokers.rabbitmq_message_producer import RabbitMQProducer
+from umlars_translator.app.dtos.messages import ModelToTranslateMessage
+from umlars_translator.app.adapters.apis.rest_api_connector import RestApiConnector
+from umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
+from umlars_translator.core.translator import ModelTranslator
+from umlars_translator.app.adapters.message_brokers.rabbitmq_message_consumer import RabbitMQConsumer
 
 
 @pytest.fixture

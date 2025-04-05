@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, List, Union, Optional
 
-from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement
-from src.umlars_translator.core.model.umlars_model.uml_elements import UmlElement, UmlLifeline, UmlClass, UmlAssociationEnd, UmlAssociationBase, UmlInterface, UmlPackage, UmlPrimitiveType, UmlAttribute, UmlOperation, UmlLifeline, UmlAssociationEnd, UmlAssociation, UmlAggregation, UmlComposition, UmlDependency, UmlRealization, UmlGeneralization, UmlMessage, UmlCombinedFragment, UmlDataType, UmlEnumeration, UmlPrimitiveType, UmlInteraction, UmlOccurrenceSpecification, UmlModelElements, UmlParameter, UmlOperand
-from src.umlars_translator.core.model.abstract.uml_diagrams import IUmlDiagram, IUmlClassDiagram, IUmlSequenceDiagram, IUmlClassDiagramElements, IUmlSequenceDiagramElements, IUmlDiagrams
-from src.umlars_translator.core.model.umlars_model.mixins import RegisteredInModelMixin
+from umlars_translator.core.model.abstract.uml_elements import IUmlElement
+from umlars_translator.core.model.umlars_model.uml_elements import UmlElement, UmlLifeline, UmlClass, UmlAssociationEnd, UmlAssociationBase, UmlInterface, UmlPackage, UmlPrimitiveType, UmlAttribute, UmlOperation, UmlLifeline, UmlAssociationEnd, UmlAssociation, UmlAggregation, UmlComposition, UmlDependency, UmlRealization, UmlGeneralization, UmlMessage, UmlCombinedFragment, UmlDataType, UmlEnumeration, UmlPrimitiveType, UmlInteraction, UmlOccurrenceSpecification, UmlModelElements, UmlParameter, UmlOperand
+from umlars_translator.core.model.abstract.uml_diagrams import IUmlDiagram, IUmlClassDiagram, IUmlSequenceDiagram, IUmlClassDiagramElements, IUmlSequenceDiagramElements, IUmlDiagrams
+from umlars_translator.core.model.umlars_model.mixins import RegisteredInModelMixin
 if TYPE_CHECKING:
-    from src.umlars_translator.core.model.umlars_model.uml_model import UmlModel
+    from umlars_translator.core.model.umlars_model.uml_model import UmlModel
 
 
 class UmlDiagram(RegisteredInModelMixin, IUmlDiagram):

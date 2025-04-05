@@ -1,15 +1,15 @@
 from xml.etree import ElementTree as ET
 from typing import Iterator, Any
 
-from src.umlars_translator.core.deserialization.abstract.xml.xml_pipeline import (
+from umlars_translator.core.deserialization.abstract.xml.xml_pipeline import (
     XmlModelProcessingPipe,
     XmlAttributeCondition,
     DataBatch,
     AliasToXmlKey,
 )
-from src.umlars_translator.core.deserialization.exceptions import UnableToMapError
-from src.umlars_translator.core.configuration.config_proxy import Config, get_configurable_value
-from src.umlars_translator.core.model.constants import UmlDiagramType, UmlVisibilityEnum
+from umlars_translator.core.deserialization.exceptions import UnableToMapError
+from umlars_translator.core.configuration.config_proxy import Config, get_configurable_value
+from umlars_translator.core.model.constants import UmlDiagramType, UmlVisibilityEnum
 
 
 class PapyrusXmiModelProcessingPipe(XmlModelProcessingPipe):

@@ -1,4 +1,4 @@
-from src.umlars_translator.cli.cli_manager import CLIManager
+from umlars_translator.cli.cli_manager import CLIManager
 
 
 if __name__ == "__main__":

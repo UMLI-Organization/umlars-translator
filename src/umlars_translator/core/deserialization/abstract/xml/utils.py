@@ -2,7 +2,7 @@ from typing import Any
 import io
 from xml.etree import ElementTree as ET
 
-from src.umlars_translator.core.deserialization.data_source import DataSource
+from umlars_translator.core.deserialization.data_source import DataSource
 
 
 def retrieve_namespaces(source: DataSource) -> dict[str, str]:

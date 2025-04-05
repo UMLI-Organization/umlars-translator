@@ -2,7 +2,7 @@ from typing import Callable, Type
 import asyncio
 from functools import wraps
 
-from src.umlars_translator.app.exceptions import NotYetAvailableError, ServiceConnectionError
+from umlars_translator.app.exceptions import NotYetAvailableError, ServiceConnectionError
 
 
 def retry_async(reconnect_attempts: int = 5, sleep_seconds_between_recconnects: int = 5, exception_class_raised_when_all_attempts_failed: Type["Exception"] = ServiceConnectionError) -> None:

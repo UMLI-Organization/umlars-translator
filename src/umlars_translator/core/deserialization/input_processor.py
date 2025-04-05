@@ -3,7 +3,7 @@ from typing import Optional, Iterator, Dict, Any
 
 from kink import inject
 
-from src.umlars_translator.core.deserialization.data_source import DataSource
+from umlars_translator.core.deserialization.data_source import DataSource
 
 
 @inject

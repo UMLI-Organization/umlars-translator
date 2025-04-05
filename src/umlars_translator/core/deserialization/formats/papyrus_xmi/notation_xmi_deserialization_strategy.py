@@ -1,22 +1,22 @@
-from src.umlars_translator.core.configuration.config_namespace import  ConfigNamespace
-from src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
+from umlars_translator.core.configuration.config_namespace import  ConfigNamespace
+from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
     DeserializationStrategy,
 )
-from src.umlars_translator.core.deserialization.formats.papyrus_xmi.notation_constants import (
+from umlars_translator.core.deserialization.formats.papyrus_xmi.notation_constants import (
     NotationXmiConfig,
 )
-from src.umlars_translator.core.deserialization.abstract.xml.xml_deserialization_strategy import (
+from umlars_translator.core.deserialization.abstract.xml.xml_deserialization_strategy import (
     XmiDeserializationStrategy,
 )
-from src.umlars_translator.core.deserialization.factory import (
+from umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
 )
-from src.umlars_translator.config import SupportedFormat
-from src.umlars_translator.core.deserialization.formats.papyrus_xmi.notation_xmi_model_processing_pipeline import (
+from umlars_translator.config import SupportedFormat
+from umlars_translator.core.deserialization.formats.papyrus_xmi.notation_xmi_model_processing_pipeline import (
     DiagramPipe, RootPipe
 )
 
-from src.umlars_translator.core.deserialization.formats.papyrus_xmi.notation_xmi_format_detection_pipeline import (
+from umlars_translator.core.deserialization.formats.papyrus_xmi.notation_xmi_format_detection_pipeline import (
     NotationXmiDetectionPipe
 )
 

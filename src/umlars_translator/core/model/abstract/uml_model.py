@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import List, Union, TYPE_CHECKING
 
-from src.umlars_translator.core.utils.visitor import IVisitable, IVisitor
-from src.umlars_translator.core.model.abstract.uml_elements import IUmlModelElements
-from src.umlars_translator.core.model.abstract.uml_diagrams import IUmlDiagrams
+from umlars_translator.core.utils.visitor import IVisitable, IVisitor
+from umlars_translator.core.model.abstract.uml_elements import IUmlModelElements
+from umlars_translator.core.model.abstract.uml_diagrams import IUmlDiagrams
 
 
 class IUmlModel(IVisitable, ABC):

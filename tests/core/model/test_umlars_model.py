@@ -1,6 +1,6 @@
 from pytest import fixture
 
-from src.umlars_translator.core.model.umlars_model.uml_elements import (
+from umlars_translator.core.model.umlars_model.uml_elements import (
     UmlElement,
     UmlNamedElement,
     UmlPrimitiveType,
@@ -20,7 +20,7 @@ from src.umlars_translator.core.model.umlars_model.uml_elements import (
     UmlParameter,
     UmlOccurrenceSpecification
 )
-from src.umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum
+from umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum
 
 
 @fixture

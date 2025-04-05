@@ -3,7 +3,7 @@ from enum import IntEnum
 
 from pydantic import BaseModel, ConfigDict
 
-from src.umlars_translator.config import SupportedFormat
+from umlars_translator.config import SupportedFormat
 
 
 class ProcessStatusEnum(IntEnum):
