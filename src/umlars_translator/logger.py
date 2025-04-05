@@ -1,3 +1,4 @@
+import os
 from logging import getLogger, StreamHandler, Formatter, Logger, FileHandler
 
 
@@ -6,6 +7,7 @@ def get_default_formatter() -> Formatter:
 
 
 def add_file_handler(logger: Logger, logs_file: str, level: int | str) -> None:
+    os.makedirs(os.path.dirname(logs_file), exist_ok=True)
     file_handler = FileHandler(logs_file)
     file_handler.setLevel(level)
     formatter = get_default_formatter()

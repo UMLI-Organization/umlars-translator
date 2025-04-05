@@ -35,7 +35,7 @@ version-new-release:
 	poetry version patch
 
 publish-test:
-	poetry publish --build -r test-pypi
+	poetry publish --build -r testpypi
 
 publish:
 	poetry publish --build
