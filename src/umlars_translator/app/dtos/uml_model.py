@@ -3,7 +3,7 @@ from typing import List, Optional, Union, Type, Dict, Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_serializer, model_validator
 
-from src.umlars_translator.core.model.constants import (
+from umlars_translator.core.model.constants import (
     UmlVisibilityEnum,
     UmlParameterDirectionEnum,
     UmlMultiplicityEnum,

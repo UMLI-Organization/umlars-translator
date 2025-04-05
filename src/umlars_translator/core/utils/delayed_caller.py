@@ -6,7 +6,7 @@ from abc import ABC
 
 from kink import inject
 
-from src.umlars_translator.core.utils.exceptions import IdMismatchException
+from umlars_translator.core.utils.exceptions import IdMismatchException
 
 
 def evaluate_elements_afterwards(blocking: bool = False) -> Callable:

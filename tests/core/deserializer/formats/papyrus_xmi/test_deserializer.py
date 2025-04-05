@@ -2,27 +2,27 @@ import pytest
 
 from kink import di
 
-from src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_deserialization_strategy import (
+from umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_deserialization_strategy import (
     PapyrusXmiImportParsingStrategy,
 )
-from src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_model_processing_pipeline import (
+from umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_model_processing_pipeline import (
     UmlModelPipe,
 )
-from src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_format_detection_pipeline import (
+from umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_format_detection_pipeline import (
     PapyrusXmiDetectionPipe,
 )
-from src.umlars_translator.core.deserialization.input_processor import InputProcessor
-from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
-from src.umlars_translator.core.model.abstract.uml_diagrams import IUmlDiagrams, IUmlClassDiagram, IUmlSequenceDiagram
-from src.umlars_translator.core.model.abstract.uml_elements import IUmlPackage, IUmlModelElements, IUmlClass, IUmlAttribute, IUmlOperation, IUmlInterface, IUmlEnumeration, IUmlDataType, IUmlPrimitiveType, IUmlAssociation, IUmlDirectedAssociation, IUmlAssociationEnd, IUmlLifeline, IUmlMessage, IUmlGeneralization, IUmlRealization
-from src.umlars_translator.core.deserialization.exceptions import (
+from umlars_translator.core.deserialization.input_processor import InputProcessor
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
+from umlars_translator.core.model.abstract.uml_diagrams import IUmlDiagrams, IUmlClassDiagram, IUmlSequenceDiagram
+from umlars_translator.core.model.abstract.uml_elements import IUmlPackage, IUmlModelElements, IUmlClass, IUmlAttribute, IUmlOperation, IUmlInterface, IUmlEnumeration, IUmlDataType, IUmlPrimitiveType, IUmlAssociation, IUmlDirectedAssociation, IUmlAssociationEnd, IUmlLifeline, IUmlMessage, IUmlGeneralization, IUmlRealization
+from umlars_translator.core.deserialization.exceptions import (
     InvalidFormatException,
 )
-from src.umlars_translator.core.model.umlars_model.uml_model_builder import (
+from umlars_translator.core.model.umlars_model.uml_model_builder import (
     UmlModelBuilder,
 )
-from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlAssociationDirectionEnum, UmlPrimitiveTypeKindEnum
-from src.umlars_translator.core.deserialization.deserializer import ModelDeserializer
+from umlars_translator.core.model.constants import UmlVisibilityEnum, UmlAssociationDirectionEnum, UmlPrimitiveTypeKindEnum
+from umlars_translator.core.deserialization.deserializer import ModelDeserializer
 
 
 CAR_MODEL_FILE_PATH_NOTATION = "tests/core/deserializer/formats/papyrus_xmi/test_data/eclipse-papyrus-car-model-with-sequence.notation"

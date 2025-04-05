@@ -1,7 +1,7 @@
 from pytest import fixture
 
-from src.umlars_translator.core.translator import ModelTranslator
-from src.umlars_translator.core.deserialization.input_processor import InputProcessor
+from umlars_translator.core.translator import ModelTranslator
+from umlars_translator.core.deserialization.input_processor import InputProcessor
 
 
 CAR_MODEL_FILE_PATH = "tests/core/deserializer/formats/ea_xmi/test_data/ea_car_model_xmi21-with-sequence.xml"

@@ -2,17 +2,17 @@ from xml.etree import ElementTree as ET
 from typing import Callable, Iterator, Optional, NamedTuple, Any
 from dataclasses import dataclass
 
-from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
-from src.umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
+from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
     ModelProcessingPipe,
     FormatDetectionPipe,
     DataBatch,
 )
-from src.umlars_translator.core.deserialization.exceptions import (
+from umlars_translator.core.deserialization.exceptions import (
     InvalidFormatException,
 )
-from src.umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
-from src.umlars_translator.core.configuration.config_proxy import (
+from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
+from umlars_translator.core.configuration.config_proxy import (
     ConfigProxy,
     get_configurable_value,
 )

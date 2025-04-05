@@ -3,12 +3,12 @@ from logging import Logger
 
 from kink import inject
 
-from src.umlars_translator.core.deserialization.deserializer import ModelDeserializer
-from src.umlars_translator.core.serialization.umlars_model.json_serializer import UmlToPydanticSerializer
-from src.umlars_translator.core.serialization.abstract.serializer import UmlSerializer
-from src.umlars_translator.config import SupportedFormat
-from src.umlars_translator.core.deserialization.data_source import DataSource
-from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
+from umlars_translator.core.deserialization.deserializer import ModelDeserializer
+from umlars_translator.core.serialization.umlars_model.json_serializer import UmlToPydanticSerializer
+from umlars_translator.core.serialization.abstract.serializer import UmlSerializer
+from umlars_translator.config import SupportedFormat
+from umlars_translator.core.deserialization.data_source import DataSource
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
 
 
 @inject

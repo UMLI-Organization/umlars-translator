@@ -10,13 +10,13 @@ from fastapi.exceptions import HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import ValidationError
 
-from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
-from src.umlars_translator.app.adapters.repositories.mongo_uml_model_repository import MongoDBUmlModelRepository
-from src.umlars_translator.app.dtos.uml_model import UmlModel
-from src.umlars_translator.app.adapters.message_brokers.rabbitmq_message_consumer import RabbitMQConsumer
-from src.umlars_translator.app import config
-from src.umlars_translator.app.exceptions import ServiceConnectionError, QueueUnavailableError
-from src.umlars_translator.logger import add_file_handler
+from umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
+from umlars_translator.app.adapters.repositories.mongo_uml_model_repository import MongoDBUmlModelRepository
+from umlars_translator.app.dtos.uml_model import UmlModel
+from umlars_translator.app.adapters.message_brokers.rabbitmq_message_consumer import RabbitMQConsumer
+from umlars_translator.app import config
+from umlars_translator.app.exceptions import ServiceConnectionError, QueueUnavailableError
+from umlars_translator.logger import add_file_handler
 
 
 def create_app_logger():
@@ -117,9 +117,9 @@ def run_app(port: int = 8020, host: str = "0.0.0.0", context: str = 'DEV', app_l
     app_logger.error(f"\nStarting the application on port {port}\n")
 
     if context == 'DEV':
-        return uvicorn.run("src.umlars_translator.app.main:app", host=host, port=port, reload=True)
+        return uvicorn.run("umlars_translator.app.main:app", host=host, port=port, reload=True)
     else:
-        return uvicorn.run("src.umlars_translator.app.main:app", host=host, port=port)
+        return uvicorn.run("umlars_translator.app.main:app", host=host, port=port)
 
 
 if __name__ == "__main__":

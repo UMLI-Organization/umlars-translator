@@ -1,11 +1,11 @@
 from enum import Enum
 
-from src.umlars_translator.core.model.constants import (
+from umlars_translator.core.model.constants import (
     UmlPrimitiveTypeKindEnum,
     UmlDiagramType,
     UmlElementType,
 )
-from src.umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
+from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
 
 
 # TODO: split config into parsed config and normal - so u can use normal enums etc and get IDE suggestions

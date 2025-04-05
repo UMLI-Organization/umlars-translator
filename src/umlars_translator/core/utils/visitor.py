@@ -2,8 +2,8 @@ from typing import Any, TYPE_CHECKING
 from abc import ABC, abstractmethod
 
 if TYPE_CHECKING:
-    from src.umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlNamedElement, IUmlPrimitiveType, IUmlClassifier, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration, IUmlAttribute, IUmlOperation, IUmlParameter, IUmlGeneralization, IUmlDependency, IUmlRealization, IUmlAssociationEnd, IUmlAssociation, IUmlDirectedAssociation, IUmlAggregation, IUmlComposition, IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment, IUmlOperand, IUmlLifeline, IUmlMessage, IUmlInteraction, IUmlModelElements, IUmlPackage, IUmlModel
-    from src.umlars_translator.core.model.abstract.uml_diagrams import IUmlDiagrams, IUmlClassDiagram, IUmlSequenceDiagram, IUmlClassDiagramElements, IUmlSequenceDiagramElements
+    from umlars_translator.core.model.abstract.uml_elements import IUmlElement, IUmlNamedElement, IUmlPrimitiveType, IUmlClassifier, IUmlClass, IUmlInterface, IUmlDataType, IUmlEnumeration, IUmlAttribute, IUmlOperation, IUmlParameter, IUmlGeneralization, IUmlDependency, IUmlRealization, IUmlAssociationEnd, IUmlAssociation, IUmlDirectedAssociation, IUmlAggregation, IUmlComposition, IUmlOccurrenceSpecification, IUmlInteractionUse, IUmlCombinedFragment, IUmlOperand, IUmlLifeline, IUmlMessage, IUmlInteraction, IUmlModelElements, IUmlPackage, IUmlModel
+    from umlars_translator.core.model.abstract.uml_diagrams import IUmlDiagrams, IUmlClassDiagram, IUmlSequenceDiagram, IUmlClassDiagramElements, IUmlSequenceDiagramElements
 
 
 class IVisitor(ABC):

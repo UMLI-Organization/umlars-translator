@@ -3,21 +3,21 @@ from logging import Logger
 
 from kink import inject
 
-from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
-from src.umlars_translator.core.model.umlars_model.uml_model import UmlModel
-from src.umlars_translator.core.model.umlars_model.uml_elements import (
+from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from umlars_translator.core.model.umlars_model.uml_model import UmlModel
+from umlars_translator.core.model.umlars_model.uml_elements import (
     UmlElement, UmlClass, UmlLifeline, UmlAssociationEnd, UmlAssociationBase, UmlVisibilityEnum, UmlInterface,
     UmlPackage, UmlPrimitiveType, UmlAttribute, UmlOperation, UmlLifeline, UmlAssociationEnd, UmlAssociationBase,
     UmlAggregation, UmlComposition, UmlRealization, UmlGeneralization, UmlDependency, UmlDirectedAssociation,
     UmlAssociation, UmlDataType, UmlEnumeration, UmlParameter, UmlMessage, UmlInteraction, UmlOccurrenceSpecification,
     UmlInteractionUse, UmlCombinedFragment, UmlOperand, UmlClassifier
 )
-from src.umlars_translator.core.utils.delayed_caller import (
+from umlars_translator.core.utils.delayed_caller import (
     DalayedIdToInstanceMapper,
     evaluate_elements_afterwards,
 )
-from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagram, UmlClassDiagram, UmlSequenceDiagram
-from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum, UmlPrimitiveTypeKindEnum, UmlParameterDirectionEnum, UmlInteractionOperatorEnum, UmlMessageSortEnum, UmlMessageKindEnum
+from umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagram, UmlClassDiagram, UmlSequenceDiagram
+from umlars_translator.core.model.constants import UmlVisibilityEnum, UmlMultiplicityEnum, UmlPrimitiveTypeKindEnum, UmlParameterDirectionEnum, UmlInteractionOperatorEnum, UmlMessageSortEnum, UmlMessageKindEnum
 
 
 @inject

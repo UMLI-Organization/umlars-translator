@@ -1,19 +1,19 @@
 from typing import Iterator, Any, Optional
 
-from src.umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
+from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
     ModelProcessingPipe,
     DataBatch,
 )
-from src.umlars_translator.core.deserialization.abstract.json.json_pipeline import (
+from umlars_translator.core.deserialization.abstract.json.json_pipeline import (
     JSONModelProcessingPipe,
     JSONAttributeCondition,
     AliasToJSONKey
 )
-from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_constants import (
+from umlars_translator.core.deserialization.formats.staruml_mdj.staruml_constants import (
     StarumlMDJConfig
 )
-from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException, UnableToMapError
-from src.umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum, UmlMessageSortEnum, UmlInteractionOperatorEnum
+from umlars_translator.core.deserialization.exceptions import InvalidFormatException, UnableToMapError
+from umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum, UmlMessageSortEnum, UmlInteractionOperatorEnum
 
 
 class StarumlMDJModelProcessingPipe(JSONModelProcessingPipe):

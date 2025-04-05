@@ -1,6 +1,6 @@
 import pytest
-from src.umlars_translator.core.serialization.umlars_model.json_serializer import UmlToPydanticSerializer
-from src.umlars_translator.core.model.umlars_model.uml_elements import (
+from umlars_translator.core.serialization.umlars_model.json_serializer import UmlToPydanticSerializer
+from umlars_translator.core.model.umlars_model.uml_elements import (
     UmlClass,
     UmlAttribute,
     UmlOperation,
@@ -24,8 +24,8 @@ from src.umlars_translator.core.model.umlars_model.uml_elements import (
     UmlPackage,
     UmlModelElements,
 )
-from src.umlars_translator.core.model.umlars_model.uml_model import UmlModel
-from src.umlars_translator.app.dtos.uml_model import (
+from umlars_translator.core.model.umlars_model.uml_model import UmlModel
+from umlars_translator.app.dtos.uml_model import (
     UmlClass as PydanticUmlClass,
     UmlAttribute as PydanticUmlAttribute,
     UmlOperation as PydanticUmlOperation,

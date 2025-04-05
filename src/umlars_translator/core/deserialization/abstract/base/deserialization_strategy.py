@@ -4,11 +4,11 @@ from logging import Logger
 
 from kink import inject
 
-from src.umlars_translator.config import SupportedFormat
-from src.umlars_translator.core.deserialization.data_source import DataSource
-from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
-from src.umlars_translator.core.configuration.config_namespace import ConfigNamespace
-from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from umlars_translator.config import SupportedFormat
+from umlars_translator.core.deserialization.data_source import DataSource
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
+from umlars_translator.core.configuration.config_namespace import ConfigNamespace
+from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 
 
 @inject

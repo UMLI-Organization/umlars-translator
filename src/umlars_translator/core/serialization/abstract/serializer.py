@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
-from src.umlars_translator.core.utils.visitor import IModelVisitor
-from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
+from umlars_translator.core.utils.visitor import IModelVisitor
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
 
 
 class UmlSerializer(IModelVisitor):

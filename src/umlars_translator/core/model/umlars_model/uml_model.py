@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 
-from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
-from src.umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlModelElements, UmlAssociationBase, UmlVisibilityEnum, UmlPackage, UmlInterface, UmlInteraction, UmlLifeline, UmlNamedElement
-from src.umlars_translator.core.model.umlars_model.mixins import RegisteredInBuilderMixin
-from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagrams
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
+from umlars_translator.core.model.umlars_model.uml_elements import UmlClass, UmlModelElements, UmlAssociationBase, UmlVisibilityEnum, UmlPackage, UmlInterface, UmlInteraction, UmlLifeline, UmlNamedElement
+from umlars_translator.core.model.umlars_model.mixins import RegisteredInBuilderMixin
+from umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagrams
 
 
 class UmlModel(UmlNamedElement, IUmlModel):

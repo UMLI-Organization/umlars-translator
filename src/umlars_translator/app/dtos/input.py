@@ -2,8 +2,8 @@ from typing import Optional, List
 
 from pydantic import BaseModel, ConfigDict
 
-from src.umlars_translator.config import SupportedFormat
-from src.umlars_translator.core.deserialization.data_source import DataSource
+from umlars_translator.config import SupportedFormat
+from umlars_translator.core.deserialization.data_source import DataSource
 
 
 class UmlFileDTO(BaseModel):

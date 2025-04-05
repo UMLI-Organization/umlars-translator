@@ -7,10 +7,10 @@ from kink import inject
 import aio_pika
 from contextlib import asynccontextmanager
 
-from src.umlars_translator.app.adapters.message_brokers.message_producer import MessageProducer
-from src.umlars_translator.app.adapters.message_brokers import config
-from src.umlars_translator.app.exceptions import QueueUnavailableError
-from src.umlars_translator.app.dtos.messages import ProcessStatusEnum, TranslatedFileMessage
+from umlars_translator.app.adapters.message_brokers.message_producer import MessageProducer
+from umlars_translator.app.adapters.message_brokers import config
+from umlars_translator.app.exceptions import QueueUnavailableError
+from umlars_translator.app.dtos.messages import ProcessStatusEnum, TranslatedFileMessage
 
 
 @inject(alias=MessageProducer)

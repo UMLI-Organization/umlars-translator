@@ -3,11 +3,11 @@ from typing import List, Optional, Union, ClassVar, TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
-    from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
+    from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+    from umlars_translator.core.model.abstract.uml_model import IUmlModel
 
-from src.umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum, UmlAssociationTypeEnum, UmlVisibilityEnum, UmlMultiplicityEnum, UmlAssociationDirectionEnum, UmlParameterDirectionEnum, UmlInteractionOperatorEnum, UmlMessageSortEnum, UmlMessageKindEnum
-from src.umlars_translator.core.utils.visitor import IVisitable, IVisitor
+from umlars_translator.core.model.constants import UmlPrimitiveTypeKindEnum, UmlAssociationTypeEnum, UmlVisibilityEnum, UmlMultiplicityEnum, UmlAssociationDirectionEnum, UmlParameterDirectionEnum, UmlInteractionOperatorEnum, UmlMessageSortEnum, UmlMessageKindEnum
+from umlars_translator.core.utils.visitor import IVisitable, IVisitor
 
 
 # Base and Common Elements

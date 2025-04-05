@@ -2,19 +2,19 @@ from abc import abstractmethod
 from typing import Optional, Any
 import json
 
-from src.umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline_deserialization_strategy import (
+from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline_deserialization_strategy import (
     PipelineDeserializationStrategy,
 )
-from src.umlars_translator.core.deserialization.data_source import DataSource
-from src.umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
+from umlars_translator.core.deserialization.data_source import DataSource
+from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
     ModelProcessingPipe,
     FormatDetectionPipe,
 )
-from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException
-from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_format_detection_pipeline import (
+from umlars_translator.core.deserialization.exceptions import InvalidFormatException
+from umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_format_detection_pipeline import (
     StarumlMDJDetectionPipe,
 )
-from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_model_processing_pipeline import (
+from umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_model_processing_pipeline import (
     RootPipe,
     UmlModelPipe,
     UmlClassPipe,
@@ -40,11 +40,11 @@ from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_
     UmlCombinedFragmentPipe,
     UmlInteractionOperandPipe,
 )
-from src.umlars_translator.core.deserialization.factory import (
+from umlars_translator.core.deserialization.factory import (
     register_deserialization_strategy,
 )
-from src.umlars_translator.config import SupportedFormat
-from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_constants import (
+from umlars_translator.config import SupportedFormat
+from umlars_translator.core.deserialization.formats.staruml_mdj.staruml_constants import (
     StarumlMDJConfig,
 )
 

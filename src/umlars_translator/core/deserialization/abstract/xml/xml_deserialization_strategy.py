@@ -2,15 +2,15 @@ from abc import abstractmethod
 from typing import Any
 from xml.etree import ElementTree as ET
 
-from src.umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace, ConfigNamespace
-from src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy import DeserializationStrategy
-from src.umlars_translator.core.deserialization.data_source import DataSource
-from src.umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline_deserialization_strategy import (
+from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace, ConfigNamespace
+from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import DeserializationStrategy
+from umlars_translator.core.deserialization.data_source import DataSource
+from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline_deserialization_strategy import (
     PipelineDeserializationStrategy,
 )
-from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException
-from src.umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
-from src.umlars_translator.core.deserialization.abstract.xml.utils import retrieve_namespaces
+from umlars_translator.core.deserialization.exceptions import InvalidFormatException
+from umlars_translator.core.configuration.config_namespace import ParsedConfigNamespace
+from umlars_translator.core.deserialization.abstract.xml.utils import retrieve_namespaces
 
 
 class XmlDeserializationStrategy(PipelineDeserializationStrategy):

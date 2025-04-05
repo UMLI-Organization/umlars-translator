@@ -1,11 +1,11 @@
 from typing import Iterator
 
-from src.umlars_translator.core.deserialization.abstract.json.json_pipeline import (
+from umlars_translator.core.deserialization.abstract.json.json_pipeline import (
     JSONFormatDetectionPipe,
     DataBatch,
     JSONAttributeCondition,
 )
-from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException
+from umlars_translator.core.deserialization.exceptions import InvalidFormatException
 
 
 class StarumlMDJFormatDetectionPipe(JSONFormatDetectionPipe):

@@ -3,21 +3,21 @@ from logging import Logger
 
 from kink import inject
 
-from src.umlars_translator.core.deserialization.input_processor import InputProcessor
-from src.umlars_translator.core.deserialization.exceptions import UnsupportedSourceDataTypeError
-from src.umlars_translator.core.deserialization.data_source import DataSource
-from src.umlars_translator.config import SupportedFormat
-from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
-from src.umlars_translator.core.extensions_manager import ExtensionsManager
-from src.umlars_translator.core.deserialization import config
-from src.umlars_translator.core.deserialization.factory import (
+from umlars_translator.core.deserialization.input_processor import InputProcessor
+from umlars_translator.core.deserialization.exceptions import UnsupportedSourceDataTypeError
+from umlars_translator.core.deserialization.data_source import DataSource
+from umlars_translator.config import SupportedFormat
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
+from umlars_translator.core.extensions_manager import ExtensionsManager
+from umlars_translator.core.deserialization import config
+from umlars_translator.core.deserialization.factory import (
     DeserializationStrategyFactory,
 )
-from src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
+from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
     DeserializationStrategy,
 )
-from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
-from src.umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
+from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
 
 
 @inject

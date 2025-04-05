@@ -2,12 +2,12 @@ from typing import Type, Optional, Dict
 
 from kink import inject
 
-from src.umlars_translator.config import SupportedFormat
-from src.umlars_translator.core.deserialization.data_source import DataSource
-from src.umlars_translator.core.deserialization.exceptions import UnsupportedSourceDataTypeError
-from src.umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
+from umlars_translator.config import SupportedFormat
+from umlars_translator.core.deserialization.data_source import DataSource
+from umlars_translator.core.deserialization.exceptions import UnsupportedSourceDataTypeError
+from umlars_translator.core.model.abstract.uml_model_builder import IUmlModelBuilder
 
-from src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
+from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
     DeserializationStrategy,
 )
 

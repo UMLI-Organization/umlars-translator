@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.umlars_translator.app.dtos.uml_model import UmlModel
+from umlars_translator.app.dtos.uml_model import UmlModel
 
 
 class UmlModelRepository(ABC):

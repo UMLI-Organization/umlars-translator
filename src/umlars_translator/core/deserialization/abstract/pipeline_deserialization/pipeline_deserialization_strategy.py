@@ -1,16 +1,16 @@
 from abc import abstractmethod
 from typing import Optional, Any
 
-from src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
+from umlars_translator.core.deserialization.abstract.base.deserialization_strategy import (
     DeserializationStrategy,
 )
-from src.umlars_translator.core.deserialization.data_source import DataSource
-from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
-from src.umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
+from umlars_translator.core.deserialization.data_source import DataSource
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
+from umlars_translator.core.deserialization.abstract.pipeline_deserialization.pipeline import (
     ModelProcessingPipe,
     FormatDetectionPipe,
 )
-from src.umlars_translator.core.deserialization.exceptions import InvalidFormatException
+from umlars_translator.core.deserialization.exceptions import InvalidFormatException
 
 
 class PipelineDeserializationStrategy(DeserializationStrategy):

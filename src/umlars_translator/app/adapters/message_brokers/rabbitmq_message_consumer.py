@@ -8,19 +8,19 @@ from pydantic import ValidationError
 import aio_pika
 from kink import inject
 
-from src.umlars_translator.core.deserialization.exceptions import UnsupportedSourceDataTypeError
-from src.umlars_translator.app.exceptions import QueueUnavailableError, NotYetAvailableError, InputDataError
-from src.umlars_translator.app.adapters.message_brokers.message_consumer import MessageConsumer
-from src.umlars_translator.app.adapters.message_brokers import config as messaging_config
-from src.umlars_translator.app.dtos.messages import ModelToTranslateMessage
-from src.umlars_translator.app.dtos.input import UmlModelDTO
-from src.umlars_translator.app import config as app_config
-from src.umlars_translator.app.adapters.apis.rest_api_connector import RestApiConnector
-from src.umlars_translator.app.utils.functions import retry_async
-from src.umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
-from src.umlars_translator.app.adapters.message_brokers.rabbitmq_message_producer import RabbitMQProducer, create_failed_translation_message, create_successfull_translation_message, create_running_translation_message, send_translated_models_messages, send_translated_model_message
-from src.umlars_translator.core.translator import ModelTranslator
-from src.umlars_translator.core.deserialization.deserializer import ModelDeserializer
+from umlars_translator.core.deserialization.exceptions import UnsupportedSourceDataTypeError
+from umlars_translator.app.exceptions import QueueUnavailableError, NotYetAvailableError, InputDataError
+from umlars_translator.app.adapters.message_brokers.message_consumer import MessageConsumer
+from umlars_translator.app.adapters.message_brokers import config as messaging_config
+from umlars_translator.app.dtos.messages import ModelToTranslateMessage
+from umlars_translator.app.dtos.input import UmlModelDTO
+from umlars_translator.app import config as app_config
+from umlars_translator.app.adapters.apis.rest_api_connector import RestApiConnector
+from umlars_translator.app.utils.functions import retry_async
+from umlars_translator.app.adapters.repositories.uml_model_repository import UmlModelRepository
+from umlars_translator.app.adapters.message_brokers.rabbitmq_message_producer import RabbitMQProducer, create_failed_translation_message, create_successfull_translation_message, create_running_translation_message, send_translated_models_messages, send_translated_model_message
+from umlars_translator.core.translator import ModelTranslator
+from umlars_translator.core.deserialization.deserializer import ModelDeserializer
 
 
 @inject

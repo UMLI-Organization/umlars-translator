@@ -2,26 +2,26 @@ import pytest
 
 from kink import di
 
-from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_deserialization_strategy import (
+from umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_deserialization_strategy import (
     StarumlMDJDeserializationStrategy,
 )
-from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_model_processing_pipeline import (
+from umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_model_processing_pipeline import (
     RootPipe, UmlModelPipe,
 )
-from src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_format_detection_pipeline import (
+from umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_format_detection_pipeline import (
     StarumlMDJDetectionPipe,
 )
-from src.umlars_translator.core.deserialization.input_processor import InputProcessor
-from src.umlars_translator.core.model.abstract.uml_model import IUmlModel
-from src.umlars_translator.core.model.abstract.uml_elements import (
+from umlars_translator.core.deserialization.input_processor import InputProcessor
+from umlars_translator.core.model.abstract.uml_model import IUmlModel
+from umlars_translator.core.model.abstract.uml_elements import (
     IUmlClass, IUmlAttribute, IUmlOperation, IUmlInterface, IUmlEnumeration, 
     IUmlDataType, IUmlPrimitiveType, IUmlAssociation, IUmlAssociationEnd, 
     IUmlGeneralization, IUmlRealization, IUmlDirectedAssociation,
 )
-from src.umlars_translator.core.model.umlars_model.uml_model_builder import (
+from umlars_translator.core.model.umlars_model.uml_model_builder import (
     UmlModelBuilder,
 )
-from src.umlars_translator.core.model.constants import UmlVisibilityEnum, UmlAssociationDirectionEnum, UmlPrimitiveTypeKindEnum
+from umlars_translator.core.model.constants import UmlVisibilityEnum, UmlAssociationDirectionEnum, UmlPrimitiveTypeKindEnum
 
 CAR_MODEL_FILE_PATH = "tests/core/deserializer/formats/staruml_mdj/test_data/staruml-car-model-with-sequence.mdj"
 

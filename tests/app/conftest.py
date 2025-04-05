@@ -5,8 +5,8 @@ from fastapi.testclient import TestClient
 from bson.objectid import ObjectId
 from pymongo import MongoClient
 
-from src.umlars_translator.app.main import app, get_db_client
-from src.umlars_translator.app.adapters.repositories.mongo_uml_model_repository import MongoDBUmlModelRepository
+from umlars_translator.app.main import app, get_db_client
+from umlars_translator.app.adapters.repositories.mongo_uml_model_repository import MongoDBUmlModelRepository
 
 
 @pytest.fixture

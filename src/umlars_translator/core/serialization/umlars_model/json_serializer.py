@@ -2,10 +2,10 @@ from typing import Union, Optional
 
 from kink import inject
 
-from src.umlars_translator.core.model.abstract.uml_elements import IUmlClassifier
-from src.umlars_translator.core.serialization.abstract.serializer import UmlSerializer
-from src.umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagrams, UmlClassDiagram, UmlSequenceDiagram, UmlClassDiagramElements, UmlSequenceDiagramElements
-from src.umlars_translator.core.model.umlars_model.uml_elements import (
+from umlars_translator.core.model.abstract.uml_elements import IUmlClassifier
+from umlars_translator.core.serialization.abstract.serializer import UmlSerializer
+from umlars_translator.core.model.umlars_model.uml_diagrams import UmlDiagrams, UmlClassDiagram, UmlSequenceDiagram, UmlClassDiagramElements, UmlSequenceDiagramElements
+from umlars_translator.core.model.umlars_model.uml_elements import (
     UmlElement,
     UmlClass,
     UmlAttribute,
@@ -33,9 +33,9 @@ from src.umlars_translator.core.model.umlars_model.uml_elements import (
     UmlOccurrenceSpecification,
     UmlPackage,
 )
-from src.umlars_translator.core.model.umlars_model.uml_model import UmlModel
+from umlars_translator.core.model.umlars_model.uml_model import UmlModel
 
-import src.umlars_translator.app.dtos.uml_model as pydantic_uml
+import umlars_translator.app.dtos.uml_model as pydantic_uml
 
 
 @inject(alias=UmlSerializer)

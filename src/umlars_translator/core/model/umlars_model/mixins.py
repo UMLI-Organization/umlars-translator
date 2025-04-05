@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING, Optional
 from typing import Optional
 
 if TYPE_CHECKING:
-    from src.umlars_translator.core.model.umlars_model.uml_model import UmlModel
-    from src.umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
+    from umlars_translator.core.model.umlars_model.uml_model import UmlModel
+    from umlars_translator.core.model.umlars_model.uml_model_builder import UmlModelBuilder
 
 
 class RegisteredInBuilderMixin:

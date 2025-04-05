@@ -1,6 +1,6 @@
 from enum import Enum
 
-from src.umlars_translator.core.model.constants import (
+from umlars_translator.core.model.constants import (
     UmlPrimitiveTypeKindEnum,
     UmlDiagramType,
     UmlElementType,
@@ -8,7 +8,7 @@ from src.umlars_translator.core.model.constants import (
     UmlInteractionOperatorEnum,
     UmlMessageSortEnum
 )
-from src.umlars_translator.core.configuration.config_namespace import ConfigNamespace
+from umlars_translator.core.configuration.config_namespace import ConfigNamespace
 
 
 class StarumlMDJConfig(ConfigNamespace):
