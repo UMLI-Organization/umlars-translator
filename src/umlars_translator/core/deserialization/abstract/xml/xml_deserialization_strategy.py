@@ -26,7 +26,7 @@ class XmlDeserializationStrategy(PipelineDeserializationStrategy):
             return self._get_element_tree(data_source)
         except ET.ParseError as ex:
             error_message = f"Error parsing XML data from {data_source}: {ex}"
-            self._logger.error(error_message)
+            self._logger.warning(error_message)
             raise InvalidFormatException(error_message)
 
     def _get_element_tree(self, source: DataSource) -> ET.ElementTree:

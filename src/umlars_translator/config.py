@@ -20,5 +20,5 @@ Base logger settings
 SYSTEM_NAME = "UMLARS"
 LOGGER_BASE_NAME = SYSTEM_NAME
 
-LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "WARNING")
 LOG_FILE = os.getenv("LOG_FILE", "logs/umlars.log")

@@ -14,9 +14,9 @@ high-level programming languages rather than manually interact with them using g
 
 Python 3.10+
 
-## Installation
-
-pip install umlars_translator
+## Usage
+1. Install: **pip install umlars_translator**
+2. Run: **python -m umlars_translator** \<name of local files to translate\>
 
 ## Dev Usage
 
@@ -36,6 +36,13 @@ Published as Python package to test PyPi.
 Documented using mkdocs.
 Tested on multiple Python versions using tox.
 
+
+## Run from clone
+1. Install poetry (e.g. run **pip install -r requirements.txt**)
+1. Run **make setup**
+4. Run **poetry run python3 -m umlars_translator** \<name of local files to translate\>
+
+
 ## Deployment as microservice
 
 Setup:
@@ -50,7 +57,17 @@ To restart:
 2. Run **docker compose up**
 
 
+## Running tests
+1. Run **make tox-test**
 
 ## License
-
 This project is licensed under the terms of the MIT license.
+
+
+## Troubleshooting
+1. Failed **make setup** with __PEP517 build of a dependency failed__:
+    * pyenv install 3.11.9 # or higher
+    * pyenv local 3.11.9
+    * poetry env use 3.11
+    * poetry lock --no-update
+    * make setup
