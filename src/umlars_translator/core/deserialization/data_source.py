@@ -68,5 +68,9 @@ class DataSource:
             yield from file.readlines()
 
     def read_data_from_file(self) -> str:
-        with open(self._file_path, "r", encoding="utf-8") as file:
-            return file.read()
+        try:
+            with open(self._file_path, "r", encoding="utf-8") as file:
+                return file.read()
+        except UnicodeDecodeError:
+            with open(self._file_path, "r", encoding="windows-1252") as file:
+                return file.read()

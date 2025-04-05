@@ -38,6 +38,10 @@ class CLIManager:
             "file_names", nargs="*", type=str, help="The UML file(s) to be translated"
         )
 
+        self._parser.add_argument(
+            "--join", action="store_true", help="Join all files data into one model"
+        )
+
     def _parse_args(self) -> argparse.Namespace:
         return self._parser.parse_args()
 
@@ -46,7 +50,7 @@ class CLIManager:
         if args.run_server:
             self._run_server()
         elif args.file_names:
-            self._translate_files(args.file_names, args.from_format)
+            self._translate_files(args.file_names, args.from_format, args.join)
         else:
             self._parser.print_help()
 
@@ -54,7 +58,7 @@ class CLIManager:
         self._logger.info("Running REST API server...")
         run_app()
 
-    def _translate_files(self, file_names, from_format) -> None:
+    def _translate_files(self, file_names, from_format, join_into_one_model) -> None:
         self._logger.info(f"Translating files {file_names} from format {from_format}...")
         translator = ModelTranslator()
         current_working_directory = os.getcwd()
@@ -63,14 +67,29 @@ class CLIManager:
             os.makedirs(output_directory)
         self._logger.info(f"Output directory: {output_directory}")
 
-        for file_name in file_names:
-            file_base_name = os.path.basename(file_name)
-            self._logger.info(f"Translating file {file_base_name}...")
+        if join_into_one_model:
+            for file_name in file_names:
+                file_base_name = os.path.basename(file_name)
+                self._logger.info(f"Translating file {file_base_name}...")
+                translated_data = translator.translate(file_name=file_name, from_format=from_format, clear_model_afterwards=False)
             
-            output_file_name = f"{file_base_name}_translated.umj"
+            output_file_name = f"{file_base_name}_merged_translated.umj"
             output_location = os.path.join(output_directory, output_file_name)
+            self._logger.info(f"Files translated to {output_location}")
             with open(output_location, "w") as output_file:
-                translated_data = translator.translate(file_name=file_name, from_format=from_format, clear_model_afterwards=True)
                 output_file.write(translated_data)
+        
+        else:        
+            for file_name in file_names:
+                file_base_name = os.path.basename(file_name)
+                self._logger.info(f"Translating file {file_base_name}...")
+                
+                output_file_name = f"{file_base_name}_translated.umj"
+                output_location = os.path.join(output_directory, output_file_name)
+                translated_data = translator.translate(file_name=file_name, from_format=from_format, clear_model_afterwards=True)
+                with open(output_location, "w") as output_file:
+                    output_file.write(translated_data)
 
-            self._logger.info(f"File {file_name} translated to {output_location}")
+                self._logger.info(f"File {file_name} translated to {output_location}")
+
+            
