@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "umlars_translator"
-version = "0.0.4a0"
+version = "0.0.4"
 description = "UML representation and analysis system - translation service"
 authors = ["Filip Pawłowski <filip.pawlowski001@gmail.com>"]
 readme = "README.md"
@@ -50,8 +50,8 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry.plugins]
-[tool.poetry.plugins."src.umlars_translator.core.deserialization.abstract.base.deserialization_strategy"]
-ea_xmi = "src.umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy"
-papyrus_xmi = "src.umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_deserialization_strategy"
-notation_xmi = "src.umlars_translator.core.deserialization.formats.papyrus_xmi.notation_xmi_deserialization_strategy"
-staruml_mdj = "src.umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_deserialization_strategy"
+[tool.poetry.plugins."umlars_translator.core.deserialization.abstract.base.deserialization_strategy"]
+ea_xmi = "umlars_translator.core.deserialization.formats.ea_xmi.ea_xmi_deserialization_strategy"
+papyrus_xmi = "umlars_translator.core.deserialization.formats.papyrus_xmi.papyrus_xmi_deserialization_strategy"
+notation_xmi = "umlars_translator.core.deserialization.formats.papyrus_xmi.notation_xmi_deserialization_strategy"
+staruml_mdj = "umlars_translator.core.deserialization.formats.staruml_mdj.staruml_mdj_deserialization_strategy"
