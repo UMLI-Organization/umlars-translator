@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "umlars_translator"
-version = "0.0.5"
+version = "0.0.6"
 description = "UML representation and analysis system - translation service"
 authors = ["Filip Pawłowski <filip.pawlowski001@gmail.com>"]
 readme = "README.md"
@@ -20,6 +20,13 @@ classifiers = [
 ]
 
 packages = [{include = "umlars_translator", from = "src"}]
+
+
+[tool.poetry.urls]
+"Repository" = "https://github.com/UMLI-Organization/umlars-translator"
+"Backend" = "https://github.com/UMLI-Organization/umlars-backend"
+"Issues" = "https://github.com/UMLI-Organization/umlars-translator/issues"
+
 
 [tool.poetry.dependencies]
 python = "^3.10"
