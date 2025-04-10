@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "umlars_translator"
-version = "0.0.5"
+version = "0.0.7a0"
 description = "UML representation and analysis system - translation service"
 authors = ["Filip Pawłowski <filip.pawlowski001@gmail.com>"]
 readme = "README.md"
