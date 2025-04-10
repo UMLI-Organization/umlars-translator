@@ -384,13 +384,7 @@ class UmlInteraction(UmlNamedElement):
 
 
 class UmlPackage(UmlNamedElement):
-    elements: Optional[Union["UmlModelElements", "UmlIdReference"]] = None
-
-    @field_serializer("elements")
-    def elements_to_json(
-        elements: Optional[Union["UmlModelElements", "UmlIdReference"]]
-    ) -> dict:
-        return serialize_field_to_id_reference(elements)
+    elements: "UmlPackageElements"
 
 
 class UmlModelElements(BaseModel):
@@ -503,13 +497,18 @@ class UmlClassDiagramElements(BaseModel):
         return [serialize_field_to_id_reference(realization) for realization in realizations]
 
 
+# Stores model elements as references - just as diagrams. Aggregates all diagrams repr.
+class UmlPackageElements(UmlClassDiagramElements, UmlSequenceDiagramElements):
+    packages: List[Union[UmlPackage, UmlIdReference]] = Field(default_factory=list)
+
+
 class UmlClassDiagram(UmlDiagram):
     elements: UmlClassDiagramElements
 
 
 class UmlDiagrams(BaseModel):
-    class_diagrams: List[Union[UmlClassDiagram, UmlIdReference]] = Field(default_factory=list)
-    sequence_diagrams: List[Union[UmlSequenceDiagram, UmlIdReference]] = Field(default_factory=list)
+    class_diagrams: List[UmlClassDiagram] = Field(default_factory=list)
+    sequence_diagrams: List[UmlSequenceDiagram] = Field(default_factory=list)
 
 
 class UmlModel(UmlNamedElement):
