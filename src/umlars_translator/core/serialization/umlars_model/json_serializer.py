@@ -313,8 +313,25 @@ class UmlToPydanticSerializer(UmlSerializer):
             id=uml_package.id,
             name=uml_package.name,
             visibility=uml_package.visibility,
-            elements=self.visit_element_or_reference(uml_package.elements),
+            elements=self.visit_uml_package_elements(uml_package.elements),
         )
+
+
+    def visit_uml_package_elements(self, elements: UmlModelElements) -> pydantic_uml.UmlPackageElements:
+        return pydantic_uml.UmlPackageElements(
+            classes=[self.visit_element_or_reference(cls) for cls in elements.classes],
+            interfaces=[self.visit_element_or_reference(interface) for interface in elements.interfaces],
+            data_types=[self.visit_element_or_reference(data_type) for data_type in elements.data_types],
+            enumerations=[self.visit_element_or_reference(enum) for enum in elements.enumerations],
+            primitive_types=[self.visit_element_or_reference(primitive) for primitive in elements.primitive_types],
+            associations=[self.visit_element_or_reference(assoc) for assoc in elements.associations],
+            generalizations=[self.visit_element_or_reference(gen) for gen in elements.generalizations],
+            dependencies=[self.visit_element_or_reference(dep) for dep in elements.dependencies],
+            realizations=[self.visit_element_or_reference(real) for real in elements.realizations],
+            interactions=[self.visit_element_or_reference(interaction) for interaction in elements.interactions],
+            packages=[self.visit_element_or_reference(package) for package in elements.packages],
+        )
+
 
     def visit_element_or_reference(self, element: Optional[UmlElement] = None) -> Union[pydantic_uml.UmlElement, pydantic_uml.UmlIdReference]:
         if isinstance(element, UmlElement):
