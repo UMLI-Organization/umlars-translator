@@ -15,7 +15,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -46,7 +46,7 @@
               "type": "null"
             }
           ],
-          "default": None
+          "default": null
         },
         "end2": {
           "anyOf": [
@@ -57,7 +57,7 @@
               "type": "null"
             }
           ],
-          "default": None
+          "default": null
         }
       },
       "title": "UmlAssociation",
@@ -86,7 +86,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -131,7 +131,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Element"
         },
         "role": {
@@ -143,7 +143,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Role"
         },
         "navigability": {
@@ -155,7 +155,7 @@
               "type": "null"
             }
           ],
-          "default": True,
+          "default": true,
           "title": "Navigability"
         }
       },
@@ -186,7 +186,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -224,7 +224,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Type"
         },
         "is_static": {
@@ -236,7 +236,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Static"
         },
         "is_ordered": {
@@ -248,7 +248,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Ordered"
         },
         "is_unique": {
@@ -260,7 +260,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Unique"
         },
         "is_read_only": {
@@ -272,7 +272,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Read Only"
         },
         "is_query": {
@@ -284,7 +284,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Query"
         },
         "is_derived": {
@@ -296,7 +296,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Derived"
         },
         "is_derived_union": {
@@ -308,7 +308,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Derived Union"
         }
       },
@@ -330,7 +330,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -405,7 +405,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Description"
         },
         "name": {
@@ -417,7 +417,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "elements": {
@@ -577,7 +577,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -637,7 +637,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -676,7 +676,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Supplier"
         },
         "client": {
@@ -694,7 +694,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Client"
         }
       },
@@ -736,7 +736,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -770,7 +770,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Source"
         },
         "target": {
@@ -785,7 +785,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Target"
         }
       },
@@ -807,7 +807,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -853,7 +853,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Specific"
         },
         "general": {
@@ -871,7 +871,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "General"
         }
       },
@@ -906,7 +906,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -990,7 +990,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -1016,7 +1016,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Interaction"
         },
         "covered": {
@@ -1052,7 +1052,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -1099,7 +1099,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -1128,7 +1128,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Represents"
         }
       },
@@ -1150,7 +1150,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -1176,7 +1176,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Send Event"
         },
         "receive_event": {
@@ -1191,7 +1191,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Receive Event"
         },
         "signature": {
@@ -1206,7 +1206,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Signature"
         },
         "arguments": {
@@ -1374,7 +1374,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Covered"
         }
       },
@@ -1413,7 +1413,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Guard"
         }
       },
@@ -1435,7 +1435,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -1480,7 +1480,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Return Type"
         },
         "is_static": {
@@ -1492,7 +1492,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Static"
         },
         "is_ordered": {
@@ -1504,7 +1504,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Ordered"
         },
         "is_unique": {
@@ -1516,7 +1516,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Unique"
         },
         "is_query": {
@@ -1528,7 +1528,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Query"
         },
         "is_derived": {
@@ -1540,7 +1540,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Derived"
         },
         "is_derived_union": {
@@ -1552,11 +1552,11 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Is Derived Union"
         },
         "is_abstract": {
-          "default": False,
+          "default": false,
           "title": "Is Abstract",
           "type": "boolean"
         },
@@ -1586,7 +1586,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -1785,7 +1785,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -1823,7 +1823,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Type"
         },
         "direction": {
@@ -1859,7 +1859,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "visibility": {
@@ -1928,7 +1928,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Supplier"
         },
         "client": {
@@ -1946,7 +1946,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Client"
         }
       },
@@ -1968,7 +1968,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Description"
         },
         "name": {
@@ -1980,7 +1980,7 @@
               "type": "null"
             }
           ],
-          "default": None,
+          "default": null,
           "title": "Name"
         },
         "elements": {
@@ -2038,7 +2038,7 @@
           "type": "null"
         }
       ],
-      "default": None,
+      "default": null,
       "title": "Name"
     },
     "visibility": {
@@ -2059,7 +2059,7 @@
       "$ref": "#/$defs/UmlDiagrams"
     },
     "metadata": {
-      "additionalProperties": True,
+      "additionalProperties": true,
       "title": "Metadata",
       "type": "object"
     }
